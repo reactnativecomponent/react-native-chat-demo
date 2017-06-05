@@ -120,7 +120,7 @@ export default class SelectUsers extends React.Component {
     _renderSelect(){
         return this.state.selectAccounts.map(res=>{
            return (
-               <Image key={res.contactId} style={{width:35,height:35,marginRight:5}} source={res.avatar ? {uri:res.avatar} : require('../../images/discuss_logo.png')} />
+               <Image key={res.contactId} style={{width:35,height:35,marginRight:5}} source={res.avatar ? {uri:res.avatar} : require('../images/discuss_logo.png')} />
            )
         });
     }
@@ -129,7 +129,7 @@ export default class SelectUsers extends React.Component {
             return(
                 <ListItem key={res.contactId}>
                     <Icon name='ios-checkmark-circle' style={{color:'#ccc',marginRight:8}}/>
-                    <Image style={{width:35,height:35}} source={res.avatar ? {uri:res.avatar} : require('../../images/discuss_logo.png')} />
+                    <Image style={{width:35,height:35}} source={res.avatar ? {uri:res.avatar} : require('../images/discuss_logo.png')} />
                     <Body>
                     <Text>
                         {res.name}
@@ -142,7 +142,7 @@ export default class SelectUsers extends React.Component {
             <ListItem key={res.contactId} onPress={()=>this._select(res,sectionID,rowId)}>
                 <Icon name={res.isSelect ? 'ios-checkmark-circle' : 'ios-radio-button-off'}
                       style={{marginRight:8,color:res.isSelect ? '#d82617' : '#ccc'}}/>
-                <Image style={{width:35,height:35}} source={res.avatar ? {uri:res.avatar} : require('../../images/discuss_logo.png')} />
+                <Image style={{width:35,height:35}} source={res.avatar ? {uri:res.avatar} : require('../images/discuss_logo.png')} />
                 <Body>
                 <Text>
                     {res.name}
