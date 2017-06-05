@@ -8,10 +8,11 @@
  ```
 [[NIMSDK sharedSDK] registerWithAppID:@"云信appId" cerName:@"证书名称"];
  ```
-#### 2.2 android (MainApplication.java)
+#### 2.2 android (app/build.gradle)
  ```
- //最后一个参数是小米推送证书的配置 new IMApplication.MiPushConfig("小米推送appId","小米推送appKey","云信后台配置的证书名称")
- IMApplication.init(this, MainActivity.class,R.drawable.ic_stat_notify_msg,null);
+  manifestPlaceholders = [
+     "NIM_KEY": ""//云信appId
+  ]
  ```
 ## 截图
 
