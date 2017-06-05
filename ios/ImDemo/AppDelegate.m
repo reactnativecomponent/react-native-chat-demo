@@ -40,7 +40,7 @@
   //appkey 是应用的标识，不同应用之间的数据（用户、消息、群组等）是完全隔离的。
   //如需打网易云信 Demo 包，请勿修改 appkey ，开发自己的应用时，请替换为自己的 appkey 。
   //并请对应更换 Demo 代码中的获取好友列表、个人信息等网易云信 SDK 未提供的接口。
-  [[NIMSDK sharedSDK] registerWithAppID:@"8cafb31bb1c3750349340dec765df1c5" cerName:@"feimapushdev"];
+  [[NIMSDK sharedSDK] registerWithAppID:@"云信appId" cerName:@"推送证书名称"];
   [self registerAPNs];
   
   
