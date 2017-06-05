@@ -129,13 +129,13 @@ export default class Chat extends React.Component {
     formatData(arr){
         arr.map((m,i) => {
             if(Platform.OS === 'android' && m.attachStatus === "2"){
-                if(m.imageObj && !m.imageObj.path2){
-                    console.log("downloading...")
-                    NIM.downloadAttachment(m._id);
-                }
+            if(m.imageObj && !m.imageObj.path2){
+                console.log("downloading...")
+                NIM.downloadAttachment(m._id);
             }
-            arr[i].createdAt = this.getLocalTime(m.createdAt);
-        });
+        }
+        arr[i].createdAt = this.getLocalTime(m.createdAt);
+    });
         arr.sort(function(a,b){return b.createdAt - a.createdAt});
         return arr;
     }
@@ -145,10 +145,10 @@ export default class Chat extends React.Component {
         let isHas = false;
         messages.map((res,i)=>{
             if(res._id === newData[0]._id){
-                messages[i] = newData[0];
-                isHas = true;
-            }
-        });
+            messages[i] = newData[0];
+            isHas = true;
+        }
+    });
         if(!isHas){
             messages = newData.concat(messages);
         }
@@ -158,48 +158,48 @@ export default class Chat extends React.Component {
         const {session={}} = this.props;
         NIM.startSession(session.contactId,session.sessionType);
         this.sessionListener = NativeAppEventEmitter.addListener("observeReceiveMessage",(data)=>{
-            console.info('新消息通知',data)
-            let messages = this.formatData(data);
-            if (!Array.isArray(data)) {
-                messages = [messages];
-            }
-            this.sendMessage = messages;
-            messages =  messages.concat(this.state.messages);
-            this.setState({
-                messages:messages
-            });
+                console.info('新消息通知',data)
+        let messages = this.formatData(data);
+        if (!Array.isArray(data)) {
+            messages = [messages];
+        }
+        this.sendMessage = messages;
+        messages =  messages.concat(this.state.messages);
+        this.setState({
+            messages:messages
         });
+    });
         this.msgStatusListener = NativeAppEventEmitter.addListener("observeMsgStatus",(data)=>{
-            console.info('消息状态',data)
-            let newMessage = this.formatData(data);
-            this.setState({
-                messages:this.concatMessage(newMessage)
-            });
+                console.info('消息状态',data)
+        let newMessage = this.formatData(data);
+        this.setState({
+            messages:this.concatMessage(newMessage)
         });
+    });
         this.audioStatusListener = NativeAppEventEmitter.addListener("observeAudioRecord",(data)=>{
-            console.info('录音状态',data)
-            if(data && data.playEnd && this.playingMessage){
-                this.stopPlayer();
-            }
-            if (Platform.OS == 'ios' && data.recordPower) {
-                var metering = data.recordPower;
-                //ios: [-160, 0]
-                metering = Math.max(metering, -160);
-                metering = Math.min(metering, 0);
-                //to [0, 20]
-                var t = 20*(metering - (-160))/160;
-                t = Math.floor(t);
-                this.setState({currentMetering:t});
-                this.recordTime = data.currentTime;
-                console.log(t)
-            }
-        });
+                console.info('录音状态',data)
+        if(data && data.playEnd && this.playingMessage){
+            this.stopPlayer();
+        }
+        if (Platform.OS == 'ios' && data.recordPower) {
+            var metering = data.recordPower;
+            //ios: [-160, 0]
+            metering = Math.max(metering, -160);
+            metering = Math.min(metering, 0);
+            //to [0, 20]
+            var t = 20*(metering - (-160))/160;
+            t = Math.floor(t);
+            this.setState({currentMetering:t});
+            this.recordTime = data.currentTime;
+            console.log(t)
+        }
+    });
         NIM.queryMessageListEx("",20).then((data)=>{
             console.info('首次加载',data);
-            this.setState({
-                messages:this.formatData(data)
-            });
-        },(err)=>{
+        this.setState({
+            messages:this.formatData(data)
+        });
+    },(err)=>{
             console.log(err)
         });
     }
@@ -213,17 +213,17 @@ export default class Chat extends React.Component {
         const {messages} = this.state;
         let newmsgs = []
         var index = messages.findIndex((m) => {
-            return m._id == id;
-        });
+                return m._id == id;
+    });
         if (index == -1) {
             return;
         } else {
             var m = Object.assign({}, messages[index], {playing:playing});
             newmsgs =  [...messages.slice(0, index), m, ...messages.slice(index+1, messages.length)];
         }
-       this.setState({
-           messages:newmsgs
-       });
+        this.setState({
+            messages:newmsgs
+        });
 
     }
     getChildContext() {
@@ -239,6 +239,15 @@ export default class Chat extends React.Component {
         this.dispatchPlaying(this.playingMessage._id,false);
         this.playingMessage = null;
 
+    }
+    setRecording(recording) {
+        this.setState({recording:recording});
+    }
+    setRecordingText(text) {
+        this.setState({recordingText:text});
+    }
+    setRecordingColor(color) {
+        this.setState({recordingColor:color});
     }
     sendTextMessage(text) {
         NIM.sendTextMessage(text);
@@ -260,8 +269,8 @@ export default class Chat extends React.Component {
             loadingLabelText:'请稍候...'
         }).then(image => {
             console.log(image)
-            NIM.sendImageMessages(image.path,"myName");
-        });
+        NIM.sendImageMessages(image.path,"myName");
+    });
     }
     handleCameraPicker() {
         ImagePicker.openCamera({
@@ -269,7 +278,7 @@ export default class Chat extends React.Component {
             loadingLabelText:'请稍候...'
         }).then(image => {
             NIM.sendImageMessages(image.path,"myName");
-        });
+    });
     }
     onLocation(coordinate) {
         this.sendLocationImage(coordinate.longitude,coordinate.latitude,coordinate.address);
@@ -452,128 +461,128 @@ export default class Chat extends React.Component {
         });
     }
     _loadMoreContentAsync = async () => {
-        const last = this.state.messages[this.state.messages.length-1];
-        if(!last){
+    const last = this.state.messages[this.state.messages.length-1];
+    if(!last){
+    return;
+}
+return NIM.queryMessageListEx(last._id,20).then((data)=>{
+        console.info('历史记录',data)
+let messages = this.formatData(data);
+if (!Array.isArray(data)) {
+    messages = [messages];
+}
+messages =  this.state.messages.concat(messages);
+this.setState({
+    messages:messages
+});
+
+}).then((err)=>{
+    this.setState({
+    canLoadMoreContent:false
+});
+
+});
+}
+renderMessages() {
+    const {session={}} = this.props;
+    return (
+        <Animated.View style={{height: this.state.messagesContainerHeight }}>
+<MessageContainer
+    canLoadMore={this.state.canLoadMoreContent}
+    onLoadMoreAsync={this._loadMoreContentAsync}
+    user={{
+        _id: global.imaccount, // sent messages should have same user._id
+    }}
+    session={session}
+    invertibleScrollViewProps={this.invertibleScrollViewProps}
+    onMessageLongPress={this.onMessageLongPress.bind(this)}
+    onMessagePress={this.onMessagePress.bind(this)}
+    messages={this.state.messages}
+    ref={component => this._messageContainerRef = component}
+/>
+</Animated.View>
+);
+}
+renderInputToolbar() {
+    const inputToolbarProps = {
+        onSend: this.onSend.bind(this),
+        onHeightChange:this.onInputToolbarHeightChange.bind(this),
+        giftedChat: this,
+
+    };
+    return (
+        <InputToolbar
+    ref={(input) => this.inputToolbar = input}
+    {...inputToolbarProps}
+/>
+);
+}
+renderRecordView() {
+    const {width, height} = Dimensions.get('window');
+    var left = this.state.recording ? 0 : width;
+    const {recordingText, recordingColor, currentMetering} = this.state;
+    return (
+        <Animated.View style={{position:"absolute",
+        top:0,
+        left:left,
+        width:width,
+        height:this.state.messagesContainerHeight,
+        alignItems:"center",
+
+        justifyContent:"center"}}>
+<View style={{backgroundColor:"rgba(0,0,0,0.5)",
+        alignItems:"center",
+        borderRadius:4}}>
+<Image source={require('../components/chat/Images/VoiceSearchFeedback020.png')}/>
+<Text style={{margin:4,padding:4,backgroundColor:recordingColor,color:'#fff'}}>
+    {recordingText}
+</Text>
+    </View>
+    </Animated.View>);
+
+
+}
+render() {
+    const {showMenuBar,menuBarOrigin,menuItems}=this.state
+    if (this.state.isInitialized === true) {
+        let onViewLayout = (e) => {
+            if (this.getIsFirstLayout() === true) {
+                this.setIsFirstLayout(false);
+            }
+        };
+        return (
+            <View
+        style={{marginTop:NAVIGATIONBAR_HEIGHT, flex:1, backgroundColor:"#f7f7f7"}}
+        onLayout={onViewLayout}>
+            {this.renderMessages()}
+        {this.renderRecordView()}
+        {this.renderInputToolbar()}
+        {showMenuBar?<MenuBar
+            origin = {menuBarOrigin}
+            menuItems = {menuItems}
+            itemClick = {this._menuBarItemClick.bind(this)}
+        />:null}
+    </View>
+    );
+    }
+    let onViewLayout = (e) => {
+        const layout = e.nativeEvent.layout;
+        if (layout.height == 0) {
             return;
         }
-       return NIM.queryMessageListEx(last._id,20).then((data)=>{
-           console.info('历史记录',data)
-           let messages = this.formatData(data);
-           if (!Array.isArray(data)) {
-               messages = [messages];
-           }
-           messages =  this.state.messages.concat(messages);
-           this.setState({
-               messages:messages
-           });
-
-        }).then((err)=>{
-           this.setState({
-               canLoadMoreContent:false
-           });
-
-       });
-    }
-    renderMessages() {
-        const {session={}} = this.props;
-        return (
-            <Animated.View style={{height: this.state.messagesContainerHeight }}>
-                <MessageContainer
-                    canLoadMore={this.state.canLoadMoreContent}
-                    onLoadMoreAsync={this._loadMoreContentAsync}
-                    user={{
-                        _id: global.imaccount, // sent messages should have same user._id
-                    }}
-                    session={session}
-                    invertibleScrollViewProps={this.invertibleScrollViewProps}
-                    onMessageLongPress={this.onMessageLongPress.bind(this)}
-                    onMessagePress={this.onMessagePress.bind(this)}
-                    messages={this.state.messages}
-                    ref={component => this._messageContainerRef = component}
-                />
-            </Animated.View>
-        );
-    }
-    renderInputToolbar() {
-        const inputToolbarProps = {
-            onSend: this.onSend.bind(this),
-            onHeightChange:this.onInputToolbarHeightChange.bind(this),
-            giftedChat: this,
-
-        };
-        return (
-            <InputToolbar
-                ref={(input) => this.inputToolbar = input}
-                {...inputToolbarProps}
-            />
-        );
-    }
-    renderRecordView() {
-        const {width, height} = Dimensions.get('window');
-        var left = this.state.recording ? 0 : width;
-        const {recordingText, recordingColor, currentMetering} = this.state;
-        return (
-            <Animated.View style={{position:"absolute",
-                                   top:0,
-                                   left:left,
-                                   width:width,
-                                   height:this.state.messagesContainerHeight,
-                                   alignItems:"center",
-
-                                   justifyContent:"center"}}>
-                <View style={{backgroundColor:"#444",
-                              alignItems:"center",
-                              borderRadius:4}}>
-                    <Image source={require('../components/chat/Images/VoiceSearchFeedback020.png')}/>
-                    <Text style={{margin:4,padding:4,backgroundColor:recordingColor}}>
-                        {recordingText}
-                    </Text>
-                </View>
-            </Animated.View>);
-
-
-    }
-    render() {
-        const {showMenuBar,menuBarOrigin,menuItems}=this.state
-        if (this.state.isInitialized === true) {
-            let onViewLayout = (e) => {
-                if (this.getIsFirstLayout() === true) {
-                    this.setIsFirstLayout(false);
-                }
-            };
-            return (
-                <View
-                    style={{marginTop:NAVIGATIONBAR_HEIGHT, flex:1, backgroundColor:"#f7f7f7"}}
-                    onLayout={onViewLayout}>
-                    {this.renderMessages()}
-                    {this.renderRecordView()}
-                    {this.renderInputToolbar()}
-                    {showMenuBar?<MenuBar
-                        origin = {menuBarOrigin}
-                        menuItems = {menuItems}
-                        itemClick = {this._menuBarItemClick.bind(this)}
-                    />:null}
-                </View>
-            );
-        }
-        let onViewLayout = (e) => {
-            const layout = e.nativeEvent.layout;
-            if (layout.height == 0) {
-                return;
-            }
-            this.setMaxHeight(layout.height);
-            let t = this.prepareMessagesContainerHeight(this.getMaxHeight() - MIN_INPUT_TOOLBAR_HEIGHT);
-            this.setState({
-                isInitialized: true,
-                messagesContainerHeight: t
-            });
-        };
-        return (
-            <View style={{marginTop:NAVIGATIONBAR_HEIGHT, flex:1, backgroundColor:"transparent"}}
-                  onLayout={onViewLayout} >
-            </View>
-        );
-    }
+        this.setMaxHeight(layout.height);
+        let t = this.prepareMessagesContainerHeight(this.getMaxHeight() - MIN_INPUT_TOOLBAR_HEIGHT);
+        this.setState({
+            isInitialized: true,
+            messagesContainerHeight: t
+        });
+    };
+    return (
+        <View style={{marginTop:NAVIGATIONBAR_HEIGHT, flex:1, backgroundColor:"transparent"}}
+    onLayout={onViewLayout} >
+        </View>
+);
+}
 }
 Chat.childContextTypes = {
     getLocale: React.PropTypes.func,

@@ -13,6 +13,7 @@ import SessionUserDetail from './SessionUserDetail';
 import SendAddFriend from './SendAddFriend';
 import UpdateTeamName from './UpdateTeamName';
 import SearchScreen from './SearchScreen';
+import SelectUsers from './SelectUsers';
 
 export default function () {
     Navigation.registerComponent('ImDemo.Login', () => Login);
@@ -28,4 +29,6 @@ export default function () {
     Navigation.registerComponent('ImDemo.SendAddFriend', () => SendAddFriend);
     Navigation.registerComponent('ImDemo.UpdateTeamName', () => UpdateTeamName);
     Navigation.registerComponent('ImDemo.SearchScreen', () => SearchScreen);
+    Navigation.registerComponent('ImDemo.SelectUsers', () => SelectUsers);
+
 }
