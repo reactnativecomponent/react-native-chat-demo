@@ -3,11 +3,12 @@
 
 # 截图
 
+|Twitter|WeChat|OFO|
 |:--:|:--:|:--:|
 |![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/chatList.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/chat.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/sessionDetail.png)|
-
-|:--:|:--:|:--:|
+|**QQBrowser**|**Gif1**|**Gif2**|
 |![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/selectUser.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/friendList.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/friendDetail.png)|
+
 # 路由配置请看
 [react-native-navigation](https://wix.github.io/react-native-navigation/#/)
 
