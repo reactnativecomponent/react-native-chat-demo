@@ -1,0 +1,39 @@
+PODS:
+  - CocoaLumberjack (2.0.3):
+    - CocoaLumberjack/Default (= 2.0.3)
+    - CocoaLumberjack/Extensions (= 2.0.3)
+  - CocoaLumberjack/Core (2.0.3)
+  - CocoaLumberjack/Default (2.0.3):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Extensions (2.0.3):
+    - CocoaLumberjack/Default
+  - FMDB (2.6.2):
+    - FMDB/standard (= 2.6.2)
+  - FMDB/standard (2.6.2)
+  - NIMSDK (3.5.5)
+  - QBImagePickerController (3.4.0)
+  - Reachability (3.1.1)
+  - RSKImageCropper (1.6.1)
+  - SSZipArchive (1.7)
+
+DEPENDENCIES:
+  - CocoaLumberjack (~> 2.0.0-rc2)
+  - FMDB (~> 2.5)
+  - NIMSDK
+  - QBImagePickerController
+  - Reachability (~> 3.1.1)
+  - RSKImageCropper
+  - SSZipArchive (~> 1.2)
+
+SPEC CHECKSUMS:
+  CocoaLumberjack: f58d8a19629f4d8379ae14bb3534def24161430e
+  FMDB: 854a0341b4726e53276f2a8996f06f1b80f9259a
+  NIMSDK: 12783e4dffda35d4bc3cd60228f5474241ae5752
+  QBImagePickerController: d54cf93db6decf26baf6ed3472f336ef35cae022
+  Reachability: dd9aa4fb6667b9f787690a74f53cb7634ce99893
+  RSKImageCropper: 0df8c99e77a8ea7ca7a8b83ef468556f31584254
+  SSZipArchive: 63f8e11cfcc33e03e4cd666b4359ea8bd6facd0c
+
+PODFILE CHECKSUM: 6365c8e89b4c41b9de7374442d79307eb3c9c774
+
+COCOAPODS: 1.2.0
