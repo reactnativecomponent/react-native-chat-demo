@@ -3,6 +3,7 @@
 ## 如何使用
 ### 1.注册网易云信帐号
 注册地址 [https://app.netease.im/regist](https://app.netease.im/regist)
+#### 注意:在后台填入的密码需要进行md5加密，或者把`/src/screens/Login.js`里面对密码的md5加密去掉(否则无法登录)
 ### 2.修改配置
 #### 2.1 ios (AppDelegate.m)
  ```
