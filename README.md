@@ -8,6 +8,7 @@
  ```
 [[NIMSDK sharedSDK] registerWithAppID:@"云信appId" cerName:@"证书名称"];
  ```
+##### 注意IOS需要安装cocoapods,进入`react-native-chat-demo/ios` 目录执行 `pod install`
 #### 2.2 android (app/build.gradle)
  ```
   manifestPlaceholders = [
