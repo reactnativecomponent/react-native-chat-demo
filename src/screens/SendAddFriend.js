@@ -6,9 +6,8 @@ import Toast from 'react-native-simple-toast';
 
 export default class SendAddFriend extends Component {
     static navigatorStyle = {
-        statusBarColor: '#fc513a',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#fc513a",
+        statusBarColor: '#444',
+        navBarBackgroundColor:"#444",
         navBarButtonColor:"#fff",
         navBarTextColor:"#fff"
     };
@@ -22,12 +21,11 @@ export default class SendAddFriend extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            remark:  "我是"+props.user.name || ''
+            remark:''
         };
         this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
     }
     _onNavigatorEvent(event){
-
         if (event.type == 'NavBarButtonPress') {
             if (event.id == 'ver-add') {
                 this.submit();
