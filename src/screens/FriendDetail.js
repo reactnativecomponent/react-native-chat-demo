@@ -7,7 +7,6 @@ export  default class FriendDetail extends Component {
 
     static navigatorStyle = {
         statusBarColor: '#444',
-        tabBarHidden: true,
         navBarBackgroundColor:"#444",
         navBarButtonColor:"#fff",
         navBarTextColor:"#fff"
@@ -21,7 +20,6 @@ export  default class FriendDetail extends Component {
             ...friendData,
             sessionType:'0'
         };
-        console.log(session)
         navigator.push({
             screen:'ImDemo.Chat',
             title:session.alias || session.name,

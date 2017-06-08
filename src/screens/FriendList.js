@@ -47,9 +47,6 @@ export default class FriendList extends React.Component {
                     animationType: 'slide-up',
                     passProps:{
                         onResult:function(result){
-                            navigator.dismissAllModals({
-                                animated:false,
-                            });
                             navigator.push({
                                 screen:'ImDemo.FriendDetail',
                                 title:'详细资料',

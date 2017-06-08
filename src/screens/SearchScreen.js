@@ -32,7 +32,9 @@ export default class SearchScreen extends Component {
     }
     onSelectResult(data){
         this.props.onResult && this.props.onResult(data);
-
+        this.props.navigator.dismissModal({
+            animationType: 'none'
+        });
     }
     _renderResult(){
         if(this.state.result && this.state.result.length > 0){

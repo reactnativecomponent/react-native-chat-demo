@@ -54,3 +54,4 @@ fastlane/Preview.html
 fastlane/screenshots
 __tests__/index.android.js
 __tests__/index.ios.js
+ios/Podfile.lock

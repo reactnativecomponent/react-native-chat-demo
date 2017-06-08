@@ -335,7 +335,6 @@
 		4A520A80709C4B268A1C44C6 /* LRDRCTSimpleToast.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = LRDRCTSimpleToast.xcodeproj; path = "../node_modules/react-native-simple-toast/ios/LRDRCTSimpleToast.xcodeproj"; sourceTree = "<group>"; };
 		4A70166304364E1ABFC08245 /* RNNeteaseIm.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNNeteaseIm.xcodeproj; path = "../node_modules/react-native-netease-im/ios/RNNeteaseIm/RNNeteaseIm.xcodeproj"; sourceTree = "<group>"; };
 		4C8E2F6CF4C748A5B0CF923A /* Rubik-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-BlackItalic.ttf"; path = "../node_modules/native-base/Fonts/Rubik-BlackItalic.ttf"; sourceTree = "<group>"; };
-		4E3D46881EE4EEBE00F8346D /* ImDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ImDemo.entitlements; path = ImDemo/ImDemo.entitlements; sourceTree = "<group>"; };
 		4E73E2CDFF3D41319294160A /* Courier New.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Courier New.ttf"; path = "../node_modules/native-base/Fonts/Courier New.ttf"; sourceTree = "<group>"; };
 		4EF2EF0E81434AA6AF900DF9 /* libRNNeteaseIm.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNNeteaseIm.a; sourceTree = "<group>"; };
 		5C662BF1A4CE4198A6E9B2F3 /* Arial Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Arial Black.ttf"; path = "../node_modules/native-base/Fonts/Arial Black.ttf"; sourceTree = "<group>"; };
@@ -517,7 +516,6 @@
 		13B07FAE1A68108700A75B9A /* ImDemo */ = {
 			isa = PBXGroup;
 			children = (
-				4E3D46881EE4EEBE00F8346D /* ImDemo.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,

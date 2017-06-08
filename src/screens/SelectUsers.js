@@ -54,11 +54,11 @@ export default class SelectUsers extends React.Component {
             if (event.id == 'add') { // this is the same id field from the static navigatorButtons definition
                 //NIM.addMembers();
                 let result = this.getIds();
+
                 if(result.length > 0){
                     NIM.addMembers(teamId,result).then(()=>{
                         this.props.onResult && this.props.onResult();
                     });
-
                 }
 
             }
