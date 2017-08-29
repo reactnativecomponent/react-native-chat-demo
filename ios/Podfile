@@ -1,0 +1,22 @@
+
+platform :ios, '8.0'
+target ‘ImDemo’ do
+  pod 'SDWebImage', '~>4.0.0'
+  pod 'AMapLocation’
+  pod 'RSKImageCropper'
+  pod 'QBImagePickerController'
+  pod 'NIMSDK'
+  pod 'SSZipArchive', '~> 1.2'
+  pod 'Reachability', '~> 3.1.1'
+  pod 'CocoaLumberjack', '~> 2.0.0-rc2'
+  pod 'FMDB', '~>2.5' 
+  pod 'Yoga', path: '../node_modules/react-native/ReactCommon/yoga/'
+  #pod 'React', path: '../node_modules/react-native/'
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+    'BatchedBridge'
+  ]
+  pod 'react-native-amap3d', path: '../node_modules/react-native-amap3d/'
+end
+
+
+
