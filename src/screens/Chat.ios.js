@@ -35,15 +35,9 @@ class Chat extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            canLoadMoreContent:true,
-            isPacketModalOpen:false,
-            packetData:{},
-            messages:[],
-            sendUser:{},
-            inputViewLayout: {width:window.width, height:86},
+            isInitialized:false,
             inputViewHeight: new Animated.Value(50),
             inputViewWidth: 0,
-            listViewWidth: new Animated.Value(0),
             showType: 0,
             menuViewH:220,
             viewY:50,
@@ -76,7 +70,6 @@ class Chat extends React.Component {
     }
     _onNavigatorEvent(event){
         const {session,navigator} = this.props;
-        let self = this;
         if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
             if (event.id === 'setting_team') { // this is the same id field from the static navigatorButtons definition
                 navigator.push({
@@ -86,9 +79,7 @@ class Chat extends React.Component {
                     passProps:{
                         session:session,
                         onResult:function(){
-                            self.setState({
-                                messages:[]
-                            });
+                            AuroraIController.cleanAllMessages();
                         }
                     }
                 });
@@ -100,9 +91,7 @@ class Chat extends React.Component {
                     passProps:{
                         session:session,
                         onResult:function(){
-                            self.setState({
-                                messages:[]
-                            });
+                            AuroraIController.cleanAllMessages();
                         }
                     }
                 });
@@ -251,11 +240,7 @@ class Chat extends React.Component {
     }
     onMsgClick = (message) => {
         const {navigator} = this.props;
-        if (message.msgType === 'text'){
 
-        }
-        if (message.msgType === 'image' && message.extend) {
-        }
         if (message.msgType === 'voice'  &&  message.extend){
             AuroraIController.tapVoiceBubbleView(message.msgId)
             if (!message.extend.isPlayed  &&  message.isOutgoing == false ){
@@ -364,11 +349,11 @@ class Chat extends React.Component {
         this._isAutoScroll = isAutoScroll;
     }
     _loadMoreContentAsync = async () => {
-        const last = this.state.messages[0];
-        if(!last){
+        if(!this._lastMessage){
             return;
         }
-        return NimSession.queryMessageListEx(last.msgId,20).then((data)=>{
+        return NimSession.queryMessageListEx(this._lastMessage.msgId,20).then((data)=>{
+            this._lastMessage = data[data.length-1];
             AuroraIController.insertMessagesToTop(data);
             AuroraIController.stopPlayActivity()
         },(err)=>{
@@ -383,52 +368,55 @@ class Chat extends React.Component {
             }
             this.setState({
                 isInitialized: true,
-                listViewWidth: window.width,
                 inputViewHeight:new Animated.Value(50),
                 inputViewWidth:window.width,
             });
-            NimSession.queryMessageListEx("",20).then((data)=>{
-                console.info('首次加载',data);
-                this.setState({
-                    messages:data
+            setTimeout(()=>{
+                NimSession.queryMessageListEx("",20).then((data)=>{
+                    this._lastMessage = data[data.length-1];
+                    AuroraIController.fristAppendMessages(data)
+                },(err)=>{
+                    console.log(err)
                 });
-                AuroraIController.fristAppendMessages(data)
-            },(err)=>{
-                console.log(err)
-            });
-
+            },200)
         };
+        if(this.state.isInitialized){
+            return (
+                <View style={styles.container}>
+                    <MessageListView style={[styles.messageList]}
+                                     onAvatarClick={this.onAvatarPress}
+                                     onMsgClick={this.onMsgClick}
+                                     onMsgOpenUrlClick={this.onMsgOpenUrlClick}
+                                     onDealWithMenuClick={this.onDealWithMenuClick}
+                                     onStatusViewClick={this.onStatusViewClick}
+                                     onTapMessageCell={this.onTapMessageCell}
+                                     onClickChangeAutoScroll={this.onClickChangeAutoScroll}
+                                     onBeginDragMessageList={this.onBeginDragMessageList}
+                                     onClickLoadMessages={this._loadMoreContentAsync}
+                                     avatarSize={{width:40,height:40}}
+                                     sendBubbleTextSize={18}
+                                     sendBubbleTextColor={"000000"}
+                                     sendBubblePadding={{left:10,top:10,right:10,bottom:10}}
+                    />
+                    <InputView style={{width:this.state.inputViewWidth,height:this.state.inputViewHeight}} menuViewH={this.state.menuViewH}
+                               defaultToolHeight={50}
+                               onFeatureView={this.onFeatureView}
+                               onShowKeyboard={this.onShowKeyboard}
+                               onChangeBarHeight = {this.onChangeBarHeight}
+                               onSendTextMessage = {this.onSendTextMessage}
+                               onSendRecordMessage = {this.onSendRecordMessage}
+                               onClickMention = {this.onClickMention}
+                    >
+                        {this.renderCustomContent()}
+                    </InputView>
+                </View>
+            );
+        }
         return (
-            <View style={styles.container}
-                  onLayout={onViewLayout} >
-                <MessageListView style={[styles.messageList]}
-                                 onAvatarClick={this.onAvatarPress}
-                                 onMsgClick={this.onMsgClick}
-                                 onMsgOpenUrlClick={this.onMsgOpenUrlClick}
-                                 onDealWithMenuClick={this.onDealWithMenuClick}
-                                 onStatusViewClick={this.onStatusViewClick}
-                                 onTapMessageCell={this.onTapMessageCell}
-                                 onClickChangeAutoScroll={this.onClickChangeAutoScroll}
-                                 onBeginDragMessageList={this.onBeginDragMessageList}
-                                 onClickLoadMessages={this._loadMoreContentAsync}
-                                 avatarSize={{width:40,height:40}}
-                                 sendBubbleTextSize={18}
-                                 sendBubbleTextColor={"000000"}
-                                 sendBubblePadding={{left:10,top:10,right:10,bottom:10}}
-                />
-                <InputView style={{width:this.state.inputViewWidth,height:this.state.inputViewHeight}} menuViewH={this.state.menuViewH}
-                           defaultToolHeight={50}
-                           onFeatureView={this.onFeatureView}
-                           onShowKeyboard={this.onShowKeyboard}
-                           onChangeBarHeight = {this.onChangeBarHeight}
-                           onSendTextMessage = {this.onSendTextMessage}
-                           onSendRecordMessage = {this.onSendRecordMessage}
-                           onClickMention = {this.onClickMention}
-                >
-                    {this.renderCustomContent()}
-                </InputView>
+            <View style={styles.container} onLayout={onViewLayout} >
             </View>
-        );
+        )
+
     }
 }
 
