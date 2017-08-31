@@ -1,5 +1,6 @@
 ## react-native-chat-demo
 网易云信IM示例
+[js版本](https://github.com/reactnativecomponent/react-native-chat-demo/tree/js-ui)
 ## 如何使用
 ### 1.注册网易云信帐号
 注册地址 [https://app.netease.im/regist](https://app.netease.im/regist)
