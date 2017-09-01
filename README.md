@@ -1,5 +1,5 @@
 ## react-native-chat-demo
-网易云信IM示
+网易云信IM示 界面仿微信
 
 [js版本](https://github.com/reactnativecomponent/react-native-chat-demo/tree/js-ui)
 ## 如何使用
