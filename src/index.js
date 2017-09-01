@@ -3,8 +3,9 @@ import React,{
 } from 'react';
 import registerScreens from './screens';
 import {Navigation} from 'react-native-navigation';
-
-
+import { Theme } from "native-base-shoutem-theme";
+import getTheme from '../native-base-theme/components';
+import platform from '../native-base-theme/variables/platform';
 registerScreens();
 
 const navigatorStyle = {
@@ -12,14 +13,14 @@ const navigatorStyle = {
 	navBarTextColor: 'white',
 	navBarButtonColor: 'white',
 	statusBarTextColorScheme: 'light',
-	statusBarColor:'#000',
-
-
+	statusBarColor:'#fff',
 };
 export default class App extends Component{
 	constructor(props) {
 		super(props);
 		this.initial();
+        Theme.setDefaultThemeStyle(getTheme(platform));
+
 	}
 	initial(){
 		Navigation.startSingleScreenApp({
@@ -32,6 +33,9 @@ export default class App extends Component{
 					navBarBackgroundColor:'#444',
 					navBarHidden:true
 				}
+			},
+			appleStyle:{
+                statusBarColor:'#fff',
 			}
 		});
 	}

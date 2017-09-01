@@ -2,12 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationWhenInUseUsageDescription - 3</key>
-	<string></string>
-	<key>NSLocationWhenInUseUsageDescription - 2</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>您的位置用于收集信息防止盗号</string>
-	<key>NSMicrophoneUsageDescription - 2</key>
-	<string>需要您的同意才能读取媒体资料库</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>亲,要允许使用相册哦</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -49,9 +45,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>

@@ -247,6 +247,10 @@ class Chat extends React.Component {
                 NimSession.updateAudioMessagePlayStatus(message.msgId);
             }
         }
+        if (message.msgType === 'image' && message.extend) {
+            AuroraIController.hidenFeatureView(true)
+            AuroraIController.showOrigImage(message.extend);
+        }
 
         if(message.msgType === 'location'  && message.extend){
             navigator.push({
@@ -335,7 +339,7 @@ class Chat extends React.Component {
         if(v && v.fromUser){
             NimFriend.getUserInfo(v.fromUser._id).then((data)=>{
                 this.props.navigator.push({
-                    screen:'FeiMa.FriendDetail',
+                    screen:'ImDemo.FriendDetail',
                     title:'详细资料',
                     backButtonTitle:'返回',
                     passProps:{

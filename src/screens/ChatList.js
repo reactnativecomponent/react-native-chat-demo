@@ -19,7 +19,7 @@ export default class ChatList extends Component {
         navBarTextColor: 'white',
         navBarButtonColor: 'white',
         statusBarTextColorScheme: 'light',
-        statusBarColor: '#444',
+        statusBarColor: '#fff',
         tabBarHidden: true,
         navBarBackgroundColor:"#444",
     };
@@ -56,7 +56,7 @@ export default class ChatList extends Component {
         }
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'add') {
-                navigator.push({
+                navigator.showModal({
                     screen:"ImDemo.CreateTeam",
                     title:'创建群'
                 });
