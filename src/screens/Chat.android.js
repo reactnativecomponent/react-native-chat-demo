@@ -281,7 +281,7 @@ class Chat extends React.Component {
                 height: ChatInputHeightMin
             },
         });
-    }
+    };
     onPacketPress(message) {
         const {navigator} = this.props;
         Toast.show('红包详情');
@@ -318,64 +318,36 @@ class Chat extends React.Component {
             });
         });
     }
-    onTouchMsgList = () => {
-        this.setState({
-            chatInputStyle: {
-                backgroundColor: ChatInputHeightBg,
-                width: width,
-                height: ChatInputHeightMin
-            },
-        });
-    }
     onSendText = (text) => {
         this.onSend(text, [])
     }
     onSendRecordMessage = (path, duration) => {
         NimSession.sendAudioMessage(path, duration);
     }
-    onSwitchToMicrophoneMode = async() => {
+    onFeatureView = (inputHeight, showType) => {
         this.setState({
-            isDismissMenuContainer: true,
-            chatInputStyle: {
-                backgroundColor: ChatInputHeightBg,
-                width: width,
-                height: ChatInputHeightMin
-            },
-            menuContainerHeight: ContainerHeightMin,
-        });
-        AuroraIMUIModule.scrollToBottom();
-    }
-    onSwitchToActionMode = async() => {
-        this.setState({
-            action:true,
+            action: showType=== 2,
             isDismissMenuContainer: false,
             chatInputStyle: {
                 backgroundColor: ChatInputHeightBg,
                 width: width,
-                height: ChatInputHeightMax
+                height: showType === 0 ? ChatInputHeightMin : ChatInputHeightMax
             },
-            menuContainerHeight: ContainerHeightMax,
+            menuContainerHeight: showType === 0 ? ContainerHeightMin : ContainerHeightMax + showType,
         });
-        AuroraIMUIModule.scrollToBottom();
+        setTimeout(()=>{
+            AuroraIMUIModule.scrollToBottom();
+        },200)
     }
-    onSwitchToEmojiMode = async() => {
-        this.setState({
-            action:false,
-            isDismissMenuContainer: false,
-            chatInputStyle: {
-                backgroundColor: ChatInputHeightBg,
-                width: width,
-                height: ChatInputHeightMax
-            },
-            menuContainerHeight: ContainerHeightMax-1,
-        });
-        AuroraIMUIModule.scrollToBottom();
-    }
-    onMessageLongPress(message){
-        console.log("text:",message);
+    onShowKeyboard = (inputHeight, showType) => {
+        console.info('onShowKeyboard', inputHeight, showType);
+        setTimeout(()=>{
+            AuroraIMUIModule.scrollToBottom();
+        },200)
     }
     onEditTextChange = (text) => {
-        // console.log("text:",text);
+        console.log("用于做@提醒:",text);
+
     }
     onStatusViewClick(message,opt){
         console.info('onStatusViewClick',message+'--'+opt);
@@ -390,17 +362,6 @@ class Chat extends React.Component {
             });
         }
     }
-    onTouchEditText = () => {
-        this.setState({
-            isDismissMenuContainer: true,
-            chatInputStyle: {
-                width: width,
-                height: ChatInputHeightMin
-            },
-            menuContainerHeight: ContainerHeightMin,
-        });
-        AuroraIMUIModule.scrollToBottom();
-    }
     renderChatInput() {
         return (
             <ChatInput
@@ -409,10 +370,8 @@ class Chat extends React.Component {
                 isDismissMenuContainer={this.state.isDismissMenuContainer}
                 onSendText={this.onSendText}
                 onSendVoice={this.onSendRecordMessage}
-                onSwitchToMicrophoneMode={this.onSwitchToMicrophoneMode}
-                onSwitchToActionMode={this.onSwitchToActionMode}
-                onSwitchToEmojiMode={this.onSwitchToEmojiMode}
-                onTouchEditText={this.onTouchEditText}
+                onShowKeyboard={this.onShowKeyboard}
+                onFeatureView={this.onFeatureView}
                 onEditTextChange={this.onEditTextChange}>
                 <View style={styles.search}>
                     <View style={{flexGrow: 1, height: 1, backgroundColor: "lightgray"}}/>
@@ -424,13 +383,13 @@ class Chat extends React.Component {
     renderMessages() {
         return (
             <MessageList
-                style={{flex: 1,marginTop:15,marginBottom:15}}
+                style={{flex: 1}}
                 onMsgClick={this.onMessagePress.bind(this)}
-                onMsgLongClick={this.onMessageLongPress.bind(this)}
                 onLinkClick={this.onOpenURL.bind(this)}
                 onAvatarClick={this.onAvatarPress.bind(this)}
                 onStatusViewClick={this.onStatusViewClick.bind(this)}
                 onTouchMsgList={this.onTouchMsgList}
+                onClickChangeAutoScroll={this.onClickChangeAutoScroll}
                 onPullToRefresh={this._loadMoreContentAsync}
                 sendBubble={{imageName: "send_msg", padding: 10}}
                 receiveBubbleTextColor={'#ffffff'}
