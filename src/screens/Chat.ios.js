@@ -41,6 +41,7 @@ class Chat extends React.Component {
             showType: 0,
             menuViewH:220,
             viewY:50,
+            messages:[]
         };
         this._isAutoScroll = true;
         this._isListenKeyBoard = true;
@@ -378,7 +379,10 @@ class Chat extends React.Component {
             setTimeout(()=>{
                 NimSession.queryMessageListEx("",20).then((data)=>{
                     this._lastMessage = data[data.length-1];
-                    AuroraIController.fristAppendMessages(data)
+                    // AuroraIController.fristAppendMessages(data)
+                    this.setState({
+                        messages:data
+                    })
                 },(err)=>{
                     console.log(err)
                 });
@@ -388,6 +392,7 @@ class Chat extends React.Component {
             return (
                 <View style={styles.container}>
                     <MessageListView style={[styles.messageList]}
+                                     initData={this.state.messages}
                                      onAvatarClick={this.onAvatarPress}
                                      onMsgClick={this.onMsgClick}
                                      onMsgOpenUrlClick={this.onMsgOpenUrlClick}
