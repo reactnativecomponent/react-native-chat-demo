@@ -68,6 +68,14 @@ class Chat extends React.Component {
     componentWillMount() {
         const {session} = this.props;
         NimSession.startSession(session.contactId,session.sessionType);
+        NimSession.queryMessageListEx("",20).then((data)=>{
+            this._lastMessage = data[data.length-1];
+            this.setState({
+                messages:data
+            })
+        },(err)=>{
+            console.log(err)
+        });
     }
     _onNavigatorEvent(event){
         const {session,navigator} = this.props;
@@ -376,23 +384,12 @@ class Chat extends React.Component {
                 inputViewHeight:new Animated.Value(50),
                 inputViewWidth:window.width,
             });
-            setTimeout(()=>{
-                NimSession.queryMessageListEx("",20).then((data)=>{
-                    this._lastMessage = data[data.length-1];
-                    // AuroraIController.fristAppendMessages(data)
-                    this.setState({
-                        messages:data
-                    })
-                },(err)=>{
-                    console.log(err)
-                });
-            },200)
         };
         if(this.state.isInitialized){
             return (
                 <View style={styles.container}>
                     <MessageListView style={[styles.messageList]}
-                                     initData={this.state.messages}
+                                     initalData={this.state.messages}
                                      onAvatarClick={this.onAvatarPress}
                                      onMsgClick={this.onMsgClick}
                                      onMsgOpenUrlClick={this.onMsgOpenUrlClick}
@@ -405,7 +402,7 @@ class Chat extends React.Component {
                                      avatarSize={{width:40,height:40}}
                                      sendBubbleTextSize={18}
                                      sendBubbleTextColor={"000000"}
-                                     sendBubblePadding={{left:10,top:10,right:10,bottom:10}}
+
                     />
                     <InputView style={{width:this.state.inputViewWidth,height:this.state.inputViewHeight}} menuViewH={this.state.menuViewH}
                                defaultToolHeight={50}
