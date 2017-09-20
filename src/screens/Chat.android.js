@@ -12,7 +12,8 @@ import {
     TouchableOpacity,
     NativeAppEventEmitter,
     NativeModules,
-    Alert
+    Alert,
+    Animated
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import {Permissions, NimFriend, NimUtils, NimSession} from 'react-native-netease-im';
@@ -25,6 +26,9 @@ const ChatInputHeightMax = 300;
 const ChatInputHeightMin = 56;
 const ChatInputHeightBg = '#ffffff';
 const AuroraIMUIModule = NativeModules.AuroraIMUIModule;
+const AnimatedImplementation = require('react-native/Libraries/Animated/src/AnimatedImplementation');
+const MessageListView = AnimatedImplementation.createAnimatedComponent(MessageList);
+const InputView = AnimatedImplementation.createAnimatedComponent(ChatInput);
 class Chat extends React.Component {
     static navigatorStyle = {
         tabBarHidden: true,
@@ -51,9 +55,9 @@ class Chat extends React.Component {
             menuContainerHeight: ContainerHeightMax,
             chatInputStyle: {
                 backgroundColor: ChatInputHeightBg,
-                width: width,
-                height: ChatInputHeightMin
+                width: width
             },
+            chatInputheight:new Animated.Value(48),
             level: '', time: '', status: '',
             isDismissMenuContainer: false,
             initList: [],
@@ -273,13 +277,16 @@ class Chat extends React.Component {
         }
     }
     onTouchMsgList = () => {
+        Animated.timing(this.state.chatInputheight,{
+            toValue:48,
+            duration:200
+        }).start();
         this.setState({
             isDismissMenuContainer: true,
             chatInputStyle: {
                 backgroundColor: ChatInputHeightBg,
-                width: width,
-                height: ChatInputHeightMin
-            },
+                width: width
+            }
         });
     };
     onPacketPress(message) {
@@ -325,19 +332,30 @@ class Chat extends React.Component {
         NimSession.sendAudioMessage(path, duration);
     }
     onFeatureView = (inputHeight, showType) => {
+        if(showType > 0){
+            Animated.timing(this.state.chatInputheight,{
+                toValue:323,
+                duration:200
+            }).start();
+        }else{
+            Animated.timing(this.state.chatInputheight,{
+                toValue:48,
+                duration:260
+            }).start();
+        }
         this.setState({
-            action: showType=== 2,
+            action: showType === 2,
             isDismissMenuContainer: false,
             chatInputStyle: {
                 backgroundColor: ChatInputHeightBg,
                 width: width,
-                height: showType === 0 ? ChatInputHeightMin : ChatInputHeightMax
+                // height: showType === 0 ? ChatInputHeightMin : ChatInputHeightMax
             },
-            menuContainerHeight: showType === 0 ? ContainerHeightMin : ContainerHeightMax + showType,
+            menuContainerHeight: ContainerHeightMax,//showType === 0 ? ContainerHeightMin : ContainerHeightMax + showType,
         });
         setTimeout(()=>{
             AuroraIMUIModule.scrollToBottom();
-        },200)
+        },500)
     }
     onShowKeyboard = (inputHeight, showType) => {
         console.info('onShowKeyboard', inputHeight, showType);
@@ -347,7 +365,6 @@ class Chat extends React.Component {
     }
     onEditTextChange = (text) => {
         console.log("用于做@提醒:",text);
-
     }
     onStatusViewClick(message,opt){
         console.info('onStatusViewClick',message+'--'+opt);
@@ -364,8 +381,8 @@ class Chat extends React.Component {
     }
     renderChatInput() {
         return (
-            <ChatInput
-                style={this.state.chatInputStyle}
+            <InputView
+                style={[this.state.chatInputStyle,{height:this.state.chatInputheight}]}
                 menuContainerHeight={this.state.menuContainerHeight}
                 isDismissMenuContainer={this.state.isDismissMenuContainer}
                 onSendText={this.onSendText}
@@ -374,15 +391,14 @@ class Chat extends React.Component {
                 onFeatureView={this.onFeatureView}
                 onEditTextChange={this.onEditTextChange}>
                 <View style={styles.search}>
-                    <View style={{flexGrow: 1, height: 1, backgroundColor: "lightgray"}}/>
                     {this.renderActionBar()}
                 </View>
-            </ChatInput>
+            </InputView>
         );
     }
     renderMessages() {
         return (
-            <MessageList
+            <MessageListView
                 style={{flex: 1}}
                 onMsgClick={this.onMessagePress.bind(this)}
                 onLinkClick={this.onOpenURL.bind(this)}
@@ -498,6 +514,7 @@ const styles = StyleSheet.create({
     },
     search: {
         //marginTop: 5,
+        flex: 1,
         flexDirection: 'column',
         //paddingTop: 10,
         backgroundColor: "#fff",
