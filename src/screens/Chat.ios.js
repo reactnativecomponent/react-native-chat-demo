@@ -127,7 +127,8 @@ class Chat extends React.Component {
             }
         });
         this.msgStatusListener = NativeAppEventEmitter.addListener("observeMsgStatus",(data)=>{
-            if(data[0].isStart === true){//发送中
+            console.log(data)
+            if(data[0].status === 'send_going'){//发送中
                 AuroraIController.appendMessages(data)
                 AuroraIController.scrollToBottom(true)
             }else {
