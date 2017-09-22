@@ -20,9 +20,9 @@
 
 |会话列表|聊天界面|会话详情|
 |:--:|:--:|:--:|
-|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/chatList.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/chat.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/sessionDetail.png)|
+|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/js-ui/screenshots/chatList.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/js-ui/screenshots/chat.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/js-ui/screenshots/sessionDetail.png)|
 |选择联系人|好友列表|好友详情|
-|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/selectUser.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/friendList.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/master/screenshots/friendDetail.png)|
+|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/js-ui/screenshots/selectUser.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/js-ui/screenshots/friendList.png)|![](https://github.com/reactnativecomponent/react-native-chat-demo/blob/js-ui/screenshots/friendDetail.png)|
 
 ## 云信IM配置请看
 [react-native-netease-im](https://github.com/reactnativecomponent/react-native-netease-im)
