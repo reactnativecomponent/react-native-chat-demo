@@ -5,7 +5,7 @@ target ‘ImDemo’ do
   pod 'AMapLocation’
   pod 'RSKImageCropper'
   pod 'QBImagePickerController'
-  pod 'NIMSDK'
+  pod 'NIMSDK', '4.1.0'
   pod 'SSZipArchive', '~> 1.2'
   pod 'Reachability', '~> 3.1.1'
   pod 'CocoaLumberjack', '~> 2.0.0-rc2'
