@@ -251,7 +251,10 @@ class Chat extends React.Component {
         Toast.show('发红包');
     }
     onOpenURL(url) {
-        Toast.show('打开链接');
+
+        Toast.show("打开链接");
+
+
     }
     onMessagePress(message) {
         const {navigator, session} = this.props;

@@ -331,14 +331,8 @@ class Chat extends React.Component {
         const {session} = this.props;
         Toast.show('需要自行实现');
     }
-    onMsgOpenUrlClick(url){
-        this.props.navigator.push({
-            screen:"FeiMa.LinkView",
-            passProps:{
-                url : config.domain+"/web/redirect?url="+url,
-                passUrl:url
-            }
-        });
+    onMsgOpenUrlClick=(url)=>{
+        Toast.show('打开链接');
     }
 
     onPacketPress(message){
