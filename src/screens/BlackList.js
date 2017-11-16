@@ -8,18 +8,14 @@ import {
     ListView,Image
 } from 'react-native';
 import {Container,Icon,ListItem,Text,Body,Right,Left} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimFriend} from 'react-native-netease-im';
 
 /**
  * 黑名单
  */
 export default class BlackList extends React.Component {
-    static navigatorStyle = {
-        StatusBarColor: '#fc513a',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#fc513a",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
+    static navigationOptions = {
+        title: '黑名单',
     };
     constructor(props) {
         super(props);
@@ -33,7 +29,7 @@ export default class BlackList extends React.Component {
     }
 
     componentWillMount() {
-        NIM.startBlackList();
+        NimFriend.startBlackList();
     }
     componentDidMount() {
         this.friendListener = NativeAppEventEmitter.addListener("observeBlackList",(data)=>{
@@ -43,17 +39,13 @@ export default class BlackList extends React.Component {
         });
     }
     componentWillUnmount() {
-        NIM.stopBlackList();
+        NimFriend.stopBlackList();
         this.friendListener && this.friendListener.remove();
     }
     toFriendDetail(id){
-        NIM.getUserInfo(id).then((data)=>{
-            this.props.navigator.push({
-                screen:'FeiMa.FriendSetting',
-                title:'资料设置',
-                passProps:{
-                    friendData:data
-                }
+        NimFriend.getUserInfo(id).then((data)=>{
+            this.props.navigation.navigate("FriendSetting",{
+                friendData:data
             });
         })
     }

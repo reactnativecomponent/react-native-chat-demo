@@ -10,17 +10,13 @@ import {
     Text
 } from 'react-native';
 import {Container,Content,Icon,ListItem,Body,Right,Left,Item,Input,Header,Text as TextNB} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimSystemMsg,NimFriend} from 'react-native-netease-im';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import Toast from 'react-native-simple-toast';
 
 export default class NewFriend extends React.Component {
-    static navigatorStyle = {
-        StatusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
+    static navigationOptions = {
+        title: '新的朋友',
     };
     // 构造
     constructor(props) {
@@ -30,36 +26,9 @@ export default class NewFriend extends React.Component {
             rowOpen:false,
             dataSource: ds.cloneWithRows([]),
         };
-        this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
-    }
-    _onNavigatorEvent(event){
-        const {navigator} = this.props;
-        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id == 'search') { // this is the same id field from the static navigatorButtons definition
-                navigator.showModal({
-                    screen:"ImDemo.SearchScreen",
-                    animationType: 'slide-up',
-                    passProps:{
-                        onResult:function(result){
-                            navigator.dismissAllModals({
-                                animated:false,
-                            });
-                            navigator.push({
-                                screen:'ImDemo.FriendDetail',
-                                title:'详细资料',
-                                passProps:{
-                                    friendData:result
-                                }
-                            });
-                        }
-                    }
-                });
-
-            }
-        }
     }
     componentWillMount() {
-        NIM.startSystemMsg();
+        NimSystemMsg.startSystemMsg();
     }
     componentDidMount() {
         this.friendListener = NativeAppEventEmitter.addListener("observeReceiveSystemMsg",(data)=>{
@@ -69,30 +38,25 @@ export default class NewFriend extends React.Component {
         });
     }
     componentWillUnmount() {
-        NIM.stopSystemMsg();
+        NimSystemMsg.stopSystemMsg();
         this.friendListener && this.friendListener.remove();
     }
     toFriendDetail(res){
-        NIM.fetchUserInfo(res.fromAccount).then((data)=>{
-            this.props.navigator.push({
-                screen:'ImDemo.FriendDetail',
-                title:'详细资料',
-                passProps:{
-                    friendData:data,
-                    isRequest:res.status === '1' ?false:true
-                }
+        NimFriend.fetchUserInfo(res.fromAccount).then((data)=>{
+            this.props.navigation.navigate("FriendDetail",{
+                friendData:data,
+                isRequest:res.status === '1' ?false:true
             });
-
         })
     }
     delete(res){
-        NIM.ackAddFriendRequest(res.messageId,res.fromAccount,"0",res.time).then((r)=>{
+        NimSystemMsg.ackAddFriendRequest(res.messageId,res.fromAccount,"0",res.time).then((r)=>{
             Toast.show("拒绝了添加");
         });
     }
     accect(res){
 
-        NIM.ackAddFriendRequest(res.messageId,res.fromAccount,"1",res.time).then((r)=>{
+        NimSystemMsg.ackAddFriendRequest(res.messageId,res.fromAccount,"1",res.time).then((r)=>{
             Toast.show("添加成功");
         },(err)=>{
             console.log(err)

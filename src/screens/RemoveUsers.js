@@ -9,30 +9,15 @@ import {
     ScrollView,
     Dimensions
 } from 'react-native';
-import {Container,Icon,ListItem,Text,Body,Right,Left} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {Container,Icon,ListItem,Text,Body,Right,Left,Header,Button,Title} from 'native-base';
+import {NimTeam} from 'react-native-netease-im';
 
 export  default class RemoveUsers extends React.Component {
-    static navigatorStyle = {
-        statusBarTextColorScheme: 'light',
-        StatusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
-    };
-    static navigatorButtons = {
-        leftButtons:[{
-            id:'cancel',
-            buttonColor:'#fff',
-            title:'取消'
-        }],
-        rightButtons:[{
-            id:'del',
-            buttonColor:'#fff',
-            title:'确定'
-        }]
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: '移出群聊',
+
+    });
+
     // 构造
     constructor(props) {
         super(props);
@@ -42,27 +27,21 @@ export  default class RemoveUsers extends React.Component {
             }
         });
         this.state = {
-            ds:ds.cloneWithRows(props.members),
+            ds:ds.cloneWithRows(props.navigation.state.params.members||[]),
             selectAccounts:[]
         };
-        this.listData = props.members;
-        this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
-    }
-    _onNavigatorEvent(event){
-        const {navigator,teamId,onResult} = this.props;
-        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id == 'del') { // this is the same id field from the static navigatorButtons definition
-                let result = this.getIds();
-                if(result.length > 0){
-                    NIM.removeMember(teamId,result).then(()=>{
-                        onResult && onResult();
-                    });
+        this.listData = props.navigation.state.params.members||[];
 
-                }
-            }
-            if(event.id == 'cancel'){
-                navigator.dismissModal();
-            }
+    }
+    removeTeam(){
+        const {teamId,onResult} = this.props.navigation.state.params;
+        let result = this.getIds();
+        if(result.length > 0){
+            NimTeam.removeMember(teamId,result).then(()=>{
+                onResult && onResult();
+                this.props.navigation.goBack();
+            });
+
         }
     }
     getIds(){
@@ -127,8 +106,26 @@ export  default class RemoveUsers extends React.Component {
 
     }
     render() {
+        const {navigation} = this.props;
         return (
             <Container style={{flex:1,backgroundColor:"#f7f7f7"}}>
+                <Header>
+                    <Left>
+                        <Button transparent onPress={()=>navigation.goBack()}>
+                            <Text>取消</Text>
+                        </Button>
+                    </Left>
+                    <Body>
+                    <Title>
+                        创建群聊
+                    </Title>
+                    </Body>
+                    <Right>
+                        <Button transparent onPress={()=>this.removeTeam()}>
+                            <Text>确定</Text>
+                        </Button>
+                    </Right>
+                </Header>
                 <View style={{width:width,height:51,backgroundColor:'#fff',justifyContent:'center',paddingHorizontal:8,borderBottomWidth:1,borderBottomColor:'#c9c9c9'}}>
                     <ScrollView horizontal style={{flex:1}} contentContainerStyle={{justifyContent:'center',alignItems:'center'}}>
                         {this._renderSelect()}

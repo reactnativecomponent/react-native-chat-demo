@@ -1,38 +1,18 @@
 import React from 'react';
 import {
-    Platform,
-    StyleSheet,
+
     View,
-    TouchableOpacity,
-    NativeAppEventEmitter,
     ListView,Image,
     ScrollView,
     Dimensions
 } from 'react-native';
-import {Container,Icon,ListItem,Text,Body,Right,Left} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {Container,Icon,ListItem,Text,Body,Right,Left,Header,Title,Button} from 'native-base';
+import {NimTeam,NimFriend} from 'react-native-netease-im';
 
 export  default class CreateTeam extends React.Component {
-    static navigatorStyle = {
-        statusBarTextColorScheme: 'light',
-        StatusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
-    };
-    static navigatorButtons = {
-        leftButtons:[{
-            id:'cancel',
-            buttonColor:'#fff',
-            title:'取消'
-        }],
-        rightButtons:[{
-            id:'add',
-            buttonColor:'#fff',
-            title:'确定'
-        }]
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: '创建群聊'
+    });
     // 构造
     constructor(props) {
         super(props);
@@ -46,35 +26,29 @@ export  default class CreateTeam extends React.Component {
             ds:ds.cloneWithRowsAndSections([]),
             selectAccounts:[]
         };
-        this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
+
     }
-    _onNavigatorEvent(event){
-        const {navigator,members} = this.props;
-        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id == 'add') { // this is the same id field from the static navigatorButtons definition
-                let result = this.getIds();
-                if(members && members.length > 0)
-                    result.push(members[0].contactId);
-                if(result.length > 0){
-                    console.log(result)
-                    NIM.createTeam({
-                        name:'群聊',
-                        introduce:'群介绍',
-                        verifyType:'0',
-                        inviteMode:'1',
-                        beInviteMode:'1',
-                        teamUpdateMode:'1'
-                    },'0',result).then((res=>{
-                        console.log(res)
-                        this.props.onSuccess && this.props.onSuccess(res);
-                    }));
+    createTeam(){
+        const {members,onSuccess} = this.props.navigation.state.params;
+        let result = this.getIds();
+        if(members && members.length > 0)
+            result.push(members[0].contactId);
+        if(result.length > 0){
+            console.log(result)
+            NimTeam.createTeam({
+                name:'群聊',
+                introduce:'群介绍',
+                verifyType:'0',
+                inviteMode:'1',
+                beInviteMode:'1',
+                teamUpdateMode:'1'
+            },'0',result).then((res=>{
+                console.log(res)
+                onSuccess && onSuccess(res);
+                this.props.navigation.goBack();
 
-                }
+            }));
 
-            }
-            if(event.id == 'cancel'){
-                navigator.dismissModal();
-            }
         }
     }
     getIds(){
@@ -85,7 +59,7 @@ export  default class CreateTeam extends React.Component {
         return arr;
     }
     componentWillMount() {
-        NIM.getFriendList('').then((data)=>{
+        NimFriend.getFriendList('').then((data)=>{
             console.log(data)
             this.listData = this.formatData(data);
             this.setState({
@@ -170,8 +144,26 @@ export  default class CreateTeam extends React.Component {
         );
     }
     render() {
+        const {navigation} = this.props;
         return (
             <Container style={{flex:1,backgroundColor:"#f7f7f7"}}>
+                <Header>
+                    <Left>
+                        <Button transparent onPress={()=>navigation.goBack()}>
+                            <Text>取消</Text>
+                        </Button>
+                    </Left>
+                    <Body>
+                    <Title>
+                        创建群聊
+                    </Title>
+                    </Body>
+                    <Right>
+                        <Button transparent onPress={()=>this.createTeam()}>
+                            <Text>确定</Text>
+                        </Button>
+                    </Right>
+                </Header>
                 <View style={{width:width,height:51,backgroundColor:'#fff',justifyContent:'center',paddingHorizontal:8,borderBottomWidth:1,borderBottomColor:'#c9c9c9'}}>
                     <ScrollView horizontal style={{flex:1}} contentContainerStyle={{justifyContent:'center',alignItems:'center'}}>
                         {this._renderSelect()}

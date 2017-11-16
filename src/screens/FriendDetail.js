@@ -1,39 +1,46 @@
 import React, { Component } from 'react';
-import {Image,TouchableOpacity,View } from 'react-native';
+import {Image,View } from 'react-native';
 import { Container,Text, Content,Header,Title, Button, Icon,Thumbnail ,Left,Right,Body,List,ListItem} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimFriend} from 'react-native-netease-im';
+import {NavigationActions} from 'react-navigation';
 
 export  default class FriendDetail extends Component {
-
-    static navigatorStyle = {
-        statusBarColor: '#444',
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
+    static navigationOptions = {
+        title: '详细信息',
     };
     toChat(){
-        const {navigator,friendData={}} = this.props;
-        navigator.popToRoot({
-            animated: false,
-        });
+        const {navigation} = this.props;
+        const {friendData={},from} = navigation.state.params;
         let session = {
             ...friendData,
             sessionType:'0'
         };
-        navigator.push({
-            screen:'ImDemo.Chat',
-            title:session.alias || session.name,
-            passProps:{session}
-        });
+        navigation.dispatch(NavigationActions.reset({
+            index:1,
+            actions:[
+                NavigationActions.navigate({ routeName: 'ChatList'}),
+                NavigationActions.navigate({ routeName: 'Chat',params:{session:session,title:session.alias || session.name}})
+            ]
+        }));
+        // console.log(navigation.state.key)
+        // navigation.goBack(from);
+        // navigation.navigate("Chat",{session:session,title:session.alias || session.name})
+        // navigator.push({
+        //     screen:'ImDemo.Chat',
+        //     title:session.alias || session.name,
+        //     passProps:{session}
+        // });
     }
     submitRequest(){
-        const {navigator,friendData={}} = this.props;
-        NIM.ackAddFriendRequest(friendData.contactId,true).then(()=>{
-            navigator.pop()
+        const {navigation} = this.props;
+        const {friendData={}} = navigation.state.params;
+
+        NimFriend.ackAddFriendRequest(friendData.contactId,true).then(()=>{
+            navigation.goBack()
         });
     }
     _renderRemark(){
-        const {friendData = {}} = this.props;
+        const {friendData = {}} = this.props.navigation.state.params;
         if(/^\d{5}$/.test(friendData.contactId)){
             return (
                 <Content style={{paddingTop:12}}>
@@ -86,7 +93,7 @@ export  default class FriendDetail extends Component {
         )
     }
     _renderButton(){
-        const {friendData = {},isRequest} = this.props;
+        const {friendData = {},isRequest} = this.props.navigation.state.params;
         if(isRequest){
             return (
                 <Button block danger rounded onPress={()=>this.submitRequest()}>
@@ -96,12 +103,8 @@ export  default class FriendDetail extends Component {
         }
         if(friendData.isMyFriend === '0'){
             return (
-                <Button block danger rounded onPress={()=>this.props.navigator.push({
-                    screen:'ImDemo.SendAddFriend',
-                    title:'添加好友',
-                    passProps:{
-                        friendData
-                    }
+                <Button block danger rounded onPress={()=>this.props.navigation.navigate("SendAddFriend",{
+                    friendData:friendData
                 })}>
                     <Text>添加到通讯录</Text>
                 </Button>

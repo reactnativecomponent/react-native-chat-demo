@@ -18,16 +18,16 @@ import {
 } from 'react-native';
 import {Icon} from 'native-base';
 import Emoji from 'react-native-emoji'
-import Swiper from 'react-native-swiper'
-import {Images, Colors, Metrics} from './Themes'
+import Carousel from 'react-native-looped-carousel';
 import Styles from './Styles/MessageScreenStyle'
 
-import NIM from 'react-native-netease-im';
+import {NimUtils} from 'react-native-netease-im';
 var spliddit = require('spliddit');
 var emoji = require("./emoji");
 
 const MODE_TEXT = "mode_text";
 const MODE_RECORD = "mode_record";
+const width = Dimensions.get('window').width;
 
 //输入框初始高度
 const MIN_COMPOSER_HEIGHT = Platform.select({
@@ -253,7 +253,7 @@ export default class InputToolbar extends React.Component {
             this.actionBarHeight = 0;
             this.onHeightChange();
         }
-        NIM.onTouchVoice();
+        // NimUtils.onTouchVoice();
     }
 
     handleTextMode() {
@@ -278,17 +278,14 @@ export default class InputToolbar extends React.Component {
                 </TouchableOpacity>
             )
         });
-        return <Animated.View style={[Styles.emojiRow,{opacity:this.state.actionAnim,transform:[{
-     translateY: this.state.actionAnim.interpolate({
-       inputRange: [0, 1],
-       outputRange: [150, 0]  // 0 : 150, 0.5 : 75, 1 : 0
-     })}]}]}>
-            <Swiper style={Styles.wrapper} loop={false}
-                    height={EMOJI_HEIGHT-35}
-                    dotStyle={ {bottom: -25} }
-                    activeDotStyle={ {bottom: -25} }
+        return <Animated.View style={[Styles.emojiRow,{width:width,height:EMOJI_HEIGHT}]}>
+            <Carousel  autoplay={false}
+                       bullets
+
+
+                      style={{width: width,height:EMOJI_HEIGHT-35}}
             >
-                <View style={Styles.slide}>
+                <View style={[Styles.slide,{width:width,height:EMOJI_HEIGHT-35}]}>
                     <View style={Styles.slideRow}>
                         {emojis.slice(0, rowIconNum)}
                     </View>
@@ -302,7 +299,7 @@ export default class InputToolbar extends React.Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={Styles.slide}>
+                <View style={[Styles.slide,{width:width,height:EMOJI_HEIGHT-35}]}>
                     <View style={Styles.slideRow}>
                         {emojis.slice(3 * rowIconNum - 1, rowIconNum * 4 - 1)}
                     </View>
@@ -316,7 +313,7 @@ export default class InputToolbar extends React.Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </Swiper>
+            </Carousel>
             <View style={{height:35,flexDirection:'row'}}>
                 <View style={{flex:1}}>
 

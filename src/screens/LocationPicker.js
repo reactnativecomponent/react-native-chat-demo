@@ -59,7 +59,7 @@ export default class LocationPicker extends React.Component {
         };
         this._amap = null;
 
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
     handleSend() {

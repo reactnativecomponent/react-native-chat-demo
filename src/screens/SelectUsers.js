@@ -1,38 +1,18 @@
 import React from 'react';
 import {
-    Platform,
-    StyleSheet,
     View,
     TouchableOpacity,
-    NativeAppEventEmitter,
     ListView,Image,
     ScrollView,
     Dimensions
 } from 'react-native';
-import {Container,Icon,ListItem,Text,Body,Right,Left} from 'native-base';
-import NIM from 'react-native-netease-im';
-
+import {Container,Icon,ListItem,Text,Body,Right,Left,Title,Header,Button} from 'native-base';
+import {NimFriend,NimTeam} from 'react-native-netease-im';
+let _this = {};
 export default class SelectUsers extends React.Component {
-    static navigatorStyle = {
-        statusBarTextColorScheme: 'light',
-        StatusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
-    };
-    static navigatorButtons = {
-        leftButtons:[{
-            id:'cancel',
-            buttonColor:'#fff',
-            title:'取消'
-        }],
-        rightButtons:[{
-            id:'add',
-            buttonColor:'#fff',
-            title:'确定'
-        }]
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: '选择联系人'
+    });
     // 构造
     constructor(props) {
         super(props);
@@ -46,25 +26,17 @@ export default class SelectUsers extends React.Component {
             ds:ds.cloneWithRowsAndSections([]),
             selectAccounts:[]
         };
-        this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
+        _this = this;
     }
-    _onNavigatorEvent(event){
-        const {navigator,teamId} = this.props;
-        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id == 'add') { // this is the same id field from the static navigatorButtons definition
-                //NIM.addMembers();
-                let result = this.getIds();
+    addToTeam(){
+        const {teamId,onResult} = this.props.navigation.state.params;
+        let result = this.getIds();
 
-                if(result.length > 0){
-                    NIM.addMembers(teamId,result).then(()=>{
-                        this.props.onResult && this.props.onResult();
-                    });
-                }
-
-            }
-            if(event.id == 'cancel'){
-                navigator.dismissModal();
-            }
+        if(result.length > 0){
+            NimTeam.addMembers(teamId,result).then(()=>{
+                onResult && onResult();
+                this.props.navigation.goBack();
+            });
         }
     }
     getIds(){
@@ -75,7 +47,7 @@ export default class SelectUsers extends React.Component {
         return arr;
     }
     componentWillMount() {
-        NIM.getFriendList('').then((data)=>{
+        NimFriend.getFriendList('').then((data)=>{
             this.listData = this.formatData(data);
             this.setState({
                 ds:this.state.ds.cloneWithRowsAndSections(this.listData),
@@ -159,8 +131,26 @@ export default class SelectUsers extends React.Component {
         );
     }
     render() {
+        const {navigation} = this.props;
         return (
             <Container style={{flex:1,backgroundColor:"#f7f7f7"}}>
+                <Header>
+                    <Left>
+                        <Button transparent onPress={()=>navigation.goBack()}>
+                            <Text>取消</Text>
+                        </Button>
+                    </Left>
+                    <Body>
+                    <Title>
+                        选择联系人
+                    </Title>
+                    </Body>
+                    <Right>
+                        <Button transparent onPress={()=>this.addToTeam()}>
+                            <Text>确定</Text>
+                        </Button>
+                    </Right>
+                </Header>
                 <View style={{width:width,height:51,backgroundColor:'#fff',justifyContent:'center',paddingHorizontal:8,borderBottomWidth:1,borderBottomColor:'#c9c9c9'}}>
                     <ScrollView horizontal style={{flex:1}} contentContainerStyle={{justifyContent:'center',alignItems:'center'}}>
                         {this._renderSelect()}

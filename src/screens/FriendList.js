@@ -1,31 +1,31 @@
 import React from 'react';
 import {
-    Platform,
-    StyleSheet,
+
     View,
     TouchableOpacity,
     NativeAppEventEmitter,
     ListView,Image
 } from 'react-native';
 import {Container,Icon,ListItem,Text,Body,Right,Left} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimFriend} from 'react-native-netease-im';
 
 export default class FriendList extends React.Component {
-    static navigatorStyle = {
-        navBarTextColor: 'white',
-        navBarButtonColor: 'white',
-        statusBarTextColorScheme: 'light',
-        statusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-    };
-    static navigatorButtons = {
-        rightButtons:[{
-            id:'add-friend',
-            buttonColor:'#fff',
-            title:'添加'
-        }]
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: '通讯录',
+        headerRight:(
+            <View style={{flexDirection:'row',paddingRight:8,alignItems:'center',justifyContent:'center'}}>
+                <TouchableOpacity onPress={()=>navigation.navigate("SearchScreen",{
+                    searchCallback:function(result){
+                        setTimeout(()=>{
+                            navigation.navigate("FriendDetail",{friendData:result})
+                        },100)
+                    }
+                })}>
+                    <Text style={{color:"#fff"}}>添加</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    });
     // 构造
     constructor(props) {
         super(props);
@@ -36,33 +36,10 @@ export default class FriendList extends React.Component {
         this.state = {
             ds:ds.cloneWithRowsAndSections([]),
         };
-        this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
-    }
-    _onNavigatorEvent(event){
-        const {navigator} = this.props;
-        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id == 'add-friend') { // this is the same id field from the static navigatorButtons definition
-                navigator.showModal({
-                    screen:"ImDemo.SearchScreen",
-                    animationType: 'slide-up',
-                    passProps:{
-                        onResult:function(result){
-                            navigator.push({
-                                screen:'ImDemo.FriendDetail',
-                                title:'详细资料',
-                                passProps:{
-                                    friendData:result
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        }
     }
 
     componentWillMount() {
-        NIM.startFriendList();
+        NimFriend.startFriendList();
 
     }
     componentDidMount() {
@@ -82,17 +59,14 @@ export default class FriendList extends React.Component {
         return newObj;
     }
     componentWillUnmount() {
-        NIM.stopFriendList();
+        NimFriend.stopFriendList();
         this.friendListener && this.friendListener.remove();
     }
     toFriendDetail(id){
-        NIM.getUserInfo(id).then((data)=>{
-            this.props.navigator.push({
-                screen:'ImDemo.FriendDetail',
-                title:'详细资料',
-                passProps:{
-                    friendData:data
-                }
+        NimFriend.getUserInfo(id).then((data)=>{
+            this.props.navigation.navigate("FriendDetail",{
+                friendData:data,
+                from:this.props.navigation.state.key
             });
         })
     }
@@ -125,17 +99,7 @@ export default class FriendList extends React.Component {
                     renderSectionHeader={this._renderSectionHeader.bind(this)}
                     renderHeader={()=>
                     <View>
-                        <ListItem onPress={()=>this.props.navigator.push({
-                            screen:'ImDemo.NewFriend',
-                            title:'新的朋友',
-                            navigatorButtons: {
-                                rightButtons: [{
-                                    id: 'search',
-                                    color: '#fff',
-                                    buttonColor:'#fff'
-                                }]
-                            }
-                        })}>
+                        <ListItem onPress={()=>this.props.navigation.navigate("NewFriend")}>
                             <Body>
                             <Text>
                                 新的朋友

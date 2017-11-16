@@ -8,6 +8,7 @@ import {
 
 import ParsedText from 'react-native-parsed-text';
 import Communications from 'react-native-communications';
+import PropTypes from 'prop-types';
 
 export default class MessageText extends React.Component {
   constructor(props) {
@@ -59,7 +60,7 @@ export default class MessageText extends React.Component {
             {type: 'email', style: StyleSheet.flatten([styles[this.props.position].link, this.props.linkStyle[this.props.position]]), onPress: this.onEmailPress},
           ]}
         >
-          {this.props.currentMessage.content}
+          {this.props.currentMessage.text}
         </ParsedText>
       </View>
     );
@@ -103,7 +104,7 @@ const styles = {
 };
 
 MessageText.contextTypes = {
-  actionSheet: React.PropTypes.func,
+  actionSheet: PropTypes.func,
 };
 
 MessageText.defaultProps = {
@@ -117,17 +118,17 @@ MessageText.defaultProps = {
 };
 
 MessageText.propTypes = {
-  position: React.PropTypes.oneOf(['left', 'right']),
-  currentMessage: React.PropTypes.object,
-  containerStyle: React.PropTypes.shape({
+  position: PropTypes.oneOf(['left', 'right']),
+  currentMessage: PropTypes.object,
+  containerStyle: PropTypes.shape({
     left: View.propTypes.style,
     right: View.propTypes.style,
   }),
-  textStyle: React.PropTypes.shape({
+  textStyle: PropTypes.shape({
     left: Text.propTypes.style,
     right: Text.propTypes.style,
   }),
-  linkStyle: React.PropTypes.shape({
+  linkStyle: PropTypes.shape({
     left: Text.propTypes.style,
     right: Text.propTypes.style,
   }),

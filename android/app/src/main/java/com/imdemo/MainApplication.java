@@ -5,45 +5,47 @@ import android.app.Application;
 import com.facebook.react.ReactApplication;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.netease.im.RNNeteaseImPackage;
-
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.reactnativenavigation.NavigationApplication;
 import com.netease.im.IMApplication;
-
 
 import java.util.Arrays;
 import java.util.List;
 
-public class MainApplication extends NavigationApplication {
+public class MainApplication extends Application implements ReactApplication {
 
-
-
-  @Override
-    public boolean isDebug() {
+  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+    @Override
+    public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
     }
- protected List<ReactPackage> getPackages() {
-    return Arrays.<ReactPackage>asList(
-                new PickerPackage(),
-                new RNNeteaseImPackage()
-          );
- }
- @Override
-   public List<ReactPackage> createAdditionalReactPackages() {
-     return getPackages();
-   }
 
+    @Override
+    protected List<ReactPackage> getPackages() {
+      return Arrays.<ReactPackage>asList(
+          new MainReactPackage(),
+            new PickerPackage(),
+            new RNNeteaseImPackage()
+      );
+    }
+
+    @Override
+    protected String getJSMainModuleName() {
+      return "index";
+    }
+  };
+
+  @Override
+  public ReactNativeHost getReactNativeHost() {
+    return mReactNativeHost;
+  }
 
   @Override
   public void onCreate() {
-    super.onCreate();
-      //new IMApplication.MiPushConfig("appId","appKey","pushname")
-    IMApplication.init(this, MainActivity.class,R.drawable.ic_stat_notify_msg,null
-    );
-
+      super.onCreate();
+    IMApplication.init(this, MainActivity.class,R.drawable.ic_stat_notify_msg,null);
     SoLoader.init(this, /* native exopackage */ false);
   }
 }

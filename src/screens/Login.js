@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
-import { View,Image,TextInput,StyleSheet,Text,Dimensions,TouchableOpacity} from 'react-native';
+import { View,Image,TextInput,StyleSheet,Text,Dimensions,StatusBar} from 'react-native';
 import { Container, Content, Button, Icon,ListItem,Left,Right,Body } from 'native-base';
-import NIM from 'react-native-netease-im';
-import Toast from 'react-native-simple-toast';
+import {NimSession} from 'react-native-netease-im';
 import md5 from '../utils/md5';
+import {NavigationActions} from 'react-navigation';
 
 export default class Login extends Component {
-    static navigatorStyle = {
-        statusBarColor: '#fff'
+    static navigationOptions = {
+        title: '登录',
     };
     constructor(props) {
         super(props);
         this.state = {
-            name:"",
-            password: ''
+            name:"abc1",
+            password: '123456'
         };
     }
     componentWillUnmount() {
@@ -22,14 +22,17 @@ export default class Login extends Component {
     }
 
     loginIn() {
-        const {navigator} = this.props;
-        NIM.login(this.state.name,md5.createHash(this.state.password)).then((data)=>{
+        const {navigation} = this.props;
+        console.log(navigation)
+        NimSession.login(this.state.name,md5.createHash(this.state.password)).then((data)=>{
             console.info(data);
             global.imaccount = this.state.name;
-            navigator.resetTo({
-                screen:'ImDemo.ChatList',
-                title:"消息"
-            });
+            navigation.dispatch(NavigationActions.reset({
+                index: 0,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'Main'})
+                ]
+            }))
         },(err)=>{
             console.warn(err);
         })
@@ -76,6 +79,7 @@ export default class Login extends Component {
     render() {
         return (
             <Container>
+                <StatusBar backgroundColor="black" barStyle="dark-content"/>
                 <Content alwaysBounceVertical={false}>
                     {this._renderContent()}
                     <View style={styles.bottom}>

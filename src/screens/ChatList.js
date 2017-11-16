@@ -7,32 +7,27 @@ import {
     TouchableHighlight,
     TouchableOpacity,
     Dimensions,
-    Platform,
     ListView,
-    NativeAppEventEmitter
+    NativeAppEventEmitter,
+    StatusBar
 } from 'react-native';
-import {Container,Content,Left,Body,Right,Title,ListItem,List,Header,Icon,Text as TextNB,Button} from 'native-base';
+import {Container,Content,Left,Right,Title,ListItem,List,Header,Icon,Text as TextNB,Button} from 'native-base';
 import {SwipeListView} from 'react-native-swipe-list-view';
-import moment from 'moment';
-import NIM from 'react-native-netease-im';
+import {NimSession} from 'react-native-netease-im';
 
-export default class ChatList extends Component {
-    static navigatorStyle = {
-        navBarTextColor: 'white',
-        navBarButtonColor: 'white',
-        statusBarTextColorScheme: 'light',
-        statusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-    };
-    static navigatorButtons = {
-        rightButtons: [
-            {
-                title: '朋友',
-                id:'firends'
-            }
-        ]
-    };
+
+class ChatList extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        title: '消息',
+        headerRight:(
+            <View style={{flexDirection:'row',paddingRight:8,alignItems:'center',justifyContent:'center'}}>
+                <TouchableOpacity style={{marginRight:5}} onPress={()=>navigation.navigate("FriendList")}>
+                    <TextNB style={{color:"#fff"}}>朋友</TextNB>
+                </TouchableOpacity>
+            </View>
+        )
+    });
+
     constructor (props) {
         super(props);
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -40,45 +35,27 @@ export default class ChatList extends Component {
             rowOpen:false,
             dataSource: ds.cloneWithRows([])
         };
-        this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
     }
-    _onNavigatorEvent(event){
-        const {navigator} = this.props;
-        if (event.type == 'NavBarButtonPress') {
-            if (event.id === 'firends') {
-                navigator.push({
-                    screen:"ImDemo.FriendList",
-                    title:'朋友'
-                });
-            }
-        }
-    }
+
     componentDidMount() {
+        console.log(this.sessionListener)
         this.sessionListener = NativeAppEventEmitter.addListener("observeRecentContact",(data)=>{
             this.setState({
                 dataSource:this.state.dataSource.cloneWithRows(data.recents || data.sessionList)
             });
             console.info('会话列表',data)
         });
+
     }
     componentWillUnmount() {
         this.sessionListener && this.sessionListener.remove();
     }
     onRowTap(data){
-        const {navigator} = this.props;
+        const {navigation} = this.props;
         this.refs['swList'].safeCloseOpenRow();
-        navigator.push({
-            screen:'ImDemo.Chat',
+        navigation.navigate("Chat",{
             title:data.name,
-            passProps:{
-                session:data
-            },
-            rightButton:{
-                id: 'setting',
-                color: '#fff',
-                buttonColor:'#fff',
-                title:'设置'
-            }
+            session:data,
         });
     }
     _renderRow(data){
@@ -106,7 +83,7 @@ export default class ChatList extends Component {
         )
     }
     delete(res){
-        NIM.deleteRecentContact(res.contactId);
+        NimSession.deleteRecentContact(res.contactId);
         this.refs['swList'].safeCloseOpenRow();
     }
     _renderSeparator(){
@@ -126,7 +103,7 @@ export default class ChatList extends Component {
     addFriend(){
         this.setState({isVisible: false});
         const {navigator} = this.props;
-        navigator.showModal({
+        navigator.n({
             screen:"FeiMa.SearchScreen",
             passProps:{
                 onResult:function(result){
@@ -170,6 +147,7 @@ export default class ChatList extends Component {
     render() {
         return (
             <Container>
+                <StatusBar backgroundColor="black" barStyle="light-content"/>
                 <SwipeListView
                     ref="swList"
                     enableEmptySections
@@ -286,3 +264,4 @@ const styles = StyleSheet.create({
     }
 
 });
+export default ChatList

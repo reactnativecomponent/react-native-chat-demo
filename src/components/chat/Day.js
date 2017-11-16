@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 
 import {showTime} from '../../utils';
-
+import PropTypes from 'prop-types';
 export default class Day extends React.Component {
     render() {
         if (!this.props.isSameDay(this.props.currentMessage, this.props.previousMessage)) {
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 });
 
 Day.contextTypes = {
-    getLocale: React.PropTypes.func,
+    getLocale: PropTypes.func,
 };
 
 Day.defaultProps = {
@@ -64,9 +64,9 @@ Day.defaultProps = {
 };
 
 Day.propTypes = {
-  isSameDay: React.PropTypes.func,
-  currentMessage: React.PropTypes.object,
-  previousMessage: React.PropTypes.object,
+  isSameDay: PropTypes.func,
+  currentMessage: PropTypes.object,
+  previousMessage: PropTypes.object,
   containerStyle: View.propTypes.style,
   wrapperStyle: View.propTypes.style,
   textStyle: Text.propTypes.style,

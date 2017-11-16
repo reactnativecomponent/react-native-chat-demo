@@ -47,7 +47,7 @@ export default class LocationPicker extends React.Component {
             title:"",
             description:"",
         };
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
     handleSend() {

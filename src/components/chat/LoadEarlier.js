@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
 export default class LoadEarlier extends React.Component {
   renderLoading() {
     if (this.props.isLoadingEarlier === false) {
@@ -37,8 +37,8 @@ export default class LoadEarlier extends React.Component {
       <TouchableOpacity
         style={[styles.container, this.props.containerStyle]}
         onPress={() => {
-          if (this.props.onLoadEarlier) {
-            this.props.onLoadEarlier();
+          if (this.props.onLoadMoreAsync) {
+            this.props.onLoadMoreAsync();
           }
         }}
         disabled={this.props.isLoadingEarlier === true}
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
 LoadEarlier.defaultProps = {
   onLoadEarlier: () => {},
   isLoadingEarlier: false,
-  label: 'Load earlier messages',
+  label: '查看历史消息',
   containerStyle: {},
   wrapperStyle: {},
   textStyle: {},
@@ -90,9 +90,9 @@ LoadEarlier.defaultProps = {
 };
 
 LoadEarlier.propTypes = {
-  onLoadEarlier: React.PropTypes.func,
-  isLoadingEarlier: React.PropTypes.bool,
-  label: React.PropTypes.string,
+  onLoadEarlier: PropTypes.func,
+  isLoadingEarlier: PropTypes.bool,
+  label: PropTypes.string,
   containerStyle: View.propTypes.style,
   wrapperStyle: View.propTypes.style,
   textStyle: Text.propTypes.style,

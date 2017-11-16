@@ -1,15 +1,15 @@
 import React from 'react';
 
 import {
-    ListView,
+    FlatList,
     View,
-    Text
+    Platform
 } from 'react-native';
 
 import shallowequal from '../../utils/showEqual';
-import InfiniteScrollView from './InfiniteScrollView.js';
-import md5 from '../../utils/md5';
 import LoadEarlier from './LoadEarlier';
+import md5 from '../../utils/md5';
+import PropTypes from 'prop-types';
 import Message from './Message';
 
 export default class MessageContainer extends React.Component {
@@ -17,36 +17,40 @@ export default class MessageContainer extends React.Component {
         super(props);
 
         this.renderRow = this.renderRow.bind(this);
-        this.renderScrollComponent = this.renderScrollComponent.bind(this);
-
-        const dataSource = new ListView.DataSource({
-            rowHasChanged: (r1, r2) => {
-                return r1.hash !== r2.hash;
-            }
-        });
-        const messagesData = this.prepareMessages(props.messages);
+        this.renderFooter = this.renderFooter.bind(this);
+        this.renderLoadEarlier = this.renderLoadEarlier.bind(this);
 
         this.state = {
-            dataSource: dataSource.cloneWithRows(messagesData.blob, messagesData.keys),
+            messagesData: this.prepareMessages(props.messages),
         };
     }
     prepareMessages(messages) {
-        return {
-            keys: messages.map(m => m._id),
-            blob: messages.reduce((o, m, i) => {
-                const previousMessage = messages[i + 1] || {};
-                const nextMessage = messages[i - 1] || {};
-                // add next and previous messages to hash to ensure updates
-                const toHash = JSON.stringify(m) + previousMessage._id + nextMessage._id;
-                o[m._id] = {
-                    ...m,
-                    previousMessage,
-                    nextMessage,
-                    hash: md5.createHash(toHash)
-                };
-                return o;
-            }, {})
-        };
+        // return {
+        //     keys: messages.map(m => m.msgId),
+        //     blob: messages.reduce((o, m, i) => {
+        //         const previousMessage = messages[i + 1] || {};
+        //         const nextMessage = messages[i - 1] || {};
+        //         // add next and previous messages to hash to ensure updates
+        //         const toHash = JSON.stringify(m) + previousMessage.msgId + nextMessage.msgId;
+        //         o[m.msgId] = {
+        //             ...m,
+        //             previousMessage,
+        //             nextMessage,
+        //             hash: md5.createHash(toHash)
+        //         };
+        //         return o;
+        //     }, {})
+        // };
+        return output = messages.reduce((o, m, i) => {
+            const previousMessage = messages[i + 1] || {}
+            const nextMessage = messages[i - 1] || {}
+            o.push({
+                ...m,
+                previousMessage,
+                nextMessage
+            })
+            return o
+        }, [])
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -63,73 +67,95 @@ export default class MessageContainer extends React.Component {
         if (this.props.messages === nextProps.messages) {
             return;
         }
-        const messagesData = this.prepareMessages(nextProps.messages);
+
         this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(messagesData.blob, messagesData.keys)
+            messagesData: this.prepareMessages(nextProps.messages)
         });
     }
 
 
     scrollTo(options) {
-        this._invertibleScrollViewRef.scrollTo(options);
+        this.refs.flatListRef.scrollToOffset(options)
     }
 
-    renderRow(message, sectionId, rowId) {
-        if (!message._id && message._id !== 0) {
+    renderRow({item,index}) {
+        if (!item.msgId && item.msgId !== 0) {
             console.warn('GiftedChat: `_id` is missing for message', JSON.stringify(message));
         }
-        if (!message.user) {
+        if (!item.fromUser) {
             console.warn('GiftedChat: `user` is missing for message', JSON.stringify(message));
-            message.user = {};
+            item.fromUser = {};
         }
-        var position;
-        if (message.notiObj && message.msgType === '5') {
+        let position;
+        if (item.msgType === 'notification') {
             position = "center";
         } else {
-            position = message.user._id === this.props.user._id ? 'right' : 'left';
+            position = item.fromUser._id === this.props.user._id ? 'right' : 'left';
         }
         const messageProps = {
             ...this.props,
-            key: message._id,
-            currentMessage: message,
-            previousMessage: message.previousMessage,
-            nextMessage: message.nextMessage,
+            key: item.msgId,
+            currentMessage: item,
+            previousMessage: item.previousMessage,
+            nextMessage: item.nextMessage,
             position: position,
         };
 
         if (this.props.renderMessage) {
             return this.props.renderMessage(messageProps);
         }
-        return <Message {...messageProps}/>;
-    }
-
-    renderScrollComponent(props) {
-        const invertibleScrollViewProps = this.props.invertibleScrollViewProps;
         return (
-            <InfiniteScrollView
-                {...props}
-                {...invertibleScrollViewProps}
-                ref={component => this._invertibleScrollViewRef = component}
-            />
-        );
+            <View style={{ flex: 1, transform: Platform.OS === 'android' ?[{scaleY: -1 },{perspective: 1280}]:[{scaleY: -1 }] }}>
+                <Message {...messageProps}/></View>);
     }
+    renderHeaderWrapper = () => {
+            return <View style={{ flex: 1, transform: Platform.OS === 'android' ?[{scaleY: -1 },{perspective: 1280}]:[{scaleY: -1 }]}}>{this.renderLoadEarlier()}</View>;
+          }
+    _keyExtractor = (item, index) => item._id+" "+index
+    renderFooter() {
+        if (this.props.renderFooter) {
+            const footerProps = {
+                ...this.props,
+            };
+            return this.props.renderFooter(footerProps);
+        }
+        return null;
+    }
+    renderLoadEarlier() {
+        if (this.props.canLoadMore === true) {
+            const loadEarlierProps = {
+                ...this.props,
+            };
+            if (this.props.renderLoadEarlier) {
+                return this.props.renderLoadEarlier(loadEarlierProps);
+            }
 
+            return (
+                <LoadEarlier {...loadEarlierProps}/>
+            );
+        }
+        return null;
+    }
     render() {
         return (
             <View ref='container' style={{flex:1}}>
-                <ListView
+                <FlatList
                     enableEmptySections={true}
                     keyboardShouldPersistTaps="always"
                     automaticallyAdjustContentInsets={false}
                     initialListSize={20}
                     pageSize={20}
+                    ref='flatListRef'
+                    keyExtractor={this._keyExtractor}
                     contentContainerStyle={{flexGrow: 1, justifyContent: 'flex-end'}}
-                    dataSource={this.state.dataSource}
-
-                    renderRow={this.renderRow}
-                    renderScrollComponent={this.renderScrollComponent}
-
+                    data={this.state.messagesData}
+                    renderItem={this.renderRow}
+                    renderHeader={this.renderFooter}
                     canLoadMore={this.props.canLoadMore}
+                    renderFooter={this.renderLoadEarlier()}
+                    style={{transform: Platform.OS === 'android' ?[{scaleY: -1 },{perspective: 1280}]:[{scaleY: -1 }]}}
+                    {...this.props.invertibleScrollViewProps}
+                    ListFooterComponent={this.renderHeaderWrapper}
                     onLoadMoreAsync={this.props.onLoadMoreAsync}
                 />
             </View>
@@ -144,7 +170,7 @@ MessageContainer.defaultProps = {
 };
 
 MessageContainer.propTypes = {
-    messages: React.PropTypes.array,
-    user: React.PropTypes.object,
-    renderMessage: React.PropTypes.func,
+    messages: PropTypes.array,
+    user: PropTypes.object,
+    renderMessage: PropTypes.func,
 };

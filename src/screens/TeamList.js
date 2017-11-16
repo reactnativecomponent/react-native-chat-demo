@@ -8,19 +8,16 @@ import {
     ListView,Image
 } from 'react-native';
 import {Container,Icon,ListItem,Text,Body,Right,Left} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimTeam} from 'react-native-netease-im';
+import {NavigationActions} from 'react-navigation';
 
 /**
  * 群组列表
  */
 export default class TeamList extends React.Component {
-    static navigatorStyle = {
-        StatusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: '群聊'
+    });
     constructor(props) {
         super(props);
         var ds = new ListView.DataSource({
@@ -33,7 +30,7 @@ export default class TeamList extends React.Component {
     }
 
     componentWillMount() {
-        NIM.startTeamList();
+        NimTeam.startTeamList();
     }
     componentDidMount() {
         this.friendListener = NativeAppEventEmitter.addListener("observeTeam",(data)=>{
@@ -44,26 +41,24 @@ export default class TeamList extends React.Component {
         });
     }
     componentWillUnmount() {
-        NIM.stopTeamList();
+        NimTeam.stopTeamList();
         this.friendListener && this.friendListener.remove();
     }
     toChat(res){
-        const {navigator} = this.props;
-        navigator.popToRoot({
-            animated: false,
-        });
+        const {navigation} = this.props;
+
         let session = {
             ...res,
             sessionType:'1',
             contactId:res.teamId
         };
-        navigator.push({
-            screen:'FeiMa.Chat',
-            title:res.name,
-            passProps:{
-                session
-            }
-        });
+        navigation.dispatch(NavigationActions.reset({
+            index:1,
+            actions:[
+                NavigationActions.navigate({ routeName: 'ChatList'}),
+                NavigationActions.navigate({ routeName: 'Chat',params:{session:session,title:res.name}})
+            ]
+        }));
     }
     _renderRow(res){
         return(

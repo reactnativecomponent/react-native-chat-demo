@@ -4,16 +4,16 @@ import {
   StyleSheet,
   View,Platform
 } from 'react-native';
-
+import PropTypes from 'prop-types';
 export default class MessageImage extends React.Component {
   render() {
-    const {imageObj} = this.props.currentMessage;
-    const {imageWidth,imageHeight} = imageObj;
+    const {extend} = this.props.currentMessage;
+    const {imageHeight,imageWidth} = extend;
     return (
       <View style={[styles.container, this.props.containerStyle]}>
         <Image
           style={[styles.image, this.props.imageStyle,{width:150,height:150*(imageHeight/imageWidth)}]}
-          source={{uri: Platform.OS === 'android' ? "file://"+imageObj.path2 : imageObj.thumbPath}}
+          source={{uri: Platform.OS === 'android' ? "file://"+extend.thumbPath : extend.thumbPath}}
         />
       </View>
     );
@@ -37,7 +37,7 @@ MessageImage.defaultProps = {
 };
 
 MessageImage.propTypes = {
-  currentMessage: React.PropTypes.object,
+  currentMessage: PropTypes.object,
   containerStyle: View.propTypes.style,
   imageStyle: Image.propTypes.style,
 };

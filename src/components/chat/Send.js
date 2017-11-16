@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
 export default class Send extends React.Component {
   render() {
     if (this.props.text.trim().length > 0) {
@@ -49,9 +49,9 @@ Send.defaultProps = {
 };
 
 Send.propTypes = {
-  text: React.PropTypes.string,
-  onSend: React.PropTypes.func,
-  label: React.PropTypes.string,
+  text: PropTypes.string,
+  onSend: PropTypes.func,
+  label: PropTypes.string,
   containerStyle: View.propTypes.style,
   textStyle: Text.propTypes.style,
 };

@@ -1,43 +1,30 @@
 import React, { Component } from 'react';
-import {View,StyleSheet} from 'react-native';
+import {View,TouchableOpacity} from 'react-native';
 import { Container,Header,Title,Text, Content, Button, Icon ,Left,Body,Right,Item,Form,Label,Input} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimTeam} from 'react-native-netease-im';
 import Toast from 'react-native-simple-toast';
-
+let _this = {};
 export default class UpdateTeamName extends Component {
-
-    static navigatorStyle = {
-        StatusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
-    };
-    static navigatorButtons = {
-        rightButtons:[{
-            id:'submit',
-            buttonColor:'#fff',
-            title:'完成'
-        }]
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: '更新群聊名称',
+        headerRight:(
+            <View style={{flexDirection:'row',paddingRight:8,alignItems:'center',justifyContent:'center'}}>
+                <TouchableOpacity onPress={()=>_this.submit()}>
+                    <Text style={{color:"#fff"}}>完成</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    });
     constructor(props) {
         super(props);
-        const {teamData={}} = props;
+        const {teamData={}} = props.navigation.state.params;
         this.state = {
             name:  teamData.name||''
         };
-        this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
-    }
-    _onNavigatorEvent(event){
-
-        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id == 'submit') { // this is the same id field from the static navigatorButtons definition
-                this.submit();
-            }
-        }
+       _this = this;
     }
     submit() {
-        const {actions,navigator,teamData} = this.props;
+        const {teamData,onResult} = this.props.navigation.state.params;
         if(!this.state.name){
             Toast.show('请填写群名称');
             return;
@@ -52,9 +39,9 @@ export default class UpdateTeamName extends Component {
             return;
         }
 
-        NIM.updateTeamName(teamData.teamId,this.state.name).then((data)=>{
-            this.props.onResult && this.props.onResult();
-            navigator.pop();
+        NimTeam.updateTeamName(teamData.teamId,this.state.name).then((data)=>{
+            onResult && onResult();
+            this.props.navigation.goBack();
         });
     }
     render() {
@@ -64,7 +51,7 @@ export default class UpdateTeamName extends Component {
                 <Content>
                     <Form style={{backgroundColor:'#fff'}}>
                         <View style={{backgroundColor:"#f7f7f7",padding:12}}><Text note>群聊名称</Text></View>
-                        <Item inlineLabel last>
+                        <Item inlineLabel first last>
                             <Input
                                 value={this.state.name}
                                 autoCapitalize="none"

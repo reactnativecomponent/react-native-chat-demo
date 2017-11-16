@@ -1,36 +1,27 @@
 import React, { Component } from 'react';
-import {View,StyleSheet} from 'react-native';
+import {View,TouchableOpacity} from 'react-native';
 import { Container,Header,Title,Text, Content, Button, Icon ,Left,Body,Right,Item,Form,Label,Input} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimFriend} from 'react-native-netease-im';
 import Toast from 'react-native-simple-toast';
+let _this={};
 
 export default class SendAddFriend extends Component {
-    static navigatorStyle = {
-        statusBarColor: '#444',
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
-    };
-    static navigatorButtons = {
-        rightButtons:[{
-            id:'ver-add',
-            buttonColor:'#fff',
-            title:'发送'
-        }]
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: '添加好友',
+        headerRight:(
+            <View style={{flexDirection:'row',paddingRight:8,alignItems:'center',justifyContent:'center'}}>
+                <TouchableOpacity onPress={()=>_this.submit()}>
+                    <Text style={{color:"#fff"}}>发送</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    });
     constructor(props) {
         super(props);
         this.state = {
             remark:''
         };
-        this.props.navigator.setOnNavigatorEvent(this._onNavigatorEvent.bind(this));
-    }
-    _onNavigatorEvent(event){
-        if (event.type == 'NavBarButtonPress') {
-            if (event.id == 'ver-add') {
-                this.submit();
-            }
-        }
+        _this = this;
     }
     submit() {
         const {friendData={}} = this.props;
@@ -38,9 +29,9 @@ export default class SendAddFriend extends Component {
             Toast.show('不能包含特殊字符');
             return;
         }
-        NIM.addFriend(friendData.contactId,this.state.remark).then((res)=>{
+        NimFriend.addFriend(friendData.contactId,this.state.remark).then((res)=>{
             Toast.show('已发送请求');
-            this.props.navigator.pop();
+            this.props.navigation.goBack();
         },(err)=>{
             Toast.show(err);
         });

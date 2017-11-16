@@ -9,7 +9,7 @@ import {
 export default class MessageAudio extends React.Component {
     render() {
 
-        var msg = this.props.currentMessage;
+        let msg = this.props.currentMessage;
         //var playing;
         //if (msg.playing == undefined) {
         //    playing = 0;
@@ -18,23 +18,21 @@ export default class MessageAudio extends React.Component {
         //}
         let image = "";
 
-        
-        var outgoing = Platform.OS === 'android' ?msg.direct === '0' : msg.direct === '1';
         if (msg.playing) {
-            image = outgoing ? require("./Images/senderVoicePlaying.gif") :
+            image = msg.isOutgoing ? require("./Images/senderVoicePlaying.gif") :
                     require("./Images/receiverVoicePlaying.gif");
         }else {
-            image = outgoing ? require("./Images/senderVoice.png") :
+            image = msg.isOutgoing ? require("./Images/senderVoice.png") :
                 require("./Images/receiverVoice.png");
         }
 
         //max 180
-        var margin = (parseFloat(msg.audioObj.duration)/1000)*3;
+        var margin = (parseFloat(msg.extend.duration)/1000)*3;
         margin = Math.min(180, margin)+10;
         return (
             <View style={[styles.container]}>
 
-                <Image style={[styles.image,outgoing ? {marginLeft:margin} : { marginRight:margin}]}
+                <Image style={[styles.image,msg.isOutgoing ? {marginLeft:margin} : { marginRight:margin}]}
                        source={image}>
                 </Image>
 

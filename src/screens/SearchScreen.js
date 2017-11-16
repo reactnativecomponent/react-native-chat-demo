@@ -1,18 +1,10 @@
 import React, { Component } from 'react';
-import {Dimensions,View,TouchableOpacity,Platform,Image} from 'react-native';
+import {View,Platform,Image} from 'react-native';
 import { Container, Header,Text, Title, Content,  Button, Icon,Item,Form,Left,Body,Right,Label,ListItem,Input } from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimFriend} from 'react-native-netease-im';
 
 export default class SearchScreen extends Component {
-    static navigatorStyle = {
-        backButtonHidden:true,
-        navBarHidden:true,
-        statusBarTextColorScheme:'dark',
-        StatusBarColor: '#444',
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
-    };
+
     constructor(props) {
         super(props);
         // 初始状态
@@ -22,7 +14,7 @@ export default class SearchScreen extends Component {
         };
     }
     _check(){
-        NIM.fetchUserInfo(this.state.account).then((res)=>{
+        NimFriend.fetchUserInfo(this.state.account).then((res)=>{
             let arr = [];
             arr.push(res);
             this.setState({
@@ -31,10 +23,9 @@ export default class SearchScreen extends Component {
         });
     }
     onSelectResult(data){
-        this.props.onResult && this.props.onResult(data);
-        this.props.navigator.dismissModal({
-            animationType: 'none'
-        });
+        const {searchCallback} = this.props.navigation.state.params;
+        searchCallback && searchCallback(data);
+        this.props.navigation.goBack();
     }
     _renderResult(){
         if(this.state.result && this.state.result.length > 0){
@@ -74,7 +65,7 @@ export default class SearchScreen extends Component {
                             onSubmitEditing={()=>this._check()}
                         />
                     </Item>
-                    <Button transparent onPress={()=>this.props.navigator.dismissModal()}>
+                    <Button transparent onPress={()=>this.props.navigation.goBack()}>
                         <Text>取消</Text>
                     </Button>
                 </View>

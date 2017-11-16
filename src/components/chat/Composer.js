@@ -4,7 +4,7 @@ import {
   StyleSheet,
   TextInput,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
 export default class Composer extends React.Component {
   render() {
     return (
@@ -59,12 +59,12 @@ Composer.defaultProps = {
 };
 
 Composer.propTypes = {
-  onChange: React.PropTypes.func,
-  composerHeight: React.PropTypes.number,
-  text: React.PropTypes.string,
-  placeholder: React.PropTypes.string,
-  placeholderTextColor: React.PropTypes.string,
-  textInputProps: React.PropTypes.object,
-  multiline: React.PropTypes.bool,
+  onChange: PropTypes.func,
+  composerHeight: PropTypes.number,
+  text: PropTypes.string,
+  placeholder: PropTypes.string,
+  placeholderTextColor: PropTypes.string,
+  textInputProps: PropTypes.object,
+  multiline: PropTypes.bool,
   textInputStyle: TextInput.propTypes.style,
 };

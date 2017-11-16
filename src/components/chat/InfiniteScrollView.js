@@ -1,14 +1,13 @@
 'use strict';
 
-import React, {
-    PropTypes,
-} from 'react';
+import React from 'react';
 import {
     Platform,
     ScrollView,
     View,
     StyleSheet
 } from 'react-native';
+import PropTypes from 'prop-types';
 import ScrollableMixin from 'react-native-scrollable-mixin';
 
 import cloneReferencedElement from 'react-clone-referenced-element';

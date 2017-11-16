@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import {Image,TouchableOpacity,View,StyleSheet,Switch,Dimensions } from 'react-native';
 import { Container,Text, Content,Header,Title, Button, Icon,Thumbnail ,Left,Right,Body,List,ListItem} from 'native-base';
-import NIM from 'react-native-netease-im';
+import {NimTeam,NimFriend,NimSession} from 'react-native-netease-im';
 
 export  default class SessionTeamDetail extends Component {
-    static navigatorStyle = {
-        statusBarColor: '#444',
-        tabBarHidden: true,
-        navBarBackgroundColor:"#444",
-        navBarButtonColor:"#fff",
-        navBarTextColor:"#fff"
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: '群组设置'
+    });
     constructor(props) {
         super(props);
         this.state = {
@@ -19,46 +15,36 @@ export  default class SessionTeamDetail extends Component {
         };
     }
     componentDidMount() {
-        const {session} = this.props;
-        NIM.getTeamInfo(session.contactId).then((data)=>{
+        const {session} = this.props.navigation.state.params;
+        NimTeam.getTeamInfo(session.contactId).then((data)=>{
             this.setState({
                 teamInfo:data
             });
         });
-        NIM.fetchTeamMemberList(session.contactId).then((data)=>{
-            this.props.navigator.setTitle({
-                title:'聊天信息('+data.length+')'
-            });
+        NimTeam.fetchTeamMemberList(session.contactId).then((data)=>{
             this.setState({
                 members:data
             });
         });
     }
     _removeUser(){
-        const {session,navigator} = this.props;
-        navigator.showModal({
-            screen:'ImDemo.RemoveUsers',
-            title:'选择联系人',
-            passProps:{
-                members:this.state.members,
-                teamId:session.contactId,
-                onResult:function(){
-                    navigator.dismissModal();
-                    navigator.pop();
-                }
+        const {navigation} = this.props;
+        const {session} = navigation.state.params;
+        navigation.navigate("RemoveUsers",{
+            members:this.state.members,
+            teamId:session.contactId,
+            onResult:function(){
+                setTimeout(()=>{
+                    navigation.goBack();
+                },100);
             }
         });
 
     }
     toFriendDetail(id){
-        NIM.getUserInfo(id).then((data)=>{
-            this.props.navigator.push({
-                screen:'ImDemo.FriendDetail',
-                title:'详细资料',
-                backButtonTitle:'返回',
-                passProps:{
-                    friendData:data
-                }
+        NimFriend.getUserInfo(id).then((data)=>{
+            this.props.navigation.navigate("FriendDetail",{
+                friendData:data
             });
         })
     }
@@ -78,24 +64,22 @@ export  default class SessionTeamDetail extends Component {
         }
     }
     _addUserToTeam(){
-        const {session,navigator} = this.props;
-        navigator.showModal({
-            screen:'ImDemo.SelectUsers',
-            title:'选择联系人',
-            passProps:{
-                members:this.state.members,
-                teamId:session.contactId,
-                onResult:function(){
-                    navigator.dismissModal();
-                    navigator.pop();
-                }
+        const {navigation} = this.props;
+        const {session} = navigation.state.params;
+        navigation.navigate("SelectUsers",{
+            members:this.state.members,
+            teamId:session.contactId,
+            onResult:function(){
+                setTimeout(()=>{
+                    navigation.goBack();
+                },100);
             }
         });
     }
     _changeState(v){
-        const {session} = this.props;
+        const {session} = this.props.navigation.state.params;
         if(v){
-           NIM.setTeamNotify(session.contactId,'0').then(()=>{
+           NimTeam.setTeamNotify(session.contactId,'0').then(()=>{
                this.setState({
                    teamInfo:{
                        ...this.state.teamInfo,
@@ -105,7 +89,7 @@ export  default class SessionTeamDetail extends Component {
            });
 
         }else{
-            NIM.setTeamNotify(session.contactId,'1').then(()=>{
+            NimTeam.setTeamNotify(session.contactId,'1').then(()=>{
                 this.setState({
                     teamInfo:{
                         ...this.state.teamInfo,
@@ -117,28 +101,24 @@ export  default class SessionTeamDetail extends Component {
 
     }
     _updateTeamName(){
-        const {navigator,session} = this.props;
+        const {navigation} = this.props;
+        const {session} = navigation.state.params;
         let self = this;
-        navigator.push({
-            screen:'ImDemo.UpdateTeamName',
-            title:'群聊名称',
-            backButtonTitle:'返回',
-            passProps:{
-                teamData:this.state.teamInfo,
-                onResult:function(){
-                    NIM.getTeamInfo(session.contactId).then((data)=>{
-                        self.setState({
-                            teamInfo:data
-                        });
+        navigation.navigate("UpdateTeamName",{
+            teamData:this.state.teamInfo,
+            onResult:function(){
+                NimTeam.getTeamInfo(session.contactId).then((data)=>{
+                    self.setState({
+                        teamInfo:data
                     });
-                }
+                });
             }
         });
 
     }
     clearMessage(){
         const {session} = this.props;
-        NIM.clearMessage(session.contactId);
+        NimSession.clearMessage(session.contactId);
     }
     render() {
         const deleteAction = (

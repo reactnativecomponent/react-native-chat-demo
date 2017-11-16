@@ -7,29 +7,28 @@
     "test": "jest"
   },
   "dependencies": {
-    "moment": "^2.18.1",
-    "native-base": "^2.1.4",
-    "react": "16.0.0-alpha.6",
-    "react-clone-referenced-element": "^1.0.1",
-    "react-native": "0.44.2",
+    "moment": "^2.19.2",
+    "native-base": "^2.3.3",
+    "react": "16.0.0",
+    "react-native": "0.50.3",
     "react-native-communications": "^2.2.1",
-    "react-native-emoji": "^1.2.0",
-    "react-native-image-crop-picker": "^0.13.1",
-    "react-native-navigation": "^1.1.85",
-    "react-native-netease-im": "^1.0.5",
-    "react-native-parsed-text": "0.0.18",
+    "react-native-emoji": "https://github.com/jorilallo/react-native-emoji",
+    "react-native-image-crop-picker": "^0.18.1",
+    "react-native-looped-carousel": "^0.1.7",
+    "react-native-netease-im": "https://github.com/reactnativecomponent/react-native-netease-im",
+    "react-native-parsed-text": "^0.0.20",
     "react-native-scrollable-mixin": "^1.0.1",
-    "react-native-simple-toast": "0.0.6",
-    "react-native-swipe-list-view": "^0.4.1",
-    "react-native-swiper": "^1.5.4",
-    "shallowequal": "^1.0.1",
+    "react-native-simple-toast": "https://github.com/hzlgit/react-native-simple-toast",
+    "react-native-swipe-list-view": "^0.4.6",
+    "react-native-swiper": "^1.5.13",
+    "react-navigation": "^1.0.0-beta.19",
     "spliddit": "^2.1.1"
   },
   "devDependencies": {
-    "babel-jest": "20.0.3",
-    "babel-preset-react-native": "1.9.2",
-    "jest": "20.0.4",
-    "react-test-renderer": "16.0.0-alpha.6"
+    "babel-jest": "21.2.0",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "21.2.1",
+    "react-test-renderer": "16.0.0"
   },
   "jest": {
     "preset": "react-native"

@@ -16,7 +16,7 @@ import MessageLocation from './MessageLocation';
 import Time from './Time';
 
 import {MESSAGE_FLAG_FAILURE, MESSAGE_FLAG_LISTENED} from './IMessage';
-
+import PropTypes from 'prop-types';
 export default class Bubble extends React.Component {
     constructor(props) {
         super(props);
@@ -39,7 +39,7 @@ export default class Bubble extends React.Component {
     }
 
     renderMessageText() {
-        if (this.props.currentMessage.msgType === '0') {
+        if (this.props.currentMessage.msgType === 'text') {
             const {containerStyle, wrapperStyle, ...messageTextProps} = this.props;
             if (this.props.renderMessageText) {
                 return this.props.renderMessageText(messageTextProps);
@@ -50,7 +50,7 @@ export default class Bubble extends React.Component {
     }
 
     renderMessageImage() {
-        if (this.props.currentMessage.msgType === '1' && this.props.currentMessage.imageObj) {
+        if (this.props.currentMessage.msgType === 'image' && this.props.currentMessage.extend) {
             const {containerStyle, wrapperStyle, ...messageImageProps} = this.props;
             if (this.props.renderMessageImage) {
                 return this.props.renderMessageImage(messageImageProps);
@@ -61,14 +61,14 @@ export default class Bubble extends React.Component {
     }
 
     renderMessageAudio() {
-        if (this.props.currentMessage.msgType === '2') {
+        if (this.props.currentMessage.msgType === 'voice') {
             console.log("render message auido");
             return <MessageAudio {...this.props}/>;
         }
     }
 
     renderMessageLocation() {
-        if (this.props.currentMessage.msgType === '4') {
+        if (this.props.currentMessage.msgType === 'location') {
             console.log("render message location");
             return <MessageLocation {...this.props}/>;
         }
@@ -109,8 +109,8 @@ export default class Bubble extends React.Component {
     //发送失败标志
     renderFlags() {
         const msg = this.props.currentMessage;
-        if (this.props.user._id === this.props.currentMessage.user._id) {
-            if (msg.status === '2') {
+        if (this.props.user._id === this.props.currentMessage.fromUser._id) {
+            if (msg.status === 'send_failed') {
                 return (
                     <Image style={{alignSelf:"flex-end", width:20, height:20}}
                            source={require('./Images/MessageSendError.png')}>
@@ -119,7 +119,7 @@ export default class Bubble extends React.Component {
             }
         }
 
-        if (!msg.outgoing && msg.audio) {
+        if (!msg.isOutgoing && msg.msgType === 'voice') {
             if (!(msg.flags & MESSAGE_FLAG_LISTENED)) {
                 return (
                     <View style={{marginLeft:4, justifyContent:"space-between"}}>
@@ -130,7 +130,7 @@ export default class Bubble extends React.Component {
                                       borderRadius:90}}/>
 
                         <Text style={{color:"lightgrey"}}>
-                            {"" + msg.audio.duration + "''"}
+                            {"" + msg.extend.duration + "''"}
                         </Text>
                     </View>
                 );
@@ -138,18 +138,18 @@ export default class Bubble extends React.Component {
                 return (
                     <View style={{marginLeft:4, justifyContent:"flex-end"}}>
                         <Text style={{color:"lightgrey"}}>
-                            {"" + msg.audio.duration + "''"}
+                            {"" + msg.extend.duration + "''"}
                         </Text>
                     </View>
                 );                
             }
         }
 
-        if (msg.outgoing && msg.audio) {
+        if (msg.isOutgoing && msg.msgType === "voice") {
             return (
                 <View style={{marginRight:4, justifyContent:"flex-end"}}>
                     <Text style={{color:"lightgrey"}}>
-                        {"" + msg.audio.duration + "''"}
+                        {"" + msg.extend.duration + "''"}
                     </Text>
                 </View>
             );                
@@ -196,16 +196,16 @@ export default class Bubble extends React.Component {
                 <View style={[styles['left'].wrapper, this.props.wrapperStyle['left']]}>
                     {this._renderContent()}
                 </View>
-                {this.renderAudoDuration()}
+
                 {this.renderFlags()}
             </View>
         );        
     }
     renderAudoDuration(){
         const msg = this.props.currentMessage;
-        if (msg.msgType === '2') {
+        if (msg.msgType === 'voice') {
             return (
-                <Text style={{color:'#666666',fontSize:12,lineHeight:25}}> {parseInt((msg.audioObj.duration)/1000)}'' </Text>
+                <Text style={{color:'#666666',fontSize:12,lineHeight:25}}> {parseInt((msg.extend.duration)/1000)}'' </Text>
             );
 
         }
@@ -214,7 +214,7 @@ export default class Bubble extends React.Component {
         return (
             <View style={[styles['right'].container, this.props.containerStyle['right']]}>
                 {this.renderFlags()}
-                {this.renderAudoDuration()}
+
                 <View style={[styles['right'].wrapper, this.props.wrapperStyle['right']]}>
                     {this._renderContent()}
                 </View>
@@ -223,8 +223,8 @@ export default class Bubble extends React.Component {
     }
 
     renderCenter() {
-        var msg = this.props.currentMessage;
-        if(msg.msgType === '5' && msg.notiObj){
+        let msg = this.props.currentMessage;
+        if(msg.msgType === 'notification'){
             return (
                 <View style={{alignItems: 'center',
                           justifyContent: 'center',
@@ -235,7 +235,7 @@ export default class Bubble extends React.Component {
                                   color: '#fff',
                                   fontSize: 12,
                                   fontWeight: '400',}}>
-                            {msg.notiObj.tipMsg}
+                            {msg.extend.tipMsg}
                         </Text>
                     </View>
                 </View>
@@ -246,11 +246,11 @@ export default class Bubble extends React.Component {
     }
     
     render() {
-        if (this.props.position == 'left') {
+        if (this.props.position === 'left') {
             return this.renderLeft();
-        } else if (this.props.position == 'right') {
+        } else if (this.props.position === 'right') {
             return this.renderRight();
-        } else if (this.props.position == 'center') {
+        } else if (this.props.position === 'center') {
             return this.renderCenter();
         } else {
             return null;
@@ -302,7 +302,7 @@ const styles = {
 };
 
 Bubble.contextTypes = {
-    actionSheet: React.PropTypes.func,
+    actionSheet: PropTypes.func,
 };
 
 Bubble.defaultProps = {
@@ -329,31 +329,31 @@ Bubble.defaultProps = {
 };
 
 Bubble.propTypes = {
-    touchableProps: React.PropTypes.object,
-    onLongPress: React.PropTypes.func,
-    renderMessageImage: React.PropTypes.func,
-    renderMessageText: React.PropTypes.func,
-    renderCustomView: React.PropTypes.func,
-    renderTime: React.PropTypes.func,
-    isSameUser: React.PropTypes.func,
-    isSameDay: React.PropTypes.func,
-    position: React.PropTypes.oneOf(['left', 'right', 'center']),
-    currentMessage: React.PropTypes.object,
-    nextMessage: React.PropTypes.object,
-    previousMessage: React.PropTypes.object,
-    containerStyle: React.PropTypes.shape({
+    touchableProps: PropTypes.object,
+    onLongPress: PropTypes.func,
+    renderMessageImage: PropTypes.func,
+    renderMessageText: PropTypes.func,
+    renderCustomView: PropTypes.func,
+    renderTime: PropTypes.func,
+    isSameUser: PropTypes.func,
+    isSameDay: PropTypes.func,
+    position: PropTypes.oneOf(['left', 'right', 'center']),
+    currentMessage: PropTypes.object,
+    nextMessage: PropTypes.object,
+    previousMessage: PropTypes.object,
+    containerStyle: PropTypes.shape({
         left: View.propTypes.style,
         right: View.propTypes.style,
     }),
-    wrapperStyle: React.PropTypes.shape({
+    wrapperStyle: PropTypes.shape({
         left: View.propTypes.style,
         right: View.propTypes.style,
     }),
-    containerToNextStyle: React.PropTypes.shape({
+    containerToNextStyle: PropTypes.shape({
         left: View.propTypes.style,
         right: View.propTypes.style,
     }),
-    containerToPreviousStyle: React.PropTypes.shape({
+    containerToPreviousStyle: PropTypes.shape({
         left: View.propTypes.style,
         right: View.propTypes.style,
     }),

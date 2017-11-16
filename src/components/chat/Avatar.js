@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 
 import GiftedAvatar from './GiftedAvatar';
+import PropTypes from 'prop-types';
 
 export default class Avatar extends React.Component {
   render() {
@@ -56,11 +57,11 @@ Avatar.defaultProps = {
 };
 
 Avatar.propTypes = {
-  isSameDay: React.PropTypes.func,
-  isSameUser: React.PropTypes.func,
-  position: React.PropTypes.oneOf(['left', 'right']),
-  currentMessage: React.PropTypes.object,
-  nextMessage: React.PropTypes.object,
+  isSameDay: PropTypes.func,
+  isSameUser: PropTypes.func,
+  position: PropTypes.oneOf(['left', 'right']),
+  currentMessage: PropTypes.object,
+  nextMessage: PropTypes.object,
   containerStyle: View.propTypes.style,
-  imageStyle: React.PropTypes.oneOfType([View.propTypes.style, Image.propTypes.style]),
+  imageStyle: PropTypes.oneOfType([View.propTypes.style, Image.propTypes.style]),
 };
