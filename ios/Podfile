@@ -5,12 +5,12 @@ target ‘ImDemo’ do
   pod 'AMapLocation’
   pod 'RSKImageCropper'
   pod 'QBImagePickerController'
-  pod 'NIMSDK', '4.1.0'
+  pod 'NIMSDK', ‘4.4.0’
   pod 'SSZipArchive', '~> 1.2'
   pod 'Reachability', '~> 3.1.1'
   pod 'CocoaLumberjack', '~> 2.0.0-rc2'
   pod 'FMDB', '~>2.5' 
-  pod 'Yoga', path: '../node_modules/react-native/ReactCommon/yoga/'
+  pod ‘Yoga', path: '../node_modules/react-native/ReactCommon/yoga/'
   #pod 'React', path: '../node_modules/react-native/'
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'BatchedBridge'
