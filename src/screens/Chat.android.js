@@ -16,7 +16,7 @@ import {
     Animated
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
-import {Permissions, NimFriend, NimUtils, NimSession} from 'react-native-netease-im';
+import {NimFriend, NimUtils, NimSession} from 'react-native-netease-im';
 import ImagePicker from 'react-native-image-crop-picker';
 import {MessageList,ChatInput} from 'react-native-imui';
 import Svgs from '../components/Svgs';
@@ -183,42 +183,22 @@ class Chat extends React.Component {
         if(!this.state.action){
             return
         }
-        Permissions.check('photo').then(res => {
-            if (res === 'authorized') {
-                ImagePicker.openPicker({
-                    mediaType: 'photo',
-                    loadingLabelText: '请稍候...'
-                }).then(image => {
-                    NimSession.sendImageMessages(image.path, "myName");
-                });
-            } else {
-                Alert.alert(
-                    '',
-                    '请到设置中心开启相册权限',
-                    [{text: '确定'}]
-                );
-            }
+        ImagePicker.openPicker({
+            mediaType: 'photo',
+            loadingLabelText: '请稍候...'
+        }).then(image => {
+            NimSession.sendImageMessages(image.path, "myName");
         });
     }
     handleCameraPicker() {
         if(!this.state.action){
             return
         }
-        Permissions.check('camera').then(res => {
-            if (res === 'authorized') {
-                ImagePicker.openCamera({
-                    mediaType: 'photo',
-                    loadingLabelText: '请稍候...'
-                }).then(image => {
-                    NimSession.sendImageMessages(image.path, "myName");
-                });
-            } else {
-                Alert.alert(
-                    '',
-                    '请到设置中心开启摄像机权限',
-                    [{text: '确定'}]
-                );
-            }
+        ImagePicker.openCamera({
+            mediaType: 'photo',
+            loadingLabelText: '请稍候...'
+        }).then(image => {
+            NimSession.sendImageMessages(image.path, "myName");
         });
     }
     onLocation(coordinate) {
