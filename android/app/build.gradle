@@ -138,7 +138,6 @@ dependencies {
     compile project(':react-native-svg')
     compile project(':react-native-amap-geolocation')
     compile project(':react-native-amap3d')
-    compile project(':react-native-geocoder')
     compile project(':react-native-imui')
     compile project(':react-native-image-crop-picker')
     compile project(':react-native-netease-im')

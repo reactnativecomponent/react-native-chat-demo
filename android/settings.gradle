@@ -1,6 +1,4 @@
 rootProject.name = 'ImDemo'
-include ':react-native-geocoder'
-project(':react-native-geocoder').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-geocoder/android')
 include ':react-native-svg'
 project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
 include ':react-native-netease-im'

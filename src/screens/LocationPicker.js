@@ -2,16 +2,21 @@ import React from 'react';
 import {
     StyleSheet,
     Dimensions,
+    Platform,
+    View,
+    Text
 } from 'react-native';
 
 import RNGeolocation from 'react-native-amap-geolocation';
+import {Container} from 'native-base';
 import Toast from 'react-native-simple-toast';
-import Geocoder from 'react-native-geocoder';
 import {MapView,Marker} from 'react-native-amap3d';
 
 export default class LocationPicker extends React.Component {
     static navigatorStyle = {
+        statusBarColor: '#444',
         tabBarHidden: true,
+        navBarBackgroundColor:"#444",
         navBarButtonColor:"#fff",
         navBarTextColor:"#fff",
         statusBarTextColorScheme: 'light',
@@ -35,56 +40,30 @@ export default class LocationPicker extends React.Component {
         super(props);
         this.state = {
             loading: false,
-            address:"loading...",
-            feature:"",
+            isInitialized:false,
+            address:null,
+            title:"",
             region:{
-                latitude:0,
-                longitude:0
+                latitude:23.121278,longitude:113.326536
             },
             coordinate:{
-                latitude:0,
-                longitude:0
+                latitude:23.121278,longitude:113.326536
             }
         };
-
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
     handleSend() {
-        if (!this.state.coords) {
+        if (!this.state.region || !this.state.region.latitude || !this.state.address) {
             Toast.show('获取当前位置失败');
             return;
         }
-        this.props.onLocation && this.props.onLocation(this.state.coords);
-        this.props.navigator.dismissModal();
-
-    }
-    getGeocoder({latitude,longitude}){
-        let location = {lat:latitude, lng:longitude};
-        this.setState({
-            feature:'',
-            address:'loading...',
-            streetName:''
+        this.props.onLocation && this.props.onLocation({
+            latitude: this.state.region.latitude+"",
+            longitude:this.state.region.longitude+"",
+            address:this.state.address
         });
-        Geocoder.geocodePosition(location)
-            .then((res) => {
-                console.log("geocode position:", res);
-                if (res.length > 0) {
-                 this.setState({
-                     feature:res[0].feature,
-                     address:res[0].formattedAddress,
-                     streetName:res[0].streetName,
-                     coords:{
-                         longitude:longitude+"",
-                         latitude:latitude+"",
-                         address:res[0].formattedAddress
-                     }
-                 });
-                }
-            })
-            .catch(err => {
-                console.log("geocode error:", err);
-            })
+        this.props.navigator.dismissModal();
     }
     onNavigatorEvent(event) {
         if (event.type === 'NavBarButtonPress') {
@@ -97,77 +76,118 @@ export default class LocationPicker extends React.Component {
         }
     }
     componentWillMount() {
-        RNGeolocation.getLocation().then(data=>{
-            if(data){
-                this.setState({
-                    region: {
-                        latitude: data.latitude,
-                        longitude: data.longitude,
-                    },
-                    coordinate:{
-                        latitude: data.latitude,
-                        longitude: data.longitude,
-                    },
-                    title:"",
-                    loading:false,
-                });
-                this.getGeocoder({
-                    latitude: data.latitude,
-                    longitude: data.longitude,
-                });
-            }
-        });
-    }
-    _onLocation = (e) => {
-        let { longitude, latitude, } = e.nativeEvent;
-        this.setState({
-            coordinate: {
-                latitude: latitude,
-                longitude: longitude,
-            }
-        });
+
     }
     _onDragEnd= (e) => {
         let { longitude, latitude } = e.nativeEvent;
-        this.setState({
-            region: {
-                latitude: latitude,
-                longitude: longitude,
-            }
-        });
-        this.getGeocoder(e.nativeEvent)
+        RNGeolocation.getAddress({lat:latitude,lng:longitude}).then((data)=>{
+            this.setState({
+                region: {
+                    latitude: latitude,
+                    longitude: longitude,
+                },
+                title:data.pois.name || data.street,
+                address:data.address,
+                loading:false,
+            });
+        })
     }
     renderMarker(){
-        if(this.state.streetName || this.state.feature){
+        if(!!this.state.address){
             return (
                 <Marker
-                    icon='green'
                     draggable
                     active
+                    centerOffset={{x:0,y:18}}
                     clickable={false}
                     onDragEnd={this._onDragEnd}
-                    title={this.state.feature || this.state.streetName}
-                    description={this.state.address}
+                    title={this.state.title}
+                    // description={this.state.address}
                     coordinate={this.state.region}
-                />
+                >
+                    <View style={styles.custom}>
+                        <View style={styles.customInfoWindow}>
+                            <Text style={{fontWeight:"600",lineHeight:25}}>{this.state.title}</Text>
+                            <Text>{this.state.address}</Text>
+                        </View>
+                        <View style={styles.triangleDown}/>
+                    </View>
+                </Marker>
             )
         }
+        return null;
     }
     render() {
-
+        let onViewLayout = (e) => {
+            const layout = e.nativeEvent.layout;
+            if (layout.height === 0) {
+                return;
+            }
+            this.setState({
+                isInitialized: true
+            });
+            RNGeolocation.getLocation().then(result=>{
+                RNGeolocation.getAddress({lat:result.latitude,lng:result.longitude}).then((data)=>{
+                    this.setState({
+                        region: {
+                            latitude: result.latitude,
+                            longitude: result.longitude,
+                        },
+                        coordinate:{
+                            latitude: result.latitude,
+                            longitude: result.longitude,
+                        },
+                        title:data.pois.name || data.street,
+                        address:data.address,
+                        loading:false,
+                    });
+                })
+            });
+        };
+        if(this.state.isInitialized) {
+            return (
+                <MapView
+                    showsZoomControls
+                    showsLocationButton
+                    zoomLevel={20}
+                    coordinate={this.state.coordinate}
+                    style={StyleSheet.absoluteFill}>
+                    {this.renderMarker()}
+                </MapView>
+            );
+        }
         return (
-            <MapView
-                showsZoomControls
-                showsLocationButton
-                zoomLevel={19}
-                // locationEnabled
-                // onLocation={this._onLocation}
-                coordinate={this.state.coordinate}
-                style={StyleSheet.absoluteFill}>
-                {this.renderMarker()}
-            </MapView>
+            <View style={{flex:1}} onLayout={onViewLayout} >
+            </View>
         );
     }
 }
+const styles = StyleSheet.create({
+    custom:{
+        backgroundColor:'transparent',
+        marginBottom: 5,
+        alignItems:'center'
+    },
+    customInfoWindow: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        elevation: 4,
+        flex:1,
+        paddingHorizontal:10,
+        paddingBottom:10,
+        paddingTop:5
+    },
+    triangleDown:{
+        width:0,
+        height:0,
+        borderLeftWidth:8,
+        borderLeftColor:"transparent",
+        borderRightWidth:8,
+        borderRightColor:"transparent",
+        borderTopWidth:16,
+        borderTopColor:'#fff',
+        alignSelf:'center'
+    }
+});
 const deviceWidth = Dimensions.get('window').width;
 const deviceHeight = Dimensions.get('window').height;

@@ -3,6 +3,7 @@ platform :ios, '8.0'
 target ‘ImDemo’ do
   pod 'SDWebImage', '~>4.0.0'
   pod 'AMapLocation’
+  pod 'AMapSearch'
   pod 'RSKImageCropper'
   pod 'QBImagePickerController'
   pod 'NIMSDK', ‘4.4.0’

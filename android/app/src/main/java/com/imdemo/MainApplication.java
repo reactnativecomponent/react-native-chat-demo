@@ -1,7 +1,6 @@
 package com.imdemo;
 import android.app.Application;
 import com.facebook.react.ReactApplication;
-import com.devfd.RNGeocoder.RNGeocoderPackage;
 import com.horcrux.svg.SvgPackage;
 import com.netease.im.RNNeteaseImPackage;
 import cn.jiguang.imui.messagelist.ReactIMUIPackage;
@@ -28,7 +27,6 @@ public class MainApplication extends NavigationApplication {
 
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
-                new RNGeocoderPackage(),
                 new SvgPackage(),
                 new RNNeteaseImPackage(),
                 new ReactIMUIPackage(),
