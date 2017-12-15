@@ -50,7 +50,6 @@
 		5DDFD65D337D4476A251A287 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E4021D0B7BF6455DB6FDD4D1 /* Entypo.ttf */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		5EE0CD038BC14A69A8C7AC83 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5E182EA6CF142C198B8DA86 /* FontAwesome.ttf */; };
-		6A37B1E1EEB94B20AE92E89F /* libRNGeocoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A43AADCFC020444DA0E7054D /* libRNGeocoder.a */; };
 		715F0DFB4743417D935D523C /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4DAC0B84A2E54AB3B8EC7D8C /* Zocial.ttf */; };
 		7707B8B0417240CAB1BDF9B9 /* libLRDRCTSimpleToast.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CFFE4FD2D6D41D081F3D336 /* libLRDRCTSimpleToast.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
@@ -333,13 +332,6 @@
 			remoteGlobalIDString = 4E612A2B1F5563140060D6FA;
 			remoteInfo = "RNSVG-tvOS";
 		};
-		4E612A921F5569D10060D6FA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F0708C521DD9482F801C71CD /* RNGeocoder.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BF8FCF941BFFB184000FCD37;
-			remoteInfo = RNGeocoder;
-		};
 		5E9157321DD0AC6500FF2AA8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */;
@@ -444,7 +436,6 @@
 		CBEFABB8D287CEFA6D7D6168 /* Pods-ImDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-ImDemo/Pods-ImDemo.release.xcconfig"; sourceTree = "<group>"; };
 		DA726E4CED0640ABB8F8E499 /* LRDRCTSimpleToast.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = LRDRCTSimpleToast.xcodeproj; path = "../node_modules/react-native-simple-toast/ios/LRDRCTSimpleToast.xcodeproj"; sourceTree = "<group>"; };
 		E4021D0B7BF6455DB6FDD4D1 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/native-base/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
-		F0708C521DD9482F801C71CD /* RNGeocoder.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNGeocoder.xcodeproj; path = "../node_modules/react-native-geocoder/ios/RNGeocoder.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -484,7 +475,6 @@
 				F729B4BCF99A42F6A389BE3D /* libRNNeteaseIm.a in Frameworks */,
 				7707B8B0417240CAB1BDF9B9 /* libLRDRCTSimpleToast.a in Frameworks */,
 				3D2B54E74FDD4CF69CF94F87 /* libRNSVG.a in Frameworks */,
-				6A37B1E1EEB94B20AE92E89F /* libRNGeocoder.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -697,14 +687,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		4E612A6D1F5569D10060D6FA /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4E612A931F5569D10060D6FA /* libRNGeocoder.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -753,7 +735,6 @@
 				01D4623AF96646E08206C2E9 /* RNNeteaseIm.xcodeproj */,
 				DA726E4CED0640ABB8F8E499 /* LRDRCTSimpleToast.xcodeproj */,
 				80DEC0715207414594FCBE8C /* RNSVG.xcodeproj */,
-				F0708C521DD9482F801C71CD /* RNGeocoder.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1001,10 +982,6 @@
 				{
 					ProductGroup = 4E6128CC1F555E160060D6FA /* Products */;
 					ProjectRef = C3066670BB864468A2E9DA61 /* ReactNativeNavigation.xcodeproj */;
-				},
-				{
-					ProductGroup = 4E612A6D1F5569D10060D6FA /* Products */;
-					ProjectRef = F0708C521DD9482F801C71CD /* RNGeocoder.xcodeproj */;
 				},
 				{
 					ProductGroup = 4E6128B21F555E150060D6FA /* Products */;
@@ -1275,13 +1252,6 @@
 			remoteRef = 4E612A561F5563160060D6FA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4E612A931F5569D10060D6FA /* libRNGeocoder.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRNGeocoder.a;
-			remoteRef = 4E612A921F5569D10060D6FA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1431,7 +1401,7 @@
 				"${PODS_ROOT}/AMap3DMap/MAMapKit.framework/AMap.bundle",
 				"${PODS_ROOT}/AMapNavi/AMapNaviKit.framework/AMapNavi.bundle",
 				"${PODS_ROOT}/NIMSDK/NIMAVChat/Resources/NMCVideoFilter.bundle",
-				"$PODS_CONFIGURATION_BUILD_DIR/QBImagePickerController/QBImagePicker.bundle",
+				$PODS_CONFIGURATION_BUILD_DIR/QBImagePickerController/QBImagePicker.bundle,
 				"${PODS_ROOT}/RSKImageCropper/RSKImageCropper/RSKImageCropperStrings.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
