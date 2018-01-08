@@ -6,13 +6,16 @@
 ### 1.注册网易云信帐号
 注册地址 [https://app.netease.im/regist](https://app.netease.im/regist)
 #### 注意:在后台填入的密码需要进行md5加密，或者把`/src/screens/Login.js`里面对密码的md5加密去掉(否则无法登录)
-### 2.修改配置
-#### 2.1 ios (AppDelegate.m)
+
+### 2.安装库
+##### 执行 `npm install`
+##### 注意IOS需要安装cocoapods,进入`/ios` 目录执行 `pod install`
+### 3.修改配置
+#### 3.1 ios (AppDelegate.m)
  ```
 [[NIMSDK sharedSDK] registerWithAppID:@"云信appId" cerName:@"证书名称"];
  ```
-##### 注意IOS需要安装cocoapods,进入`react-native-chat-demo/ios` 目录执行 `pod install`
-#### 2.2 android (app/build.gradle)
+#### 3.2 android (app/build.gradle)
  ```
   manifestPlaceholders = [
      "NIM_KEY": ""//云信appId
