@@ -44,9 +44,8 @@ export  default class CreateTeam extends React.Component {
                 teamUpdateMode:'1'
             },'0',result).then((res=>{
                 console.log(res)
+                this.props.navigation.popToTop();
                 onSuccess && onSuccess(res);
-                this.props.navigation.goBack();
-
             }));
 
         }

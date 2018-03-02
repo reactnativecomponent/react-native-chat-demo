@@ -15,13 +15,15 @@ export  default class FriendDetail extends Component {
             ...friendData,
             sessionType:'0'
         };
-        navigation.dispatch(NavigationActions.reset({
-            index:1,
-            actions:[
-                NavigationActions.navigate({ routeName: 'ChatList'}),
-                NavigationActions.navigate({ routeName: 'Chat',params:{session:session,title:session.alias || session.name}})
-            ]
-        }));
+        navigation.popToTop()
+        navigation.navigate('Chat',{session:session,title:session.alias || session.name})
+        // navigation.dispatch(NavigationActions.reset({
+        //     index:1,
+        //     actions:[
+        //         NavigationActions.navigate({ routeName: 'ChatList'}),
+        //         NavigationActions.navigate({ routeName: 'Chat',params:{session:session,title:session.alias || session.name}})
+        //     ]
+        // }));
         // console.log(navigation.state.key)
         // navigation.goBack(from);
         // navigation.navigate("Chat",{session:session,title:session.alias || session.name})

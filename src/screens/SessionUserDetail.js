@@ -35,14 +35,9 @@ export default class SessionUserDetail extends Component {
                     sessionType:'1'
                 };
                 setTimeout(()=>{
-                    navigation.dispatch(NavigationActions.reset({
-                        index:1,
-                        actions:[
-                            NavigationActions.navigate({ routeName: 'ChatList'}),
-                            NavigationActions.navigate({ routeName: 'Chat',params:{session:session,title:"群聊"}})
-                        ]
-                    }));
-                },100)
+                    navigation.popToTop()
+                    navigation.navigate('Chat',{session:session,title:"群聊"})
+                })
 
             }
         });

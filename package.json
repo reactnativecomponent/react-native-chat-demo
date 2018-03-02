@@ -21,7 +21,7 @@
     "react-native-simple-toast": "https://github.com/hzlgit/react-native-simple-toast",
     "react-native-swipe-list-view": "^0.4.6",
     "react-native-swiper": "^1.5.13",
-    "react-navigation": "^1.0.0-beta.19",
+    "react-navigation": "^1.3.0",
     "spliddit": "^2.1.1"
   },
   "devDependencies": {

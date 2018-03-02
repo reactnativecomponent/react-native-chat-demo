@@ -52,13 +52,9 @@ export default class TeamList extends React.Component {
             sessionType:'1',
             contactId:res.teamId
         };
-        navigation.dispatch(NavigationActions.reset({
-            index:1,
-            actions:[
-                NavigationActions.navigate({ routeName: 'ChatList'}),
-                NavigationActions.navigate({ routeName: 'Chat',params:{session:session,title:res.name}})
-            ]
-        }));
+        navigation.popToTop()
+        navigation.navigate('Chat',{session:session,title:res.name})
+
     }
     _renderRow(res){
         return(
