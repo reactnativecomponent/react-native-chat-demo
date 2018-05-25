@@ -265,9 +265,10 @@ class Chat extends React.Component {
         }
         if (message.msgType === 'image' && message.extend) {
             AuroraIController.hidenFeatureView(true)
-            AuroraIController.showOrigImage(message.extend);
         }
-
+        if (message.msgType === 'video' && message.extend) {
+            AuroraIController.hidenFeatureView(true)
+        }
         if(message.msgType === 'location'  && message.extend){
             navigator.push({
                 screen:"ImDemo.LocationView",
@@ -315,6 +316,13 @@ class Chat extends React.Component {
         }).then(image => {
             NimSession.sendImageMessages(image.path,"myName");
         });
+        // ImagePicker.openPicker({
+        //     mediaType:'video',
+        //     loadingLabelText:'请稍候...'
+        // }).then((video) => {
+        //     console.log(video);
+        //     NimSession.sendVideoMessage(video.path, 'duration', 'width', 'height', 'displayName');
+        // });
     }
     onLocation(coordinate) {
         this.sendLocationImage(coordinate.latitude,coordinate.longitude,coordinate.address);
