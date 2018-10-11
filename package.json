@@ -4,10 +4,14 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "prettier": "prettier --write --single-quote --no-semi --trailing-comma es5 --print-width 80 \"src/**/*.js\"",
+    "lint": "eslint app",
+    "format": "yarn prettier && yarn lint --fix"
   },
   "dependencies": {
-    "native-base": "^2.3.1",
+    "color": "^3.0.0",
+    "native-base": "2.6.1",
     "react": "16.0.0-alpha.12",
     "react-native": "0.47.2",
     "react-native-amap-geolocation": "https://github.com/reactnativecomponent/react-native-amap-geolocation",
@@ -24,7 +28,17 @@
     "babel-jest": "20.0.3",
     "babel-preset-react-native": "3.0.1",
     "jest": "20.0.4",
-    "react-test-renderer": "16.0.0-alpha.12"
+    "react-test-renderer": "16.0.0-alpha.12",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-babel": "^5.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-react": "^7.8.2",
+    "prettier": "^1.12.1",
+    "babel-eslint": "^10.0.1"
   },
   "jest": {
     "preset": "react-native"

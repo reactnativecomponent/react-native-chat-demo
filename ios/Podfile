@@ -2,16 +2,16 @@
 platform :ios, '8.0'
 target ‘ImDemo’ do
   pod 'SDWebImage', '~>4.0.0'
-  pod 'AMap3DMap', '5.6.0'
+  pod 'AMap3DMap', '~>6.4.0'
   pod 'AMapLocation’
   pod 'AMapSearch'
   pod 'RSKImageCropper'
   pod 'QBImagePickerController'
-  pod 'NIMSDK', ‘4.4.0’
-  pod 'SSZipArchive', '~> 1.2'
-  pod 'Reachability', '~> 3.1.1'
+  pod 'NIMSDK', ‘~>5.6.0’
+  #pod 'SSZipArchive', '~> 2.1.4'
+  #pod 'Reachability', '~> 3.1.1'
   pod 'CocoaLumberjack', '~> 2.0.0-rc2'
-  pod 'FMDB', '~>2.5' 
+  #pod 'FMDB', '~>2.5'
   pod ‘Yoga', path: '../node_modules/react-native/ReactCommon/yoga/'
   #pod 'React', path: '../node_modules/react-native/'
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
