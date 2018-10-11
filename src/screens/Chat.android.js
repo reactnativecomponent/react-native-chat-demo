@@ -3,7 +3,7 @@
  * @Author: huangjun
  * @Date: 2018-10-10 15:49:57
  * @Last Modified by: huangjun
- * @Last Modified time: 2018-10-10 16:42:13
+ * @Last Modified time: 2018-10-11 11:01:35
  */
 import React from 'react'
 import {
@@ -126,7 +126,7 @@ class Chat extends React.Component {
       data => {
         console.info('消息', data)
         console.info('新消息通知', data)
-        Alert.alert('', JSON.stringify(data))
+        // Alert.alert('', JSON.stringify(data))
         if (data.length > 0) {
           if (data[0].status === 'send_sending') {
             AuroraIMUIModule.appendMessages(data)
@@ -185,7 +185,7 @@ class Chat extends React.Component {
 
     this.forceUpdate()
   }
-  handleImagePicker() {
+  handleImagePicker = () => {
     if (!this.state.action) {
       return
     }
@@ -227,13 +227,13 @@ class Chat extends React.Component {
       },
     })
   }
-  handleTransferClick() {
+  handleTransferClick = () => {
     if (!this.state.action) {
       return
     }
     Toast.show('向好友转账')
   }
-  handlePacketClick() {
+  handlePacketClick = () => {
     if (!this.state.action) {
       return
     }
@@ -280,7 +280,7 @@ class Chat extends React.Component {
     console.log(message)
     Toast.show('红包详情')
   }
-  onAvatarPress(v) {
+  onAvatarPress = (v) => {
     if (v && v.fromUser) {
       NimFriend.getUserInfo(v.fromUser._id).then(data => {
         this.props.navigator.push({
