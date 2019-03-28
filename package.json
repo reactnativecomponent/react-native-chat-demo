@@ -1,0 +1,46 @@
+{
+  "name": "ImDemo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "add": "^2.0.6",
+    "native-base": "^2.12.1",
+    "react": "16.8.3",
+    "react-native": "^0.59.1",
+    "react-native-amap-geolocation": "^0.3.2",
+    "react-native-amap3d": "^1.1.0",
+    "react-native-gesture-handler": "^1.1.0",
+    "react-native-image-crop-picker": "^0.23.0",
+    "react-native-imui": "https://github.com/reactnativecomponent/react-native-imui",
+    "react-native-netease-im": "https://github.com/reactnativecomponent/react-native-netease-im",
+    "react-native-svg": "^9.3.3",
+    "react-native-toasty": "^0.0.4",
+    "react-navigation": "^3.3.2",
+    "react-navigation-header-buttons": "^2.1.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/runtime": "^7.3.4",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^24.5.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-babel": "^5.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-react": "^7.8.2",
+    "jest": "^24.5.0",
+    "metro-react-native-babel-preset": "^0.53.0",
+    "prettier": "^1.12.1",
+    "react-test-renderer": "16.8.3"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
