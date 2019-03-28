@@ -5495,10 +5495,9 @@ react-native-amap-geolocation@^0.3.2:
   resolved "https://registry.yarnpkg.com/react-native-amap-geolocation/-/react-native-amap-geolocation-0.3.2.tgz#99b208638dd7ff911e60d34b36ee1ffc0d9b82b5"
   integrity sha512-qiLHKvqXFU0Gqm3/9kaIoZfR6agLwAUunSg+Mak+K3MmI09rdkiVjP8Gn28E22Rx7KSw+x1zNVj4tVpFJXkFyQ==
 
-react-native-amap3d@^1.1.0:
+"react-native-amap3d@https://github.com/25juan/react-native-amap3d":
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-amap3d/-/react-native-amap3d-1.1.0.tgz#ec204e8d16c765c9260d4703ab6eba7a441b0ac5"
-  integrity sha512-9Oi5mchRwLhNEKQkLDcdmEN5+TCJQYtCMNG9JPaB0T69l6VXvDiYVu+Gws4H+Lee0gFs4wo6un0n9SypTygSow==
+  resolved "https://github.com/25juan/react-native-amap3d#30b92dad1ec6d59b82bbfcb0b12051c36ef8cfb0"
 
 react-native-drawer@2.5.1:
   version "2.5.1"
@@ -5538,9 +5537,10 @@ react-native-image-crop-picker@^0.23.0:
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.23.0.tgz#27bb1b2d1ce4a33b4edf93945519a1dee63d5a92"
   integrity sha512-BmfP246feY+sElYArAR7/DGRT2kFCTvAdiBKcIH8sA7UbUNy2eGAZsXBZWtt917wm+RuhW98CoAsnKB3iH9IvQ==
 
-"react-native-imui@https://github.com/reactnativecomponent/react-native-imui":
-  version "1.0.7"
-  resolved "https://github.com/reactnativecomponent/react-native-imui#5aca1b24880a492b331793bed90a43841bf7feda"
+react-native-imui@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-imui/-/react-native-imui-1.0.8.tgz#73bd7e24c3afef607160168479348675be15d09c"
+  integrity sha512-k9AQaO2vfZpuY7dKAAGq8Sg3s7lpyuSguyeJSOfyjsfhAMAtfJ9Etg9LAPiUByf8Mcd1BdUj84tx2hhlz3Hq5A==
 
 react-native-iphone-x-helper@^1.0.3:
   version "1.2.0"
@@ -5555,9 +5555,10 @@ react-native-keyboard-aware-scroll-view@0.8.0:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
-"react-native-netease-im@https://github.com/reactnativecomponent/react-native-netease-im":
-  version "2.0.8"
-  resolved "https://github.com/reactnativecomponent/react-native-netease-im#cc15277bee0d6f23cf677601da24f27dd8f29f66"
+react-native-netease-im@^2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/react-native-netease-im/-/react-native-netease-im-2.0.9.tgz#befe8692fc2e7c1afd5402b722873373cdee28b9"
+  integrity sha512-bWvXVEqfXlROitLP3wckDb6NFJgucD7w9ZzZGkBKAKjvJc3KWXSFqpNytevEGDzxcRymbK3xTmlV8dPZyB8gHA==
 
 react-native-platform-touchable@^1.1.1:
   version "1.1.1"
