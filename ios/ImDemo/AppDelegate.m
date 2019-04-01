@@ -49,7 +49,6 @@
   //注册自定义消息的解析器
   [NIMCustomObject registerCustomDecoder:[DWCustomAttachmentDecoder new]];
   [self registerAPNs];
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"LoadPagesNotification" object:nil];
   return YES;
 }
 #pragma mark - misc
