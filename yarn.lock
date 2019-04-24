@@ -5537,10 +5537,10 @@ react-native-image-crop-picker@^0.23.0:
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.23.0.tgz#27bb1b2d1ce4a33b4edf93945519a1dee63d5a92"
   integrity sha512-BmfP246feY+sElYArAR7/DGRT2kFCTvAdiBKcIH8sA7UbUNy2eGAZsXBZWtt917wm+RuhW98CoAsnKB3iH9IvQ==
 
-react-native-imui@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/react-native-imui/-/react-native-imui-1.0.8.tgz#73bd7e24c3afef607160168479348675be15d09c"
-  integrity sha512-k9AQaO2vfZpuY7dKAAGq8Sg3s7lpyuSguyeJSOfyjsfhAMAtfJ9Etg9LAPiUByf8Mcd1BdUj84tx2hhlz3Hq5A==
+react-native-imui@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/react-native-imui/-/react-native-imui-1.0.9.tgz#4c6d5f21d2efcffe6183dc3077759abc9f73792b"
+  integrity sha512-+8T6iYe94oV4kAph97/NKCo+7+Z2/kODDEnM8lJCPBz8QhfQYxKIWbTWAxFcM0JxTX4WUR/4AJkAhhbBT6JR9w==
 
 react-native-iphone-x-helper@^1.0.3:
   version "1.2.0"
