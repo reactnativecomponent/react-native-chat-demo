@@ -965,11 +965,6 @@ acorn@^6.0.1:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.1.1.tgz#7d25ae05bb8ad1f9b699108e1094ecd7884adc1f"
   integrity sha512-jPTiwtOxaHNaAPg/dmrJ/beuzLRnXtB0kQPQ8JpotKJgTB6rX6c8mlf315941pyjBSaPg8NHXS9fhP4u17DpGA==
 
-add@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/add/-/add-2.0.6.tgz#248f0a9f6e5a528ef2295dbeec30532130ae2235"
-  integrity sha1-JI8Kn25aUo7yKV2+7DBTITCuIjU=
-
 ajv-keywords@^2.1.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-2.1.1.tgz#617997fc5f60576894c435f940d819e135b80762"
@@ -5555,10 +5550,9 @@ react-native-keyboard-aware-scroll-view@0.8.0:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
-react-native-netease-im@^2.0.9:
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/react-native-netease-im/-/react-native-netease-im-2.0.9.tgz#befe8692fc2e7c1afd5402b722873373cdee28b9"
-  integrity sha512-bWvXVEqfXlROitLP3wckDb6NFJgucD7w9ZzZGkBKAKjvJc3KWXSFqpNytevEGDzxcRymbK3xTmlV8dPZyB8gHA==
+"react-native-netease-im@https://github.com/reactnativecomponent/react-native-netease-im":
+  version "2.1.0"
+  resolved "https://github.com/reactnativecomponent/react-native-netease-im#1e1ca2bab6d08c9dcc89b2cdbb4bbd4787390278"
 
 react-native-platform-touchable@^1.1.1:
   version "1.1.1"

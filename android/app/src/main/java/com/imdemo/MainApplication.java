@@ -4,6 +4,9 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import ui.toasty.RNToastyPackage;
+
+
+import com.netease.im.ImPushConfig;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.netease.im.RNNeteaseImPackage;
 import cn.jiguang.imui.messagelist.ReactIMUIPackage;
@@ -57,9 +60,13 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    //new IMApplication.MiPushConfig("appId","appKey","pushname")
-    IMApplication.init(this, MainActivity.class, R.drawable.ic_stat_notify_msg, null
-    );
+
+    ImPushConfig config = new ImPushConfig();
+    config.xmAppId = "";
+    config.xmAppKey = "";
+    config.xmCertificateName = "";
+    config.hwCertificateName = "";
+    IMApplication.init(this, MainActivity.class, R.drawable.ic_stat_notify_msg,config);
     SoLoader.init(this, /* native exopackage */ false);
   }
 }

@@ -114,6 +114,7 @@ android {
         multiDexEnabled true
 
         manifestPlaceholders = [
+                //8cafb31bb1c3750349340dec765df1c5
                 "NIM_KEY": "8cafb31bb1c3750349340dec765df1c5"//云信appId
         ]
     }
