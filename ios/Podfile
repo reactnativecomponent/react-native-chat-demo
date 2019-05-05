@@ -35,7 +35,6 @@ target ‘ImDemo’ do
 
   pod 'react-native-amap3d', path: '../node_modules/react-native-amap3d/lib/ios'
   pod 'react-native-amap-geolocation', path: '../node_modules/react-native-amap-geolocation/lib/ios'
-  pod 'RNToasty', path: '../node_modules/react-native-toasty/lib/ios'
 
 end
 
