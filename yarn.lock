@@ -5532,10 +5532,10 @@ react-native-image-crop-picker@^0.23.0:
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.23.0.tgz#27bb1b2d1ce4a33b4edf93945519a1dee63d5a92"
   integrity sha512-BmfP246feY+sElYArAR7/DGRT2kFCTvAdiBKcIH8sA7UbUNy2eGAZsXBZWtt917wm+RuhW98CoAsnKB3iH9IvQ==
 
-react-native-imui@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/react-native-imui/-/react-native-imui-1.0.9.tgz#4c6d5f21d2efcffe6183dc3077759abc9f73792b"
-  integrity sha512-+8T6iYe94oV4kAph97/NKCo+7+Z2/kODDEnM8lJCPBz8QhfQYxKIWbTWAxFcM0JxTX4WUR/4AJkAhhbBT6JR9w==
+react-native-imui@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-imui/-/react-native-imui-1.1.0.tgz#9a1650251bece2c07f96fe83d2d8a8017941e1b3"
+  integrity sha512-iKSteiUMWQ3xKm9p79/6wGv2EzlzaU0ve39t7F4ksM7L6nOKNQCDp5bGri7qPqrcqiO9iVH4ypoP0qAond+nhQ==
 
 react-native-iphone-x-helper@^1.0.3:
   version "1.2.0"
@@ -5550,9 +5550,10 @@ react-native-keyboard-aware-scroll-view@0.8.0:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
-"react-native-netease-im@https://github.com/reactnativecomponent/react-native-netease-im":
+react-native-netease-im@^2.1.0:
   version "2.1.0"
-  resolved "https://github.com/reactnativecomponent/react-native-netease-im#1e1ca2bab6d08c9dcc89b2cdbb4bbd4787390278"
+  resolved "https://registry.yarnpkg.com/react-native-netease-im/-/react-native-netease-im-2.1.0.tgz#f3d483caee9be0d8a35d7bb49a0033f9f81debb0"
+  integrity sha512-tfHq3Eto19jco7oMVVAbT8drs5optjXo9Gx9vLOqhNXH3m1orqUSWaCp0GIr7Vb/5MnvOZT3CNzkOom+QUsLMg==
 
 react-native-platform-touchable@^1.1.1:
   version "1.1.1"
