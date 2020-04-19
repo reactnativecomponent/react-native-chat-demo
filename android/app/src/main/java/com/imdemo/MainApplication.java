@@ -1,72 +1,98 @@
 package com.imdemo;
 
 import android.app.Application;
+import android.content.Context;
 
+import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import ui.toasty.RNToastyPackage;
-
-
-import com.netease.im.ImPushConfig;
-import com.reactnative.ivpusic.imagepicker.PickerPackage;
-import com.netease.im.RNNeteaseImPackage;
-import cn.jiguang.imui.messagelist.ReactIMUIPackage;
-import com.netease.im.IMApplication;
-import cn.qiuxiang.react.geolocation.AMapGeolocationPackage;
-import com.horcrux.svg.SvgPackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import cn.qiuxiang.react.amap3d.AMap3DPackage;
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
-import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import com.netease.im.RNNeteaseImPackage;
+import com.netease.im.IMApplication;
+import com.netease.im.ImPushConfig;
 
 public class MainApplication extends Application implements ReactApplication {
 
-  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+    private final ReactNativeHost mReactNativeHost =
+            new ReactNativeHost(this) {
+                @Override
+                public boolean getUseDeveloperSupport() {
+                    return BuildConfig.DEBUG;
+                }
+
+                @Override
+                protected List<ReactPackage> getPackages() {
+                    @SuppressWarnings("UnnecessaryLocalVariable")
+                    List<ReactPackage> packages = new PackageList(this).getPackages();
+                    // Packages that cannot be autolinked yet can be added manually here, for example:
+                    // packages.add(new MyReactNativePackage());
+                    return packages;
+                }
+
+                @Override
+                protected String getJSMainModuleName() {
+                    return "index";
+                }
+            };
+
     @Override
-    public boolean getUseDeveloperSupport() {
-      return BuildConfig.DEBUG;
+    public ReactNativeHost getReactNativeHost() {
+        return mReactNativeHost;
     }
 
     @Override
-    protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-            new RNToastyPackage(),
-            new PickerPackage(),
-            new RNNeteaseImPackage(),
-            new ReactIMUIPackage(),
-            new AMapGeolocationPackage(),
-            new SvgPackage(),
-            new RNGestureHandlerPackage(),
-            new AMap3DPackage()
-      );
+    public void onCreate() {
+        super.onCreate();
+
+        // IMApplication.setDebugAble(BuildConfig.DEBUG);
+        // 推送配置，没有可传null
+        ImPushConfig config = new ImPushConfig();
+        // 小米证书配置，没有可不填
+        config.xmAppId = "";
+        config.xmAppKey = "";
+        config.xmCertificateName = "";
+        // 华为推送配置，没有可不填
+        config.hwCertificateName = "";
+        IMApplication.init(this, MainActivity.class, 0, config);
+        SoLoader.init(this, /* native exopackage */ false);
+        initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+
     }
 
-    @Override
-    protected String getJSMainModuleName() {
-      return "index";
+    /**
+     * Loads Flipper in React Native templates. Call this in the onCreate method with something like
+     * initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+     *
+     * @param context
+     * @param reactInstanceManager
+     */
+    private static void initializeFlipper(
+            Context context, ReactInstanceManager reactInstanceManager) {
+        if (BuildConfig.DEBUG) {
+            try {
+        /*
+         We use reflection here to pick up the class that initializes Flipper,
+        since Flipper library is not available in release mode
+        */
+                Class<?> aClass = Class.forName("com.imdemo.ReactNativeFlipper");
+                aClass
+                        .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
+                        .invoke(null, context, reactInstanceManager);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
     }
-  };
-
-  @Override
-  public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
-  }
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-
-    ImPushConfig config = new ImPushConfig();
-    config.xmAppId = "";
-    config.xmAppKey = "";
-    config.xmCertificateName = "";
-    config.hwCertificateName = "";
-    IMApplication.init(this, MainActivity.class, R.drawable.ic_stat_notify_msg,config);
-    SoLoader.init(this, /* native exopackage */ false);
-  }
 }

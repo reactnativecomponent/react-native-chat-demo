@@ -3,32 +3,39 @@
  * @Author: huangjun
  * @Date: 2018-10-10 16:21:39
  * @Last Modified by: huangjun
- * @Last Modified time: 2019-03-28 10:03:21
+ * @Last Modified time: 2020-04-19 16:07:01
  */
-import React from 'react'
-import { StyleSheet, View, Text, PermissionsAndroid } from 'react-native'
-import Geolocation from 'react-native-amap-geolocation'
-import { RNToasty } from 'react-native-toasty'
-import HeaderButtons, { Item } from 'react-navigation-header-buttons'
-import { MapView, Marker } from 'react-native-amap3d'
+import React from 'react';
+import {StyleSheet, View, Text, PermissionsAndroid} from 'react-native';
+import Geolocation from 'react-native-amap-geolocation';
+import {RNToasty} from 'react-native-toasty';
+import {HeaderButtons} from 'react-navigation-header-buttons';
+import {MapView, Marker} from 'react-native-amap3d';
 
 export default class LocationPicker extends React.Component {
-
-  static navigationOptions = ({ navigation }) => ({
+  static navigationOptions = ({navigation}) => ({
     title: '选择位置',
-    headerLeft: (
+    headerLeft: () => (
       <HeaderButtons color="#037aff">
-        <Item title="取消" color="#037aff" onPress={() => navigation.pop()} />
+        <HeaderButtons.Item
+          title="取消"
+          color="#037aff"
+          onPress={() => navigation.pop()}
+        />
       </HeaderButtons>
     ),
-    headerRight: (
+    headerRight: () => (
       <HeaderButtons color="#037aff">
-        <Item title="发送" color="#037aff" onPress={navigation.getParam('handlerSend')} />
+        <HeaderButtons.Item
+          title="发送"
+          color="#037aff"
+          onPress={navigation.getParam('handlerSend')}
+        />
       </HeaderButtons>
     ),
-  })
+  });
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       isInitialized: false,
       address: null,
@@ -41,52 +48,52 @@ export default class LocationPicker extends React.Component {
         latitude: 23.121278,
         longitude: 113.326536,
       },
-    }
+    };
   }
 
   handleSend = () => {
-    const { navigation } = this.props
-    const { onLocation } = navigation.state.params
+    const {navigation} = this.props;
+    const {onLocation} = navigation.state.params;
     if (
       !this.state.region ||
       !this.state.region.latitude ||
       !this.state.address
     ) {
       RNToasty.Show({
-        title: '获取当前位置失败'
-      })
-      return
+        title: '获取当前位置失败',
+      });
+      return;
     }
     onLocation &&
       onLocation({
         latitude: `${this.state.region.latitude}`,
         longitude: `${this.state.region.longitude}`,
         address: this.state.address,
-      })
-    navigation.pop()
-  }
+      });
+    navigation.pop();
+  };
   componentDidMount() {
     this.props.navigation.setParams({
-      handlerSend: this.handleSend
-    })
+      handlerSend: this.handleSend,
+    });
   }
   async getLocation() {
     const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     );
 
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       await Geolocation.init({
-        ios: "",
-        android: ""
-      })
+        ios: '',
+        android: '',
+      });
 
       Geolocation.setOptions({
         interval: 8000,
-        distanceFilter: 20
-      })
+        distanceFilter: 20,
+      });
 
-      Geolocation.addLocationListener(location => {
+      Geolocation.addLocationListener((location) => {
         this.setState({
           region: {
             latitude: location.latitude,
@@ -98,39 +105,37 @@ export default class LocationPicker extends React.Component {
           },
           title: location.poiName,
           address: location.address,
-        })
-      })
-      Geolocation.start()
+        });
+      });
+      Geolocation.start();
     }
   }
-  _onDragEnd = e => {
-    const { longitude, latitude } = e.nativeEvent
-    console.log(e)
+  _onDragEnd = (e) => {
+    const {longitude, latitude} = e.nativeEvent;
     this.setState({
       region: {
         latitude,
         longitude,
       },
-      title: data.pois.name || data.street,
-      address: data.address,
-    })
-  }
+      // title: data.pois.name || data.street,
+      // address: data.address,
+    });
+  };
   renderMarker() {
     if (this.state.address) {
       return (
         <Marker
           draggable
           active
-          centerOffset={{ x: 0, y: 18 }}
+          centerOffset={{x: 0, y: 18}}
           clickable={false}
           onDragEnd={this._onDragEnd}
           title={this.state.title}
           // description={this.state.address}
-          coordinate={this.state.region}
-        >
+          coordinate={this.state.region}>
           <View style={styles.custom}>
             <View style={styles.customInfoWindow}>
-              <Text style={{ fontWeight: '600', lineHeight: 25 }}>
+              <Text style={{fontWeight: '600', lineHeight: 25}}>
                 {this.state.title}
               </Text>
               <Text>{this.state.address}</Text>
@@ -138,20 +143,20 @@ export default class LocationPicker extends React.Component {
             <View style={styles.triangleDown} />
           </View>
         </Marker>
-      )
+      );
     }
-    return null
+    return null;
   }
   render() {
-    const onViewLayout = e => {
-      const { layout } = e.nativeEvent
+    const onViewLayout = (e) => {
+      const {layout} = e.nativeEvent;
       if (layout.height === 0) {
-        return
+        return;
       }
       this.setState({
         isInitialized: true,
-      })
-    }
+      });
+    };
     if (this.state.isInitialized) {
       return (
         <MapView
@@ -159,13 +164,12 @@ export default class LocationPicker extends React.Component {
           showsLocationButton
           zoomLevel={20}
           coordinate={this.state.coordinate}
-          style={StyleSheet.absoluteFill}
-        >
+          style={StyleSheet.absoluteFill}>
           {this.renderMarker()}
         </MapView>
-      )
+      );
     }
-    return <View style={{ flex: 1 }} onLayout={onViewLayout} />
+    return <View style={{flex: 1}} onLayout={onViewLayout} />;
   }
 }
 const styles = StyleSheet.create({
@@ -194,4 +198,4 @@ const styles = StyleSheet.create({
     borderTopColor: '#fff',
     alignSelf: 'center',
   },
-})
+});

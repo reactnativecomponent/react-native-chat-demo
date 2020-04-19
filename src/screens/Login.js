@@ -3,48 +3,50 @@
  * @Author: huangjun
  * @Date: 2018-10-10 16:22:47
  * @Last Modified by: huangjun
- * @Last Modified time: 2019-05-08 08:56:31
+ * @Last Modified time: 2020-04-19 16:49:41
  */
-import React, { Component } from 'react'
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  Dimensions,
-} from 'react-native'
-import {
-  Container,
-  Content,
-  Button,
-} from 'native-base'
-import { NimSession } from 'react-native-netease-im'
-import md5 from '../utils/md5'
+import React, {Component} from 'react';
+import {View, TextInput, StyleSheet, Text, Dimensions} from 'react-native';
+import {Container, Content, Button} from 'native-base';
+import {NimSession} from 'react-native-netease-im';
+import {PERMISSIONS, requestMultiple} from 'react-native-permissions';
+import md5 from '../utils/md5';
 
 export default class Login extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       name: 'abc1',
       password: '123456',
-    }
+    };
   }
+
+  componentDidMount() {
+    requestMultiple([
+      PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+      PERMISSIONS.ANDROID.ACTIVITY_RECOGNITION,
+      PERMISSIONS.ANDROID.CAMERA,
+      PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
+      PERMISSIONS.ANDROID.ADD_VOICEMAIL,
+    ]);
+  }
+
   componentWillUnmount() {
     // 清除密码
-    this.setState({ password: '' })
+    this.setState({password: ''});
   }
 
   loginIn() {
-    const { navigation } = this.props
+    const {navigation} = this.props;
     NimSession.login(this.state.name, md5.createHash(this.state.password)).then(
       (res) => {
-        global.imaccount = this.state.name
-        navigation.navigate('App')
+        global.imaccount = this.state.name;
+        navigation.navigate('App');
       },
-      err => {
-        console.warn(err)
+      (err) => {
+        console.warn(err);
       },
-    )
+    );
   }
   _renderContent() {
     return (
@@ -52,9 +54,8 @@ export default class Login extends Component {
         <View
           style={[
             styles.inputView,
-            { borderTopWidth: borderWidth, borderTopColor: '#ccc' },
-          ]}
-        >
+            {borderTopWidth: borderWidth, borderTopColor: '#ccc'},
+          ]}>
           <Text style={styles.inputLabel}>账户</Text>
           <TextInput
             style={styles.textViewStyle}
@@ -64,8 +65,8 @@ export default class Login extends Component {
             autoCapitalize="none"
             autoCorrect={false}
             clearButtonMode="while-editing"
-            onChangeText={name => {
-              this.setState({ name })
+            onChangeText={(name) => {
+              this.setState({name});
             }}
           />
         </View>
@@ -80,13 +81,13 @@ export default class Login extends Component {
             autoCorrect={false}
             clearButtonMode="while-editing"
             placeholder="请输入密码"
-            onChangeText={password => {
-              this.setState({ password })
+            onChangeText={(password) => {
+              this.setState({password});
             }}
           />
         </View>
       </View>
-    )
+    );
   }
   render() {
     return (
@@ -100,11 +101,11 @@ export default class Login extends Component {
           </View>
         </Content>
       </Container>
-    )
+    );
   }
 }
-const borderWidth = StyleSheet.hairlineWidth
-const { height } = Dimensions.get('window')
+const borderWidth = StyleSheet.hairlineWidth;
+const {height} = Dimensions.get('window');
 const styles = StyleSheet.create({
   content: {
     backgroundColor: '#fff',
@@ -142,4 +143,4 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
   },
-})
+});

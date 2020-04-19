@@ -3,41 +3,36 @@
  * @Author: huangjun
  * @Date: 2018-10-10 16:21:34
  * @Last Modified by: huangjun
- * @Last Modified time: 2019-03-26 17:59:55
+ * @Last Modified time: 2020-04-19 15:13:41
  */
-import React from 'react'
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
-import { Marker, MapView } from 'react-native-amap3d'
+import React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {Marker, MapView} from 'react-native-amap3d';
 
 export default class LocationView extends React.Component {
-
-  static navigationOptions = ({ navigation }) => ({
+  static navigationOptions = ({navigation}) => ({
     title: '查看位置',
-  })
+  });
   // 构造
   constructor(props) {
-    super(props)
+    super(props);
     // 初始状态
     this.state = {
       isInitialized: false,
-    }
+    };
   }
   render() {
-    const { region = {} } = this.props.navigation.state.params
-    const { latitude, longitude } = region
-    const onViewLayout = e => {
-      const { layout } = e.nativeEvent
+    const {region = {}} = this.props.navigation.state.params;
+    const {latitude, longitude} = region;
+    const onViewLayout = (e) => {
+      const {layout} = e.nativeEvent;
       if (layout.height === 0) {
-        return
+        return;
       }
       this.setState({
         isInitialized: true,
-      })
-    }
+      });
+    };
     if (this.state.isInitialized) {
       return (
         <MapView
@@ -48,16 +43,14 @@ export default class LocationView extends React.Component {
             latitude: parseFloat(latitude),
             longitude: parseFloat(longitude),
           }}
-          style={{ flex: 1 }}
-        >
+          style={{flex: 1}}>
           <Marker
             active
             clickable={false}
             coordinate={{
               latitude: parseFloat(latitude),
               longitude: parseFloat(longitude),
-            }}
-          >
+            }}>
             <View style={styles.custom}>
               <View style={styles.customInfoWindow}>
                 <Text>{region.title}</Text>
@@ -66,9 +59,9 @@ export default class LocationView extends React.Component {
             </View>
           </Marker>
         </MapView>
-      )
+      );
     }
-    return <View style={{ flex: 1 }} onLayout={onViewLayout} />
+    return <View style={{flex: 1}} onLayout={onViewLayout} />;
   }
 }
 const styles = StyleSheet.create({
@@ -95,4 +88,4 @@ const styles = StyleSheet.create({
     borderTopColor: '#fff',
     alignSelf: 'center',
   },
-})
+});

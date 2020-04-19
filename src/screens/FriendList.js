@@ -3,133 +3,134 @@
  * @Author: huangjun
  * @Date: 2018-10-10 16:21:48
  * @Last Modified by: huangjun
- * @Last Modified time: 2019-03-27 14:40:39
+ * @Last Modified time: 2020-04-19 16:17:13
  */
-import React from 'react'
-import { View, NativeAppEventEmitter, ListView, Image } from 'react-native'
-import { Container, ListItem, Text, Body } from 'native-base'
-import { NimFriend } from 'react-native-netease-im'
-import HeaderButtons, { Item } from 'react-navigation-header-buttons'
+import React from 'react';
+import {View, NativeAppEventEmitter, SectionList, Image} from 'react-native';
+import {HeaderButtons} from 'react-navigation-header-buttons';
+import {Container, ListItem, Text, Body} from 'native-base';
+import {NimFriend} from 'react-native-netease-im';
 
 export default class FriendList extends React.Component {
-
+  static navigationOptions = ({navigation}) => ({
+    title: '通讯录',
+    headerRight: () => (
+      <HeaderButtons color="#037aff">
+        <HeaderButtons.Item
+          title="添加"
+          color="#037aff"
+          onPress={navigation.getParam('handlerAddBtn')}
+        />
+      </HeaderButtons>
+    ),
+  });
   // 构造
   constructor(props) {
-    super(props)
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2,
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
-    })
+    super(props);
+
     this.state = {
-      ds: ds.cloneWithRowsAndSections([]),
-    }
+      ds: [],
+    };
   }
   addFriend = () => {
-    console.log('search')
-    this.props.navigation.push('SearchScreen')
-  }
+    console.log('search');
+    this.props.navigation.push('SearchScreen');
+  };
 
-  componentWillMount() {
-    NimFriend.startFriendList()
-  }
   componentDidMount() {
+    NimFriend.startFriendList();
     this.props.navigation.setParams({
-      handlerAddBtn: this.addFriend
-    })
+      handlerAddBtn: this.addFriend,
+    });
     this.friendListener = NativeAppEventEmitter.addListener(
       'observeFriend',
-      data => {
+      (data) => {
         this.setState({
-          ds: this.state.ds.cloneWithRowsAndSections(this.formatData(data)),
-        })
+          ds: this.formatData(data),
+        });
       },
-    )
+    );
   }
   formatData = (data) => {
-    const newObj = {}
-    const h = transform(data).sort()
-    h.map(res => {
-      newObj[res] = data[res]
-    })
-    return newObj
-  }
+    const newObj = [];
+    const h = transform(data).sort();
+    h.map((res) => {
+      // newObj[res] = data[res];
+      newObj.push({
+        title: res,
+        data: data[res],
+      });
+    });
+    console.log(newObj);
+    return newObj;
+  };
   componentWillUnmount() {
-    NimFriend.stopFriendList()
-    this.friendListener && this.friendListener.remove()
+    NimFriend.stopFriendList();
+    this.friendListener && this.friendListener.remove();
   }
   toFriendDetail(id) {
-    NimFriend.getUserInfo(id).then(data => {
+    NimFriend.getUserInfo(id).then((data) => {
       this.props.navigation.push('FriendDetail', {
         friendData: data,
-      })
-    })
+      });
+    });
   }
-  _renderRow = (res) => (
-    <ListItem onPress={() => this.toFriendDetail(res.contactId)}>
+  _renderRow = ({item}) => (
+    <ListItem onPress={() => this.toFriendDetail(item.contactId)}>
       <Image
-        style={{ width: 35, height: 35 }}
+        style={{width: 35, height: 35}}
         source={
-            res.avatar
-              ? { uri: res.avatar }
-              : require('../images/discuss_logo.png')
-          }
+          item.avatar
+            ? {uri: item.avatar}
+            : require('../images/discuss_logo.png')
+        }
       />
       <Body>
-        <Text>{res.name}</Text>
+        <Text>{item.name}</Text>
       </Body>
     </ListItem>
-  )
-  _renderSectionHeader = (sectionData, sectionID) => (
+  );
+  _renderSectionHeader = ({section: {title}}) => (
     <ListItem itemDivider>
-      <Text>{sectionID}</Text>
+      <Text>{title}</Text>
     </ListItem>
-  )
+  );
   render() {
     return (
-      <Container style={{ flex: 1 }}>
-        <ListView
-          style={{ backgroundColor: '#fff' }}
-          dataSource={this.state.ds}
-          renderRow={this._renderRow}
-          enableEmptySections
-          removeClippedSubviews
+      <Container style={{flex: 1}}>
+        <SectionList
+          style={{backgroundColor: '#fff'}}
+          sections={this.state.ds}
+          renderItem={this._renderRow}
           renderSectionHeader={this._renderSectionHeader}
-          renderHeader={() => (
+          keyExtractor={(item, index) => item + index}
+          ListHeaderComponent={
             <View>
               <ListItem
                 last
-                onPress={() =>
-                  this.props.navigation.push('NewFriend')
-                }
-              >
+                onPress={() => this.props.navigation.push('NewFriend')}>
                 <Body>
                   <Text>新的朋友</Text>
                 </Body>
               </ListItem>
             </View>
-          )}
+          }
         />
       </Container>
-    )
+    );
   }
 }
 function transform(obj) {
-  const arr = []
+  const arr = [];
   for (const item in obj) {
-    arr.push(item)
+    arr.push(item);
   }
-  arr.sort(mySorter)
-  return arr
+  arr.sort(mySorter);
+  return arr;
 }
 function mySorter(a, b) {
-  if (/^\d/.test(a) !== /^\D/.test(b)) return a > b ? 1 : (a = b ? 0 : -1)
-  return a > b ? -1 : a == b ? 0 : 1
+  if (/^\d/.test(a) !== /^\D/.test(b)) {
+    return a > b ? 1 : (a = b ? 0 : -1);
+  }
+  return a > b ? -1 : a == b ? 0 : 1;
 }
-FriendList.navigationOptions = ({ navigation }) => ({
-  title: '通讯录',
-  headerRight: (
-    <HeaderButtons color="#037aff">
-      <Item title="添加" color="#037aff" onPress={navigation.getParam('handlerAddBtn')} />
-    </HeaderButtons>
-  ),
-})

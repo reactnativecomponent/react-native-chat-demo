@@ -3,9 +3,9 @@
  * @Author: huangjun
  * @Date: 2018-10-10 16:23:32
  * @Last Modified by: huangjun
- * @Last Modified time: 2019-03-27 14:40:58
+ * @Last Modified time: 2020-04-19 16:07:52
  */
-import React from 'react'
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -14,60 +14,57 @@ import {
   ListView,
   Image,
   Text,
-} from 'react-native'
-import {
-  Container,
-  Content,
-  ListItem,
-  Body,
-  Text as TextNB,
-} from 'native-base'
-import { NimSystemMsg, NimFriend } from 'react-native-netease-im'
-import { RNToasty } from 'react-native-toasty'
-import HeaderButtons, { Item } from 'react-navigation-header-buttons'
+} from 'react-native';
+import {Container, Content, ListItem, Body, Text as TextNB} from 'native-base';
+import {NimSystemMsg, NimFriend} from 'react-native-netease-im';
+import {RNToasty} from 'react-native-toasty';
+import {HeaderButtons} from 'react-navigation-header-buttons';
 
 export default class NewFriend extends React.Component {
-
-  static navigationOptions = ({ navigation }) => ({
+  static navigationOptions = ({navigation}) => ({
     title: '新的朋友',
-    headerRight: (
+    headerRight: () => (
       <HeaderButtons color="#037aff">
-        <Item title="查找" color="#037aff" onPress={() => navigation.push('SearchScreen')} />
+        <HeaderButtons.Item
+          title="查找"
+          color="#037aff"
+          onPress={() => navigation.push('SearchScreen')}
+        />
       </HeaderButtons>
     ),
-  })
+  });
   // 构造
   constructor(props) {
-    super(props)
-    const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    super(props);
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       dataSource: ds.cloneWithRows([]),
-    }
+    };
   }
   componentWillMount() {
-    NimSystemMsg.startSystemMsg()
+    NimSystemMsg.startSystemMsg();
   }
   componentDidMount() {
     this.friendListener = NativeAppEventEmitter.addListener(
       'observeReceiveSystemMsg',
-      data => {
+      (data) => {
         this.setState({
           dataSource: this.state.dataSource.cloneWithRows(data),
-        })
+        });
       },
-    )
+    );
   }
   componentWillUnmount() {
-    NimSystemMsg.stopSystemMsg()
-    this.friendListener && this.friendListener.remove()
+    NimSystemMsg.stopSystemMsg();
+    this.friendListener && this.friendListener.remove();
   }
   toFriendDetail(res) {
-    NimFriend.fetchUserInfo(res.fromAccount).then(data => {
+    NimFriend.fetchUserInfo(res.fromAccount).then((data) => {
       this.props.navigation.push('FriendDetail', {
         friendData: data,
         isRequest: res.status !== '1',
-      })
-    })
+      });
+    });
   }
   delete = (res) => {
     NimSystemMsg.ackAddFriendRequest(
@@ -77,10 +74,10 @@ export default class NewFriend extends React.Component {
       res.time,
     ).then(() => {
       RNToasty.Show({
-        title: '拒绝了添加'
-      })
-    })
-  }
+        title: '拒绝了添加',
+      });
+    });
+  };
   accect = (res) => {
     NimSystemMsg.ackAddFriendRequest(
       res.messageId,
@@ -90,27 +87,24 @@ export default class NewFriend extends React.Component {
     ).then(
       () => {
         RNToasty.Show({
-          title: '添加成功'
-        })
+          title: '添加成功',
+        });
       },
-      err => {
-        console.log(err)
+      (err) => {
+        console.log(err);
       },
-    )
-  }
+    );
+  };
   _renderRow = (res) => (
     <ListItem
-      style={{ backgroundColor: '#fff' }}
+      style={{backgroundColor: '#fff'}}
       key={res.messageId}
-      onPress={() => this.toFriendDetail(res)}
-    >
+      onPress={() => this.toFriendDetail(res)}>
       <Image
-        style={{ width: 35, height: 35 }}
+        style={{width: 35, height: 35}}
         source={
-            res.avatar
-              ? { uri: res.avatar }
-              : require('../images/discuss_logo.png')
-          }
+          res.avatar ? {uri: res.avatar} : require('../images/discuss_logo.png')
+        }
       />
       <Body>
         <TextNB>{res.name}</TextNB>
@@ -118,34 +112,32 @@ export default class NewFriend extends React.Component {
       </Body>
       {res.status === '0' ? (
         <TouchableOpacity
-          style={{ backgroundColor: '#d82617', borderRadius: 3, padding: 8 }}
-          onPress={() => this.accect(res)}
-        >
-          <Text style={{ color: '#fff', fontSize: 13 }}>接受</Text>
+          style={{backgroundColor: '#d82617', borderRadius: 3, padding: 8}}
+          onPress={() => this.accect(res)}>
+          <Text style={{color: '#fff', fontSize: 13}}>接受</Text>
         </TouchableOpacity>
-        ) : (
-          <TextNB note>已接受</TextNB>
-        )}
+      ) : (
+        <TextNB note>已接受</TextNB>
+      )}
     </ListItem>
-  )
+  );
   _renderHiddenRow = (res) => (
     <View style={styles.rowBack}>
       <TouchableOpacity
         style={styles.deleteBtn}
         activeOpacity={1}
-        onPress={() => this.delete(res)}
-      >
-        <TextNB style={{ color: '#fff' }}>删除</TextNB>
+        onPress={() => this.delete(res)}>
+        <TextNB style={{color: '#fff'}}>删除</TextNB>
       </TouchableOpacity>
     </View>
-  )
+  );
   render() {
     return (
-      <Container style={{ flex: 1, backgroundColor: '#f7f7f7' }}>
+      <Container style={{flex: 1, backgroundColor: '#f7f7f7'}}>
         <Content>
-          <View style={{ backgroundColor: '#fff' }}>
+          <View style={{backgroundColor: '#fff'}}>
             <ListView
-              ref={(v) => this.swList = v}
+              ref={(v) => (this.swList = v)}
               enableEmptySections
               dataSource={this.state.dataSource}
               renderRow={this._renderRow}
@@ -153,7 +145,7 @@ export default class NewFriend extends React.Component {
           </View>
         </Content>
       </Container>
-    )
+    );
   }
 }
 const styles = StyleSheet.create({
@@ -169,4 +161,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
-})
+});

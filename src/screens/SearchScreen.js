@@ -3,10 +3,10 @@
  * @Author: huangjun
  * @Date: 2018-10-10 16:28:40
  * @Last Modified by: huangjun
- * @Last Modified time: 2019-03-27 11:10:58
+ * @Last Modified time: 2020-04-19 16:08:47
  */
-import React, { Component } from 'react'
-import { View, Platform, Image } from 'react-native'
+import React, {Component} from 'react';
+import {View, Platform, Image} from 'react-native';
 import {
   Container,
   Text,
@@ -18,67 +18,62 @@ import {
   ListItem,
   Input,
   Header,
-} from 'native-base'
-import { StackActions } from 'react-navigation'
-import { NimFriend } from 'react-native-netease-im'
+} from 'native-base';
+import {NimFriend} from 'react-native-netease-im';
 
 export default class SearchScreen extends Component {
-
   static navigationOptions = (navigation) => ({
     title: '搜索',
-    header: null
-  })
+    header: null,
+  });
 
   constructor(props) {
-    super(props)
+    super(props);
     // 初始状态
     this.state = {
       account: '',
       result: [],
-    }
+    };
   }
   _check() {
-    NimFriend.fetchUserInfo(this.state.account).then(res => {
-      const arr = []
-      arr.push(res)
+    NimFriend.fetchUserInfo(this.state.account).then((res) => {
+      const arr = [];
+      arr.push(res);
       this.setState({
         result: arr,
-      })
-    })
+      });
+    });
   }
   onSelectResult(data) {
-    const { navigation } = this.props
-    navigation.goBack()
+    const {navigation} = this.props;
+    navigation.goBack();
     navigation.push('FriendDetail', {
       friendData: data,
-    })
+    });
   }
   _renderResult() {
     if (this.state.result && this.state.result.length > 0) {
-      return this.state.result.map(res => (
-        <ListItem
-          key={res.contactId}
-          onPress={() => this.onSelectResult(res)}
-        >
+      return this.state.result.map((res) => (
+        <ListItem key={res.contactId} onPress={() => this.onSelectResult(res)}>
           <Image
-            style={{ width: 35, height: 35 }}
+            style={{width: 35, height: 35}}
             source={
-                res.avatar
-                  ? { uri: res.avatar }
-                  : require('../images/discuss_logo.png')
-              }
+              res.avatar
+                ? {uri: res.avatar}
+                : require('../images/discuss_logo.png')
+            }
           />
           <Body>
             <Text>{res.name}</Text>
           </Body>
         </ListItem>
-      ))
+      ));
     }
-    return null
+    return null;
   }
   render() {
     return (
-      <Container style={{ backgroundColor: '#f7f7f7' }}>
+      <Container style={{backgroundColor: '#f7f7f7'}}>
         <Header searchBar rounded>
           <Item>
             <Icon active name="search" />
@@ -90,8 +85,8 @@ export default class SearchScreen extends Component {
               autoFocus
               clearButtonMode="while-editing"
               returnKeyType={Platform.OS === 'ios' ? 'search' : 'previous'}
-              onChangeText={account => {
-                this.setState({ account })
+              onChangeText={(account) => {
+                this.setState({account});
               }}
               onSubmitEditing={() => this._check()}
             />
@@ -101,11 +96,9 @@ export default class SearchScreen extends Component {
           </Button>
         </Header>
         <Content>
-          <View style={{ backgroundColor: '#fff' }}>
-            {this._renderResult()}
-          </View>
+          <View style={{backgroundColor: '#fff'}}>{this._renderResult()}</View>
         </Content>
       </Container>
-    )
+    );
   }
 }

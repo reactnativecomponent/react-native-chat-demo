@@ -3,25 +3,21 @@
  * @Author: huangjun
  * @Date: 2018-10-10 16:42:42
  * @Last Modified by: huangjun
- * @Last Modified time: 2019-03-26 14:45:19
+ * @Last Modified time: 2020-04-19 15:31:29
  */
-import React, { Component } from 'react'
-import { View } from 'react-native'
-import { Theme } from 'native-base-shoutem-theme'
-import getTheme from '../native-base-theme/components'
-import platform from '../native-base-theme/variables/platform'
-import AppNavigator from './screens'
+import React, {Component} from 'react';
+import {View} from 'react-native';
+import AppNavigator from './screens';
 
-export default class App  extends Component{
+export default class App extends Component {
   constructor(props) {
-    super(props)
-    Theme.setDefaultThemeStyle(getTheme(platform))
+    super(props);
   }
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <AppNavigator />
       </View>
-    )
+    );
   }
 }
