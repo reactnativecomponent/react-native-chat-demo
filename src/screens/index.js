@@ -1,13 +1,13 @@
 /*
- * @导航
+ * @Descripttion: 路由
  * @Author: huangjun
- * @Date: 2018-10-10 16:21:43
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 16:38:08
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-16 18:17:23
  */
-import {Platform} from 'react-native';
-import {createAppContainer, createSwitchNavigator} from 'react-navigation';
-import {createStackNavigator} from 'react-navigation-stack';
+
+import * as React from 'react';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import Login from './Login';
 import Chat from './Chat';
@@ -26,68 +26,89 @@ import SelectUsers from './SelectUsers';
 import LocationPicker from './LocationPicker';
 import LocationView from './LocationView';
 
-const MainStack = createStackNavigator(
-  {
-    ChatList,
-    FriendList,
-    FriendDetail,
-    Chat,
-    NewFriend,
-    RemoveUsers,
-    SessionTeamDetail,
-    SessionUserDetail,
-    SendAddFriend,
-    UpdateTeamName,
+const Stack = createStackNavigator();
+function MainStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="ChatList"
+        options={{headerTitle: '会话列表'}}
+        component={ChatList}
+      />
+      <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen
+        name="FriendList"
+        options={{headerTitle: '我的好友'}}
+        component={FriendList}
+      />
+      <Stack.Screen
+        name="FriendDetail"
+        options={{headerTitle: '个人信息'}}
+        component={FriendDetail}
+      />
+      <Stack.Screen
+        name="NewFriend"
+        options={{headerTitle: '新的朋友'}}
+        component={NewFriend}
+      />
+      <Stack.Screen
+        name="RemoveUsers"
+        options={{headerTitle: '移出用户'}}
+        component={RemoveUsers}
+      />
+      <Stack.Screen
+        name="SessionTeamDetail"
+        options={{headerTitle: '会话详情'}}
+        component={SessionTeamDetail}
+      />
+      <Stack.Screen
+        name="SessionUserDetail"
+        options={{headerTitle: '会话详情'}}
+        component={SessionUserDetail}
+      />
+      <Stack.Screen
+        name="SendAddFriend"
+        options={{headerTitle: '添加好友'}}
+        component={SendAddFriend}
+      />
+      <Stack.Screen
+        name="UpdateTeamName"
+        options={{headerTitle: '修改群组名称'}}
+        component={UpdateTeamName}
+      />
+      <Stack.Screen
+        name="SelectUsers"
+        options={{headerTitle: '选择用户'}}
+        component={SelectUsers}
+      />
+      <Stack.Screen name="LocationPicker" component={LocationPicker} />
+      <Stack.Screen name="LocationView" component={LocationView} />
+    </Stack.Navigator>
+  );
+}
+const RootStack = createStackNavigator();
 
-    SelectUsers,
-    LocationPicker,
-    LocationView,
-  },
-  {
-    headerMode: Platform.OS === 'ios' ? 'float' : 'screen',
-    defaultNavigationOptions: {
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-      headerTitleAlign: 'center',
-    },
-  },
-);
+function Root() {
+  return (
+    <RootStack.Navigator mode="modal">
+      <RootStack.Screen name="Login" component={Login} />
+      <RootStack.Screen
+        name="Main"
+        options={{headerShown: false}}
+        component={MainStack}
+      />
+      <RootStack.Screen
+        name="SearchScreen"
+        options={{headerShown: false}}
+        component={SearchScreen}
+      />
+      <RootStack.Screen
+        name="CreateTeam"
+        options={{headerTitle: '创建群组'}}
+        component={CreateTeam}
+      />
+    </RootStack.Navigator>
+  );
+}
 
-MainStack.navigationOptions = () => {
-  return {
-    headerShown: false,
-  };
-};
-
-const ModalStack = createStackNavigator(
-  {
-    MainNavigator: {
-      screen: MainStack,
-    },
-    SearchScreen,
-    CreateTeam,
-  },
-  {
-    mode: 'modal',
-    initialRouteName: 'MainNavigator',
-    defaultNavigationOptions: {
-      // headerTransparent: true,
-      // headerTintColor: '#fff',
-      // headerStyle: {
-      //   backgroundColor: 'rgba(0,0,0,0.8)',
-      // },
-      headerTitleAlign: 'center',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    },
-  },
-);
-
-const AppNavigator = createSwitchNavigator({
-  Login,
-  App: ModalStack,
-});
-
-export default createAppContainer(AppNavigator);
+export default Root;

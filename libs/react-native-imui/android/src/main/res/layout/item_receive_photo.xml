@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/aurora_msgitem_receive_style">
+
+    <TextView
+        android:id="@+id/aurora_tv_msgitem_date"
+        style="@style/aurora_msgitem_date_style" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp">
+
+        <include layout="@layout/item_head_left" />
+
+        <TextView
+            android:id="@+id/aurora_tv_msgitem_display_name"
+            style="@style/aurora_msgitem_display_name_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/aurora_iv_msgitem_avatar" />
+
+        <cn.jiguang.imui.view.ShapeImageView
+            android:layout_marginTop="@dimen/aurora_message_padding_top"
+            android:id="@+id/aurora_iv_msgitem_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxHeight="@dimen/photo_width"
+            android:maxWidth="@dimen/photo_width"
+            android:layout_below="@id/aurora_tv_msgitem_display_name"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/aurora_avatar_padding"
+            android:layout_toRightOf="@id/aurora_iv_msgitem_avatar"
+            android:background="@drawable/aurora_bg_imagemsg_default"
+            android:src="@drawable/aurora_picture_not_found"
+            app:videomessage_radius="8dp"
+            />
+
+    </RelativeLayout>
+</LinearLayout>

@@ -1,104 +1,74 @@
 /*
- * @查询用户
+ * @Descripttion: 查找用户
  * @Author: huangjun
- * @Date: 2018-10-10 16:28:40
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 16:08:47
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-17 15:48:16
  */
-import React, {Component} from 'react';
-import {View, Platform, Image} from 'react-native';
-import {
-  Container,
-  Text,
-  Content,
-  Button,
-  Icon,
-  Item,
-  Body,
-  ListItem,
-  Input,
-  Header,
-} from 'native-base';
+
+import * as React from 'react';
+import {View} from 'react-native-ui-lib';
+import {ScrollView, StyleSheet} from 'react-native';
 import {NimFriend} from 'react-native-netease-im';
+import {useNavigation} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Cell from '../components/Cell';
+import SearchBar from '../components/SearchBar';
 
-export default class SearchScreen extends Component {
-  static navigationOptions = (navigation) => ({
-    title: '搜索',
-    header: null,
-  });
+export default function SearchScreen() {
+  const navigation = useNavigation();
+  const [dataList, setDataList] = React.useState([]);
 
-  constructor(props) {
-    super(props);
-    // 初始状态
-    this.state = {
-      account: '',
-      result: [],
-    };
-  }
-  _check() {
-    NimFriend.fetchUserInfo(this.state.account).then((res) => {
+  const _search = (account) => {
+    NimFriend.fetchUserInfo(account).then((res) => {
       const arr = [];
       arr.push(res);
-      this.setState({
-        result: arr,
-      });
+      setDataList([res]);
     });
-  }
-  onSelectResult(data) {
-    const {navigation} = this.props;
+  };
+  const _onSelectResult = (data) => {
     navigation.goBack();
-    navigation.push('FriendDetail', {
+    navigation.navigate('FriendDetail', {
       friendData: data,
     });
-  }
-  _renderResult() {
-    if (this.state.result && this.state.result.length > 0) {
-      return this.state.result.map((res) => (
-        <ListItem key={res.contactId} onPress={() => this.onSelectResult(res)}>
-          <Image
-            style={{width: 35, height: 35}}
-            source={
-              res.avatar
-                ? {uri: res.avatar}
-                : require('../images/discuss_logo.png')
-            }
-          />
-          <Body>
-            <Text>{res.name}</Text>
-          </Body>
-        </ListItem>
+  };
+  const _renderResult = () => {
+    if (dataList.length > 0) {
+      return dataList.map((res) => (
+        <Cell
+          key={res.contactId}
+          title={res.name}
+          source={
+            res.avatar
+              ? {uri: res.avatar}
+              : require('../images/discuss_logo.png')
+          }
+          iconLeftStyle={{width: 35, height: 35}}
+          onPress={() => _onSelectResult(res)}
+        />
       ));
     }
     return null;
-  }
-  render() {
-    return (
-      <Container style={{backgroundColor: '#f7f7f7'}}>
-        <Header searchBar rounded>
-          <Item>
-            <Icon active name="search" />
-            <Input
-              value={this.state.account}
-              placeholder="手机号/帐号"
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoFocus
-              clearButtonMode="while-editing"
-              returnKeyType={Platform.OS === 'ios' ? 'search' : 'previous'}
-              onChangeText={(account) => {
-                this.setState({account});
-              }}
-              onSubmitEditing={() => this._check()}
-            />
-          </Item>
-          <Button transparent onPress={() => this.props.navigation.pop()}>
-            <Text>取消</Text>
-          </Button>
-        </Header>
-        <Content>
-          <View style={{backgroundColor: '#fff'}}>{this._renderResult()}</View>
-        </Content>
-      </Container>
-    );
-  }
+  };
+  const inset = useSafeAreaInsets();
+  return (
+    <View flex style={{backgroundColor: '#f7f7f7'}}>
+      <View
+        style={{
+          paddingTop: inset.top,
+          backgroundColor: '#fff',
+          height: inset.top + 44,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: '#eee',
+        }}>
+        <SearchBar
+          onSubmit={_search}
+          onChangeQuery={_search}
+          onCancelPress={() => navigation.goBack()}
+        />
+      </View>
+
+      <ScrollView>{_renderResult()}</ScrollView>
+    </View>
+  );
 }

@@ -6,136 +6,36 @@
  * @Last Modified time: 2020-04-19 16:05:41
  */
 
-import React from 'react';
+import React, {useRef} from 'react';
 import {
-  Animated,
   StyleSheet,
-  Text,
-  View,
   Dimensions,
   TouchableOpacity,
   Clipboard,
   NativeAppEventEmitter,
   NativeModules,
   Image,
+  LayoutAnimation,
 } from 'react-native';
-import {NavigationEvents} from 'react-navigation';
+import {View, Text} from 'react-native-ui-lib';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {HeaderButtons} from 'react-navigation-header-buttons';
 import {NimSession, NimFriend} from 'react-native-netease-im';
 import ImagePicker from 'react-native-image-crop-picker';
-import IMUI from 'react-native-imui';
+import {ChatInput, MessageList} from 'react-native-imui';
 import {RNToasty} from 'react-native-toasty';
 import Svgs from '../components/Svgs';
 
-const AnimatedImplementation = require('react-native/Libraries/Animated/src/AnimatedImplementation');
-
 const AuroraIController = NativeModules.AuroraIMUIModule;
-const InputView = AnimatedImplementation.createAnimatedComponent(
-  IMUI.ChatInput,
-);
-const MessageListView = AnimatedImplementation.createAnimatedComponent(
-  IMUI.MessageList,
-);
+
 const window = Dimensions.get('window');
-
-class Chat extends React.Component {
-  static navigationOptions = ({navigation}) => {
-    const {session = {}, title} = navigation.state.params;
-    return {
-      title,
-      headerRight: () => (
-        <HeaderButtons>
-          <HeaderButtons.Item
-            ButtonElement={
-              <Image
-                style={{tintColor: '#037aff'}}
-                source={
-                  session.sessionType === '1'
-                    ? require('../images/session_team.png')
-                    : require('../images/session_user.png')
-                }
-              />
-            }
-            title=""
-            buttonWrapperStyle={{marginRight: 5}}
-            onPress={navigation.getParam('handlerRightBtn')}
-          />
-        </HeaderButtons>
-      ),
-    };
-  };
-  constructor(props) {
-    super(props);
-    this.state = {
-      isInitialized: false,
-      inputViewHeight: new Animated.Value(50),
-      inputViewWidth: 0,
-      showType: 0,
-      menuViewH: 220,
-      viewY: 50,
-      messages: [],
-    };
-    this._isAutoScroll = true;
-    this._isListenKeyBoard = true;
-  }
-
-  componentWillMount() {
-    const {navigation} = this.props;
-    const {session = {}} = navigation.state.params;
-
-    navigation.setParams({
-      handlerRightBtn: this.toSessionDetail,
-    });
-
-    NimSession.startSession(session.contactId, session.sessionType);
-    NimSession.queryMessageListEx('', 20).then(
-      (data) => {
-        this._lastMessage = data[0];
-        this.setState({
-          messages: data,
-        });
-      },
-      (err) => {
-        console.log(err);
-      },
-    );
-  }
-  componentDidMount() {
-    this.sessionListener = NativeAppEventEmitter.addListener(
-      'observeReceiveMessage',
-      (data) => {
-        if (data && data.length > 0) {
-          AuroraIController.appendMessages(data);
-          if (this._isAutoScroll) {
-            AuroraIController.scrollToBottom(true);
-          }
-        }
-      },
-    );
-    this.msgStatusListener = NativeAppEventEmitter.addListener(
-      'observeMsgStatus',
-      (data) => {
-        if (data[0].status === 'send_going') {
-          // 发送中
-          AuroraIController.appendMessages(data);
-          AuroraIController.scrollToBottom(true);
-        } else {
-          AuroraIController.updateMessage(data[0]);
-        }
-        this._isAutoScroll = true;
-      },
-    );
-  }
-  componentWillUnmount() {
-    NimSession.stopSession();
-    AuroraIController.stopPlayVoice();
-    this.sessionListener && this.sessionListener.remove();
-    this.msgStatusListener && this.msgStatusListener.remove();
-  }
+export default function ChatIosScreen() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const {session = {}, title} = route.params || {};
   // 会话详情
-  toSessionDetail = () => {
-    const {navigation} = this.props;
-    const {session = {}} = navigation.state.params;
+  const _toSessionDetail = React.useCallback(() => {
     if (session.sessionType === '1') {
       navigation.push('SessionTeamDetail', {
         session,
@@ -151,46 +51,144 @@ class Chat extends React.Component {
         },
       });
     }
-  };
-  onFeatureView = (inputHeight, showType) => {
-    Animated.timing(this.state.inputViewHeight, {
-      toValue: inputHeight,
-      duration: 310,
-    }).start();
-    this.setState({
-      showType,
+  }, [navigation, session]);
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: title,
+      headerRight: () => (
+        <HeaderButtons>
+          <HeaderButtons.Item
+            ButtonElement={
+              <Image
+                style={{tintColor: '#037aff'}}
+                source={
+                  session?.sessionType === '1'
+                    ? require('../images/session_team.png')
+                    : require('../images/session_user.png')
+                }
+              />
+            }
+            title=""
+            buttonWrapperStyle={{marginRight: 5}}
+            onPress={_toSessionDetail}
+          />
+        </HeaderButtons>
+      ),
     });
+  }, [title, session, navigation, _toSessionDetail]);
+
+  const [inputViewHeight, setInputViewHeight] = React.useState(50);
+  const [showType, setShowType] = React.useState(0);
+  const [menuViewH, setMenuViewH] = React.useState(220);
+  const [viewY, setViewY] = React.useState(50);
+  const [messages, setMessages] = React.useState([]);
+  let _isAutoScroll = useRef(false);
+  let _isListenKeyBoard = useRef(true);
+  let _lastMessage = useRef();
+
+  React.useEffect(() => {
+    NimSession.startSession(session.contactId, session.sessionType);
+    NimSession.queryMessageListEx('', 20).then(
+      (data) => {
+        _lastMessage.current = data[0];
+        setMessages(data);
+      },
+      (err) => {
+        console.log(err);
+      },
+    );
+    const _sessionListener = NativeAppEventEmitter.addListener(
+      'observeReceiveMessage',
+      (data) => {
+        if (data && data.length > 0) {
+          AuroraIController.appendMessages(data);
+          if (_isAutoScroll.current) {
+            AuroraIController.scrollToBottom(true);
+          }
+        }
+      },
+    );
+    const _msgStatusListener = NativeAppEventEmitter.addListener(
+      'observeMsgStatus',
+      (data) => {
+        if (data[0].status === 'send_going') {
+          // 发送中
+          AuroraIController.appendMessages(data);
+          AuroraIController.scrollToBottom(true);
+        } else {
+          AuroraIController.updateMessage(data[0]);
+        }
+        _isAutoScroll.current = true;
+      },
+    );
+    const _focusListener = navigation.addListener('focus', () => {
+      _isListenKeyBoard.current = true;
+    });
+    const _blurListener = navigation.addListener('blur', () => {
+      _isListenKeyBoard.current = false;
+    });
+    return () => {
+      NimSession.stopSession();
+      AuroraIController.stopPlayVoice();
+      _sessionListener.remove();
+      _msgStatusListener.remove();
+      navigation.removeListener('focus', _focusListener);
+      navigation.removeListener('blur', _blurListener);
+    };
+  }, [session, navigation]);
+  const _onFeatureView = (height, type) => {
+    requestAnimationFrame(() => {
+      LayoutAnimation.configureNext({
+        duration: 200,
+        create: {
+          type: LayoutAnimation.Types.keyboard,
+          property: LayoutAnimation.Properties.opacity,
+        },
+        update: {
+          type: LayoutAnimation.Types.linear,
+          property: LayoutAnimation.Properties.opacity,
+        },
+        delete: {
+          type: LayoutAnimation.Types.linear,
+          property: LayoutAnimation.Properties.opacity,
+        },
+      });
+      setInputViewHeight(height);
+      setShowType(type);
+    });
+    console.log('onFeatureView', height);
   };
-  onShowKeyboard = (inputHeight, showType) => {
-    if (this._isListenKeyBoard) {
-      Animated.timing(this.state.inputViewHeight, {
-        toValue: inputHeight,
-        duration: 310,
-      }).start();
-      this.setState({
-        showType,
+  const _onShowKeyboard = (height, type) => {
+    if (_isListenKeyBoard.current) {
+      requestAnimationFrame(() => {
+        LayoutAnimation.configureNext({
+          duration: 200,
+          create: {
+            type: LayoutAnimation.Types.keyboard,
+            property: LayoutAnimation.Properties.opacity,
+          },
+          update: {
+            type: LayoutAnimation.Types.keyboard,
+            property: LayoutAnimation.Properties.opacity,
+          },
+          delete: {
+            type: LayoutAnimation.Types.keyboard,
+            property: LayoutAnimation.Properties.opacity,
+          },
+        });
+        setInputViewHeight(height);
+        setShowType(type);
       });
     }
   };
-  onChangeBarHeight = (inputHeight, marginTop) => {
-    Animated.timing(this.state.inputViewHeight, {
-      toValue: inputHeight,
-      duration: 310,
-    }).start();
-    this.setState({
-      viewY: marginTop,
-    });
+  const _onSendTextMessage = (text, ids) => {
+    NimSession.sendTextMessage(text, ids);
   };
-  onSendTextMessage = (text, IDArr) => {
-    NimSession.sendTextMessage(text, IDArr);
-  };
-  onSendRecordMessage = (path) => {
+  const _onSendRecordMessage = (path) => {
     NimSession.sendAudioMessage(path, '0');
   };
   // @姓名
-  onClickMention = () => {
-    const {navigation} = this.props;
-    const {session = {}} = navigation.state.params;
+  const _onClickMention = () => {
     if (session.sessionType === '1') {
       navigation.push('RemindList', {
         session,
@@ -201,85 +199,7 @@ class Chat extends React.Component {
     }
   };
 
-  _renderActions() {
-    const {session = {}} = this.props.navigation.state.params;
-    return (
-      <View style={styles.iconRow}>
-        <View style={styles.actionCol}>
-          <TouchableOpacity
-            style={styles.iconTouch}
-            onPress={this.handleCameraPicker}>
-            {Svgs.iconCamera}
-          </TouchableOpacity>
-          <Text style={{marginTop: 6, fontSize: 12}}>拍照</Text>
-        </View>
-        <View style={styles.actionCol}>
-          <TouchableOpacity
-            style={styles.iconTouch}
-            onPress={this.handleImagePicker}>
-            {Svgs.iconImage}
-          </TouchableOpacity>
-          <Text style={{marginTop: 6, fontSize: 12}}>相册</Text>
-        </View>
-        <View style={[styles.actionCol]}>
-          <TouchableOpacity
-            style={styles.iconTouch}
-            onPress={this.handleLocationClick}>
-            {Svgs.iconLocation}
-          </TouchableOpacity>
-          <Text style={{marginTop: 6, fontSize: 12}}>位置</Text>
-        </View>
-        <View style={[styles.actionCol, {marginRight: 0}]}>
-          <TouchableOpacity
-            style={styles.iconTouch}
-            onPress={this.handlePacketClick}>
-            {Svgs.iconPack}
-          </TouchableOpacity>
-          <Text style={{marginTop: 6, fontSize: 12}}>红包</Text>
-        </View>
-        {session.sessionType === '0' ? (
-          <View style={[styles.actionCol]}>
-            <TouchableOpacity
-              style={styles.iconTouch}
-              onPress={this.handleTransferClick}>
-              {Svgs.iconTransfer}
-            </TouchableOpacity>
-            <Text style={{marginTop: 6, fontSize: 12}}>转账</Text>
-          </View>
-        ) : null}
-        <View style={[styles.actionCol]}>
-          <TouchableOpacity
-            style={styles.iconTouch}
-            onPress={this.handleCustomMessageClick}>
-            {Svgs.iconTransfer}
-          </TouchableOpacity>
-          <Text style={{marginTop: 6, fontSize: 12}}>自定义消息</Text>
-        </View>
-      </View>
-    );
-  }
-  renderCustomContent() {
-    if (this.state.showType === 1) {
-      // 显示菜单
-      return (
-        <View
-          style={{
-            height: this.state.menuViewH,
-            width: window.width,
-            marginTop: this.state.viewY,
-            flexGrow: 1,
-            backgroundColor: 'white',
-          }}>
-          <View style={{height: 1, backgroundColor: '#EAEAEA'}} />
-          {this._renderActions()}
-        </View>
-      );
-    }
-    return null;
-  }
-  onMsgClick = (message) => {
-    const {navigation} = this.props;
-
+  const _onMsgClick = (message) => {
     if (message.msgType === 'voice' && message.extend) {
       AuroraIController.tapVoiceBubbleView(message.msgId);
       if (!message.extend.isPlayed && !message.isOutgoing) {
@@ -298,7 +218,8 @@ class Chat extends React.Component {
       });
     }
   };
-  onDealWithMenuClick = (message, strMenu) => {
+
+  const _onDealWithMenuClick = (message, strMenu) => {
     if (strMenu === '复制') {
       Clipboard.setString(message.text);
     } else if (strMenu === '删除') {
@@ -310,16 +231,14 @@ class Chat extends React.Component {
       });
     }
   };
-  onStatusViewClick = (message) => {
+  const _onStatusViewClick = (message) => {
     console.log('onStatusViewClick:', message);
   };
-  onBeginDragMessageList = () => {
+
+  const _onBeginDragMessageList = () => {
     AuroraIController.hidenFeatureView(true);
   };
-  sendLocationImage = (longitude, latitude, address) => {
-    NimSession.sendLocationMessage(longitude, latitude, address);
-  };
-  handleImagePicker = () => {
+  const _handleImagePicker = () => {
     ImagePicker.openPicker({
       mediaType: 'photo',
       loadingLabelText: '请稍候...',
@@ -327,39 +246,31 @@ class Chat extends React.Component {
       NimSession.sendImageMessages(image.path, 'myName');
     });
   };
-  handleCameraPicker = () => {
+  const _handleCameraPicker = () => {
     ImagePicker.openCamera({
       mediaType: 'photo',
       loadingLabelText: '请稍候...',
     }).then((image) => {
       NimSession.sendImageMessages(image.path, 'myName');
     });
-    // ImagePicker.openPicker({
-    //     mediaType:'video',
-    //     loadingLabelText:'请稍候...'
-    // }).then((video) => {
-    //     console.log(video);
-    //     NimSession.sendVideoMessage(video.path, 'duration', 'width', 'height', 'displayName');
-    // });
   };
-  onLocation = (coordinate) => {
-    this.sendLocationImage(
-      coordinate.latitude,
-      coordinate.longitude,
-      coordinate.address,
-    );
-  };
-  handleLocationClick = () => {
-    this.props.navigation.push('LocationPicker', {
-      onLocation: this.onLocation,
+  const _handleLocationClick = () => {
+    navigation.push('LocationPicker', {
+      onLocation: (coordinate) => {
+        NimSession.sendLocationMessage(
+          coordinate.latitude,
+          coordinate.longitude,
+          coordinate.address,
+        );
+      },
     });
   };
-  handleTransferClick = () => {
+  const _handleTransferClick = () => {
     RNToasty.Show({
       title: '需要自行实现',
     });
   };
-  handleCustomMessageClick = () => {
+  const _handleCustomMessageClick = () => {
     const h5Content = `
                   <h5>This is a custom message. </h5>
                   <button type="button">Click Me!</button>
@@ -373,100 +284,168 @@ class Chat extends React.Component {
       content: h5Content,
     });
   };
-  handlePacketClick = () => {
+
+  const _handlePacketClick = () => {
     RNToasty.Show({
       title: '需要自行实现',
     });
   };
-  onMsgOpenUrlClick = (url) => {
+  const _onMsgOpenUrlClick = (url) => {
     RNToasty.Show({
       title: `打开链接${url}`,
     });
   };
 
-  onPacketPress = (message) => {
+  const _onPacketPress = (message) => {
     console.log(message);
     RNToasty.Show({
       title: '需要自行实现',
     });
   };
-  onAvatarPress = (v) => {
+  const _onAvatarPress = (v) => {
     if (v && v.fromUser) {
       NimFriend.getUserInfo(v.fromUser._id).then((data) => {
-        this.props.navigation.push('FriendDetail', {
+        navigation.push('FriendDetail', {
           friendData: data,
         });
       });
     }
   };
-  onClickChangeAutoScroll = (isAutoScroll) => {
-    this._isAutoScroll = isAutoScroll;
+
+  const _onClickChangeAutoScroll = (isAutoScroll) => {
+    _isAutoScroll.current = isAutoScroll;
   };
-  _loadMoreContentAsync = async () => {
-    if (!this._lastMessage) {
+  const _loadMoreContentAsync = async () => {
+    if (!_lastMessage.current) {
       return;
     }
-    NimSession.queryMessageListEx(this._lastMessage.msgId, 20).then((data) => {
-      this._lastMessage = data[data.length - 1];
-      AuroraIController.insertMessagesToTop(data);
-      AuroraIController.stopPlayActivity();
-    });
-  };
-  render() {
-    const onViewLayout = (e) => {
-      const {layout} = e.nativeEvent;
-      if (layout.height === 0) {
-        return;
-      }
-      this.setState({
-        isInitialized: true,
-        inputViewHeight: new Animated.Value(50),
-        inputViewWidth: window.width,
+    NimSession.queryMessageListEx(_lastMessage.current?.msgId, 20)
+      .then((data) => {
+        _lastMessage.current = data[data.length - 1];
+        AuroraIController.insertMessagesToTop(data);
+        AuroraIController.stopPlayActivity();
+      })
+      .catch((e) => {
+        AuroraIController.stopPlayActivity();
       });
-    };
-    if (this.state.isInitialized) {
+  };
+
+  const _renderActions = () => {
+    return (
+      <View style={styles.iconRow}>
+        <View style={styles.actionCol}>
+          <TouchableOpacity
+            style={styles.iconTouch}
+            onPress={_handleCameraPicker}>
+            {Svgs.iconCamera}
+          </TouchableOpacity>
+          <Text style={{marginTop: 6, fontSize: 12}}>拍照</Text>
+        </View>
+        <View style={styles.actionCol}>
+          <TouchableOpacity
+            style={styles.iconTouch}
+            onPress={_handleImagePicker}>
+            {Svgs.iconImage}
+          </TouchableOpacity>
+          <Text style={{marginTop: 6, fontSize: 12}}>相册</Text>
+        </View>
+        <View style={[styles.actionCol]}>
+          <TouchableOpacity
+            style={styles.iconTouch}
+            onPress={_handleLocationClick}>
+            {Svgs.iconLocation}
+          </TouchableOpacity>
+          <Text style={{marginTop: 6, fontSize: 12}}>位置</Text>
+        </View>
+        <View style={[styles.actionCol, {marginRight: 0}]}>
+          <TouchableOpacity
+            style={styles.iconTouch}
+            onPress={_handlePacketClick}>
+            {Svgs.iconPack}
+          </TouchableOpacity>
+          <Text style={{marginTop: 6, fontSize: 12}}>红包</Text>
+        </View>
+        {session.sessionType === '0' ? (
+          <View style={[styles.actionCol]}>
+            <TouchableOpacity
+              style={styles.iconTouch}
+              onPress={_handleTransferClick}>
+              {Svgs.iconTransfer}
+            </TouchableOpacity>
+            <Text style={{marginTop: 6, fontSize: 12}}>转账</Text>
+          </View>
+        ) : null}
+        <View style={[styles.actionCol]}>
+          <TouchableOpacity
+            style={styles.iconTouch}
+            onPress={_handleCustomMessageClick}>
+            {Svgs.iconTransfer}
+          </TouchableOpacity>
+          <Text style={{marginTop: 6, fontSize: 12}}>自定义消息</Text>
+        </View>
+      </View>
+    );
+  };
+
+  const _renderCustomContent = () => {
+    if (showType === 1) {
+      // 显示菜单
       return (
-        <View style={styles.container}>
-          <MessageListView
-            style={[styles.messageList]}
-            initalData={this.state.messages}
-            onAvatarClick={this.onAvatarPress}
-            onMsgClick={this.onMsgClick}
-            onMsgOpenUrlClick={this.onMsgOpenUrlClick}
-            onDealWithMenuClick={this.onDealWithMenuClick}
-            onStatusViewClick={this.onStatusViewClick}
-            onTapMessageCell={this.onTapMessageCell}
-            onClickChangeAutoScroll={this.onClickChangeAutoScroll}
-            onBeginDragMessageList={this.onBeginDragMessageList}
-            onClickLoadMessages={this._loadMoreContentAsync}
-            avatarSize={{width: 40, height: 40}}
-            sendBubbleTextSize={18}
-            sendBubbleTextColor="000000"
-          />
-          <InputView
-            style={{
-              width: this.state.inputViewWidth,
-              height: this.state.inputViewHeight,
-            }}
-            menuViewH={this.state.menuViewH}
-            defaultToolHeight={50}
-            onFeatureView={this.onFeatureView}
-            onShowKeyboard={this.onShowKeyboard}
-            onChangeBarHeight={this.onChangeBarHeight}
-            onSendTextMessage={this.onSendTextMessage}
-            onSendRecordMessage={this.onSendRecordMessage}
-            onClickMention={this.onClickMention}>
-            {this.renderCustomContent()}
-          </InputView>
-          <NavigationEvents
-            onWillFocus={(payload) => (this._isListenKeyBoard = true)}
-            onWillBlur={(payload) => (this._isListenKeyBoard = false)}
-          />
+        <View
+          style={{
+            height: menuViewH,
+            width: window.width,
+            marginTop: viewY,
+            flexGrow: 1,
+            backgroundColor: 'white',
+          }}>
+          <View style={{height: 1, backgroundColor: '#EAEAEA'}} />
+          {_renderActions()}
         </View>
       );
     }
-    return <View style={styles.container} onLayout={onViewLayout} />;
-  }
+    return null;
+  };
+  return (
+    <View flex>
+      <MessageList
+        style={styles.messageList}
+        initalData={messages}
+        onAvatarClick={_onAvatarPress}
+        onMsgClick={_onMsgClick}
+        onMsgOpenUrlClick={_onMsgOpenUrlClick}
+        onDealWithMenuClick={_onDealWithMenuClick}
+        onStatusViewClick={_onStatusViewClick}
+        // onTapMessageCell={_onTapMessageCell}
+        onClickChangeAutoScroll={_onClickChangeAutoScroll}
+        onBeginDragMessageList={_onBeginDragMessageList}
+        onClickLoadMessages={_loadMoreContentAsync}
+        avatarSize={{width: 40, height: 40}}
+        sendBubbleTextSize={18}
+        sendBubbleTextColor="000000"
+      />
+      <SafeAreaView forceInset={{top: false}}>
+        <ChatInput
+          style={{
+            width: window.width,
+            height: inputViewHeight,
+          }}
+          menuViewH={menuViewH}
+          defaultToolHeight={50}
+          onFeatureView={_onFeatureView}
+          onShowKeyboard={_onShowKeyboard}
+          onSendTextMessage={_onSendTextMessage}
+          onSendRecordMessage={_onSendRecordMessage}
+          onClickMention={_onClickMention}>
+          {_renderCustomContent()}
+        </ChatInput>
+      </SafeAreaView>
+      {/* <NavigationEvents
+            onWillFocus={(payload) => (this._isListenKeyBoard = true)}
+            onWillBlur={(payload) => (this._isListenKeyBoard = false)}
+          /> */}
+    </View>
+  );
 }
 
 const {width} = Dimensions.get('window');
@@ -513,5 +492,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-export default Chat;

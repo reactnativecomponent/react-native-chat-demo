@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <cn.jiguang.imui.view.ShapeImageView
+        android:id="@+id/aurora_iv_msgitem_avatar"
+        style="@style/aurora_msgitem_sender_avatar_style"
+        android:src="@drawable/aurora_headicon_default"
+        app:videomessage_radius="3dp" />
+</merge>

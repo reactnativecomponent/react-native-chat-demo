@@ -5,7 +5,7 @@
  * @Last Modified by: huangjun
  * @Last Modified time: 2020-04-19 15:46:00
  */
-import React, {Component} from 'react';
+import * as React from 'react';
 import {
   View,
   Text,
@@ -16,70 +16,81 @@ import {
   FlatList,
   NativeAppEventEmitter,
 } from 'react-native';
-import {Container} from 'native-base';
+import {useNavigation} from '@react-navigation/native';
 import {NimSession} from 'react-native-netease-im';
 import {HeaderButtons} from 'react-navigation-header-buttons';
 import SwipeableRow from '../components/SwipeableRow';
 
-export default class ChatList extends Component {
-  static navigationOptions = ({navigation}) => ({
-    title: '会话列表',
-    headerLeft: () => (
-      <HeaderButtons color="#037aff">
-        <HeaderButtons.Item
-          color="#037aff"
-          title="朋友"
-          onPress={() => navigation.push('FriendList')}
-        />
-      </HeaderButtons>
-    ),
-    headerRight: () => (
-      <HeaderButtons color="#037aff">
-        <HeaderButtons.Item
-          color="#037aff"
-          title="创建群聊"
-          onPress={navigation.getParam('handlerCreateTeam')}
-        />
-      </HeaderButtons>
-    ),
-  });
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-    };
-  }
-  componentDidMount() {
-    this.sessionListener = NativeAppEventEmitter.addListener(
+export default function ChatListScreen() {
+  const navigation = useNavigation();
+  const _createTeam = React.useCallback(() => {
+    navigation.push('CreateTeam', {
+      onSuccess(res) {
+        navigation.push('Chat', {
+          session: {
+            contactId: res.teamId,
+            name: '群聊',
+            sessionType: '1',
+          },
+          title: '群聊',
+        });
+      },
+    });
+  }, [navigation]);
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <HeaderButtons color="#037aff">
+          <HeaderButtons.Item
+            color="#037aff"
+            title="朋友"
+            onPress={() => navigation.push('FriendList')}
+          />
+        </HeaderButtons>
+      ),
+      headerRight: () => (
+        <HeaderButtons color="#037aff">
+          <HeaderButtons.Item
+            color="#037aff"
+            title="创建群聊"
+            onPress={_createTeam}
+          />
+        </HeaderButtons>
+      ),
+    });
+  }, [_createTeam, navigation]);
+
+  const [dataList, setDataList] = React.useState([]);
+  React.useEffect(() => {
+    const _sessionListener = NativeAppEventEmitter.addListener(
       'observeRecentContact',
       (data) => {
-        this.setState({
-          data: data.recents,
-        });
+        setDataList(data.recents);
         console.info('会话列表', data);
       },
     );
-    this.props.navigation.setParams({
-      handlerCreateTeam: this.createTeam,
-    });
-  }
-  componentWillUnmount() {
-    this.sessionListener && this.sessionListener.remove();
-  }
-  onRowTap(data) {
-    const {navigation} = this.props;
+    return () => {
+      _sessionListener.remove();
+    };
+  }, []);
+  const _onItemPress = (data) => {
     navigation.push('Chat', {
       title: data.name,
       session: data,
     });
-  }
-  _renderRow = ({item}) => (
+  };
+  const _delete = (contactId) => {
+    NimSession.deleteRecentContact(contactId);
+  };
+
+  const _addFriend = () => {
+    navigation.push('SearchScreen');
+  };
+  const _renderSeparator = () => <View style={styles.line} />;
+  const _renderItem = ({item}) => (
     <View>
-      <SwipeableRow
-        onSwipeableOpen={() => this.setState({selectSId: item.contactId})}
-        id={item.contactId}
-        onDelActionsPress={this.delete}>
-        <TouchableHighlight onPress={() => this.onRowTap(item)}>
+      <SwipeableRow id={item.contactId} onDelActionsPress={_delete}>
+        <TouchableHighlight onPress={() => _onItemPress(item)}>
           <View style={[styles.row, styles.last]}>
             <Image
               style={styles.logo}
@@ -104,7 +115,7 @@ export default class ChatList extends Component {
                 </Text>
               </View>
             </View>
-            {parseInt(item.unreadCount) > 0 ? (
+            {parseInt(item.unreadCount, 10) > 0 ? (
               <View style={styles.badge} />
             ) : null}
           </View>
@@ -112,46 +123,19 @@ export default class ChatList extends Component {
       </SwipeableRow>
     </View>
   );
-  delete(contactId) {
-    NimSession.deleteRecentContact(contactId);
-  }
-  _renderSeparator = () => <View style={styles.line} />;
-  addFriend() {
-    const {navigation} = this.props;
-    navigation.push('SearchScreen');
-  }
-  createTeam = () => {
-    const {navigation} = this.props;
-    navigation.push('CreateTeam', {
-      onSuccess(res) {
-        const session = {
-          contactId: res.teamId,
-          name: '群聊',
-          sessionType: '1',
-        };
-        navigation.push('Chat', {
-          session,
-          title: '群聊',
-        });
-      },
-    });
-  };
-  render() {
-    return (
-      <Container>
-        <FlatList
-          style={styles.list}
-          data={this.state.data}
-          keyExtractor={(item) => item.contactId}
-          renderItem={this._renderRow}
-          ItemSeparatorComponent={this._renderSeparator}
-          ListHeaderComponent={this._renderSeparator}
-          ListFooterComponent={this._renderSeparator}
-        />
-      </Container>
-    );
-  }
+  return (
+    <FlatList
+      style={styles.list}
+      data={dataList}
+      keyExtractor={(item) => item.contactId}
+      renderItem={_renderItem}
+      ItemSeparatorComponent={_renderSeparator}
+      ListHeaderComponent={_renderSeparator}
+      ListFooterComponent={_renderSeparator}
+    />
+  );
 }
+
 const {width} = Dimensions.get('window');
 const px = 9;
 const borderWidth = StyleSheet.hairlineWidth;

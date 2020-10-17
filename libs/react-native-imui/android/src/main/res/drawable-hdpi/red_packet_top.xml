@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:shape="rectangle">
+            <corners
+                android:topLeftRadius="@dimen/red_packet_radio"
+                android:topRightRadius="@dimen/red_packet_radio" />
+            <solid android:color="@color/red_packet_bg" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape
+            android:shape="rectangle">
+            <corners
+                android:topLeftRadius="@dimen/red_packet_radio"
+                android:topRightRadius="@dimen/red_packet_radio" />
+            <solid android:color="@color/red_packet_bg_pressed" />
+        </shape>
+    </item>
+</selector>

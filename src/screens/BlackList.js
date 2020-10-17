@@ -6,79 +6,55 @@
  * @Last Modified time: 2020-04-19 15:09:29
  */
 import React from 'react';
-import {NativeAppEventEmitter, ListView, Image} from 'react-native';
-import {Container, ListItem, Text, Body} from 'native-base';
 import {NimFriend} from 'react-native-netease-im';
+import {NativeAppEventEmitter, FlatList} from 'react-native';
+import Cell from '../components/Cell';
 
-export default class BlackList extends React.Component {
-  static navigationOptions = ({navigation}) => ({
-    title: '黑名单',
-  });
-  constructor(props) {
-    super(props);
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2,
-    });
-    this.state = {
-      ds: ds.cloneWithRows([]),
-    };
-  }
-
-  componentWillMount() {
+export default function BlackListScreen({navigation}) {
+  const [dataList, setDataList] = React.useState([]);
+  React.useEffect(() => {
     NimFriend.startBlackList();
-  }
-  componentDidMount() {
-    this.friendListener = NativeAppEventEmitter.addListener(
+    const _friendListener = NativeAppEventEmitter.addListener(
       'observeBlackList',
       (data) => {
-        this.setState({
-          ds: this.state.ds.cloneWithRows(data),
-        });
+        setDataList(data);
       },
     );
-  }
-  componentWillUnmount() {
-    NimFriend.stopBlackList();
-    this.friendListener && this.friendListener.remove();
-  }
-  toFriendDetail(id) {
+    return () => {
+      NimFriend.stopBlackList();
+      _friendListener.remove();
+    };
+  }, []);
+  const _toFriendDetail = (id) => {
     NimFriend.getUserInfo(id).then((data) => {
-      this.props.navigator.push({
-        screen: 'FeiMa.FriendSetting',
-        title: '资料设置',
-        passProps: {
-          friendData: data,
-        },
-      });
+      // this.props.navigator.push({
+      //   screen: 'FeiMa.FriendSetting',
+      //   title: '资料设置',
+      //   passProps: {
+      //     friendData: data,
+      //   },
+      // });
     });
-  }
-  _renderRow = (res) => (
-    <ListItem onPress={() => this.toFriendDetail(res.contactId)}>
-      <Image
-        style={{width: 35, height: 35}}
+  };
+  const _renderItem = ({item}) => {
+    return (
+      <Cell
         source={
-          res.avatar
-            ? {uri: res.avatar}
+          item.avatar
+            ? {uri: item.avatar}
             : require('../../images/discuss_logo.png')
         }
+        onPress={() => _toFriendDetail(item.contactId)}
+        iconLeftStyle={{width: 35, height: 35}}
+        title={item.name}
       />
-      <Body>
-        <Text>{res.name}</Text>
-      </Body>
-    </ListItem>
-  );
-
-  render() {
-    return (
-      <Container style={{flex: 1, backgroundColor: '#f7f7f7'}}>
-        <ListView
-          style={{backgroundColor: '#fff'}}
-          dataSource={this.state.ds}
-          renderRow={this._renderRow}
-          enableEmptySections
-          removeClippedSubviews
-        />
-      </Container>
     );
-  }
+  };
+  return (
+    <FlatList
+      contentContainerStyle={{backgroundColor: 'white'}}
+      data={dataList}
+      renderItem={_renderItem}
+    />
+  );
 }

@@ -1,27 +1,31 @@
 /*
- * @登录
+ * @Descripttion: 登录
  * @Author: huangjun
- * @Date: 2018-10-10 16:22:47
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 16:49:41
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-17 15:32:22
  */
-import React, {Component} from 'react';
-import {View, TextInput, StyleSheet, Text, Dimensions} from 'react-native';
-import {Container, Content, Button} from 'native-base';
-import {NimSession} from 'react-native-netease-im';
+
+import * as React from 'react';
+import {
+  TextInput,
+  StyleSheet,
+  Text,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import {PERMISSIONS, requestMultiple} from 'react-native-permissions';
+import {View, Button} from 'react-native-ui-lib';
+import {NimSession} from 'react-native-netease-im';
+import {useNavigation} from '@react-navigation/native';
 import md5 from '../utils/md5';
 
-export default class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: 'abc1',
-      password: '123456',
-    };
-  }
+export default function LoginScreen() {
+  const navigation = useNavigation();
+  const [name, setName] = React.useState('abc1');
+  const [password, sePassword] = React.useState('123456');
 
-  componentDidMount() {
+  React.useEffect(() => {
     requestMultiple([
       PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
       PERMISSIONS.ANDROID.ACTIVITY_RECOGNITION,
@@ -29,80 +33,62 @@ export default class Login extends Component {
       PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
       PERMISSIONS.ANDROID.ADD_VOICEMAIL,
     ]);
-  }
+  }, []);
 
-  componentWillUnmount() {
-    // 清除密码
-    this.setState({password: ''});
-  }
-
-  loginIn() {
-    const {navigation} = this.props;
-    NimSession.login(this.state.name, md5.createHash(this.state.password)).then(
+  const _loginIn = () => {
+    NimSession.login(name, md5.createHash(password)).then(
       (res) => {
-        global.imaccount = this.state.name;
-        navigation.navigate('App');
+        global.imaccount = name;
+        global.isLogin = true;
+        navigation.replace('Main');
       },
       (err) => {
         console.warn(err);
       },
     );
-  }
-  _renderContent() {
+  };
+  const _renderContent = () => {
     return (
       <View style={styles.content}>
-        <View
-          style={[
-            styles.inputView,
-            {borderTopWidth: borderWidth, borderTopColor: '#ccc'},
-          ]}>
+        <View style={[styles.inputView, styles.borderTop]}>
           <Text style={styles.inputLabel}>账户</Text>
           <TextInput
             style={styles.textViewStyle}
-            value={this.state.name}
+            value={name}
             underlineColorAndroid="transparent"
             placeholder="请输入帐号"
             autoCapitalize="none"
             autoCorrect={false}
             clearButtonMode="while-editing"
-            onChangeText={(name) => {
-              this.setState({name});
-            }}
+            onChangeText={(val) => setName(val)}
           />
         </View>
         <View style={styles.inputView}>
           <Text style={styles.inputLabel}>密码</Text>
           <TextInput
             style={styles.textViewStyle}
-            value={this.state.password}
+            value={password}
             underlineColorAndroid="transparent"
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}
             clearButtonMode="while-editing"
             placeholder="请输入密码"
-            onChangeText={(password) => {
-              this.setState({password});
-            }}
+            onChangeText={(val) => sePassword(val)}
           />
         </View>
       </View>
     );
-  }
-  render() {
-    return (
-      <Container>
-        <Content alwaysBounceVertical={false}>
-          {this._renderContent()}
-          <View style={styles.bottom}>
-            <Button block onPress={() => this.loginIn()}>
-              <Text style={styles.buttonText}>登录</Text>
-            </Button>
-          </View>
-        </Content>
-      </Container>
-    );
-  }
+  };
+
+  return (
+    <ScrollView alwaysBounceVertical={false} style={{backgroundColor: 'white'}}>
+      {_renderContent()}
+      <View style={styles.bottom}>
+        <Button label="登录" onPress={_loginIn} />
+      </View>
+    </ScrollView>
+  );
 }
 const borderWidth = StyleSheet.hairlineWidth;
 const {height} = Dimensions.get('window');
@@ -110,13 +96,12 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: '#fff',
     flex: 1,
-    marginTop: height / 2 - 150,
+    marginTop: height / 2 - 250,
     padding: 12,
   },
   bottom: {
     padding: 12,
   },
-
   inputView: {
     backgroundColor: '#fff',
     flexDirection: 'row',
@@ -142,5 +127,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
+  },
+  borderTop: {
+    borderTopWidth: borderWidth,
+    borderTopColor: '#ccc',
   },
 });

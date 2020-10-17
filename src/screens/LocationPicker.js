@@ -10,7 +10,7 @@ import {StyleSheet, View, Text, PermissionsAndroid} from 'react-native';
 import Geolocation from 'react-native-amap-geolocation';
 import {RNToasty} from 'react-native-toasty';
 import {HeaderButtons} from 'react-navigation-header-buttons';
-import {MapView, Marker} from 'react-native-amap3d';
+// import {MapView, Marker} from 'react-native-amap3d';
 
 export default class LocationPicker extends React.Component {
   static navigationOptions = ({navigation}) => ({
@@ -148,28 +148,28 @@ export default class LocationPicker extends React.Component {
     return null;
   }
   render() {
-    const onViewLayout = (e) => {
-      const {layout} = e.nativeEvent;
-      if (layout.height === 0) {
-        return;
-      }
-      this.setState({
-        isInitialized: true,
-      });
-    };
-    if (this.state.isInitialized) {
-      return (
-        <MapView
-          showsZoomControls
-          showsLocationButton
-          zoomLevel={20}
-          coordinate={this.state.coordinate}
-          style={StyleSheet.absoluteFill}>
-          {this.renderMarker()}
-        </MapView>
-      );
-    }
-    return <View style={{flex: 1}} onLayout={onViewLayout} />;
+    // const onViewLayout = (e) => {
+    //   const {layout} = e.nativeEvent;
+    //   if (layout.height === 0) {
+    //     return;
+    //   }
+    //   this.setState({
+    //     isInitialized: true,
+    //   });
+    // };
+    // if (this.state.isInitialized) {
+    //   return (
+    //     <MapView
+    //       showsZoomControls
+    //       showsLocationButton
+    //       zoomLevel={20}
+    //       coordinate={this.state.coordinate}
+    //       style={StyleSheet.absoluteFill}>
+    //       {this.renderMarker()}
+    //     </MapView>
+    //   );
+    // }
+    return <View style={{flex: 1}}  />;
   }
 }
 const styles = StyleSheet.create({

@@ -1,46 +1,35 @@
 /*
- * @群组列表
+ * @Descripttion: 群组列表
  * @Author: huangjun
- * @Date: 2018-10-10 16:35:25
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 16:14:04
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-17 15:53:08
  */
+
 import React from 'react';
-import {NativeAppEventEmitter, Image} from 'react-native';
-import {Container, ListItem, Text, Body} from 'native-base';
+import {NativeAppEventEmitter, FlatList} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {NimTeam} from 'react-native-netease-im';
-import {FlatList} from 'react-native-gesture-handler';
+import Cell from '../components/Cell';
 
-export default class TeamList extends React.Component {
-  static navigationOptions = (navigation) => ({
-    title: '我的群聊',
-  });
-  constructor(props) {
-    super(props);
-    this.state = {
-      ds: [],
-    };
-  }
-
-  componentWillMount() {
+export default function TeamListScreen() {
+  const navigation = useNavigation();
+  const [dataList, setDataList] = React.useState([]);
+  React.useEffect(() => {
     NimTeam.startTeamList();
-  }
-  componentDidMount() {
-    this.friendListener = NativeAppEventEmitter.addListener(
+    const _teamListener = NativeAppEventEmitter.addListener(
       'observeTeam',
       (data) => {
-        this.setState({
-          ds: [],
-        });
+        setDataList(data);
       },
     );
-  }
-  componentWillUnmount() {
-    NimTeam.stopTeamList();
-    this.friendListener && this.friendListener.remove();
-  }
-  toChat(res) {
-    const {navigation} = this.props;
+    return () => {
+      NimTeam.stopTeamList();
+      _teamListener.remove();
+    };
+  }, []);
+
+  const _toChat = (res) => {
     navigation.popToTop();
     const session = {
       ...res,
@@ -51,33 +40,26 @@ export default class TeamList extends React.Component {
       session,
       title: res.name,
     });
-  }
-  _renderRow = ({item}) => (
-    <ListItem onPress={() => this.toChat(item)}>
-      <Image
-        style={{width: 35, height: 35}}
-        source={
-          item.avatar
-            ? {uri: item.avatar}
-            : require('../../images/discuss_logo.png')
-        }
-      />
-      <Body>
-        <Text>{item.name}</Text>
-      </Body>
-    </ListItem>
+  };
+  const _renderRow = ({item}) => (
+    <Cell
+      title={item.name}
+      iconLeftStyle={{width: 35, height: 35}}
+      source={
+        item.avatar
+          ? {uri: item.avatar}
+          : require('../../images/discuss_logo.png')
+      }
+      onPress={() => _toChat(item)}
+    />
   );
 
-  render() {
-    return (
-      <Container style={{flex: 1, backgroundColor: '#fff'}}>
-        <FlatList
-          style={{backgroundColor: '#fff'}}
-          data={this.state.ds}
-          renderItem={this._renderRow}
-          keyExtractor={(item, index) => item + index}
-        />
-      </Container>
-    );
-  }
+  return (
+    <FlatList
+      contentContainerStyle={{backgroundColor: '#fff'}}
+      data={dataList}
+      renderItem={_renderRow}
+      keyExtractor={(item, index) => item + index}
+    />
+  );
 }

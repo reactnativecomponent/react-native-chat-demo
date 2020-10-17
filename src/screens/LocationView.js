@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Marker, MapView} from 'react-native-amap3d';
+// import {Marker, MapView} from 'react-native-amap3d';
 
 export default class LocationView extends React.Component {
   static navigationOptions = ({navigation}) => ({
@@ -33,34 +33,34 @@ export default class LocationView extends React.Component {
         isInitialized: true,
       });
     };
-    if (this.state.isInitialized) {
-      return (
-        <MapView
-          zoomLevel={20}
-          showsZoomControls
-          showsLocationButton
-          coordinate={{
-            latitude: parseFloat(latitude),
-            longitude: parseFloat(longitude),
-          }}
-          style={{flex: 1}}>
-          <Marker
-            active
-            clickable={false}
-            coordinate={{
-              latitude: parseFloat(latitude),
-              longitude: parseFloat(longitude),
-            }}>
-            <View style={styles.custom}>
-              <View style={styles.customInfoWindow}>
-                <Text>{region.title}</Text>
-              </View>
-              <View style={styles.triangleDown} />
-            </View>
-          </Marker>
-        </MapView>
-      );
-    }
+    // if (this.state.isInitialized) {
+    //   return (
+    //     <MapView
+    //       zoomLevel={20}
+    //       showsZoomControls
+    //       showsLocationButton
+    //       coordinate={{
+    //         latitude: parseFloat(latitude),
+    //         longitude: parseFloat(longitude),
+    //       }}
+    //       style={{flex: 1}}>
+    //       <Marker
+    //         active
+    //         clickable={false}
+    //         coordinate={{
+    //           latitude: parseFloat(latitude),
+    //           longitude: parseFloat(longitude),
+    //         }}>
+    //         <View style={styles.custom}>
+    //           <View style={styles.customInfoWindow}>
+    //             <Text>{region.title}</Text>
+    //           </View>
+    //           <View style={styles.triangleDown} />
+    //         </View>
+    //       </Marker>
+    //     </MapView>
+    //   );
+    // }
     return <View style={{flex: 1}} onLayout={onViewLayout} />;
   }
 }

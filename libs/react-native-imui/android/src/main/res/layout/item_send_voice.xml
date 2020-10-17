@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/aurora_msgitem_send_style">
+
+    <TextView
+        android:id="@+id/aurora_tv_msgitem_date"
+        style="@style/aurora_msgitem_date_style" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
+
+        <include layout="@layout/item_head_right" />
+
+        <FrameLayout
+            android:id="@+id/aurora_fl_msgitem_voice_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/aurora_iv_msgitem_avatar"
+            android:gravity="right">
+
+            <TextView
+                android:paddingTop="@dimen/voice_padding"
+                android:paddingBottom="@dimen/voice_padding"
+                android:id="@+id/aurora_tv_msgitem_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3dp"
+                android:background="@drawable/aurora_sendtxt_bubble"
+                android:maxWidth="220dp" />
+
+            <ImageView
+                android:id="@+id/aurora_iv_msgitem_voice_anim"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/aurora_anim_send_voice" />
+
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/aurora_tv_voice_length"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|left"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_toLeftOf="@id/aurora_fl_msgitem_voice_container"
+            android:text="3'"
+            android:textColor="#555555"
+            android:textSize="12sp" />
+
+        <ImageButton
+            android:id="@+id/aurora_ib_msgitem_resend"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/aurora_tv_voice_length"
+            android:background="@drawable/aurora_send_msg_error"
+            android:clickable="true"
+            android:scaleType="fitCenter" />
+
+        <ProgressBar
+            android:id="@+id/aurora_pb_msgitem_sending"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="3dp"
+            android:layout_toLeftOf="@id/aurora_tv_voice_length"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+</LinearLayout>

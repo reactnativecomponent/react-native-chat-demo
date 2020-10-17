@@ -1,72 +1,65 @@
 /*
- * @添加好友
+ * @Descripttion: 新的朋友
  * @Author: huangjun
- * @Date: 2018-10-10 16:23:32
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 16:07:52
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-17 15:50:38
  */
+
 import React from 'react';
 import {
   StyleSheet,
-  View,
   TouchableOpacity,
   NativeAppEventEmitter,
-  ListView,
-  Image,
-  Text,
+  FlatList,
 } from 'react-native';
-import {Container, Content, ListItem, Body, Text as TextNB} from 'native-base';
+import {View, Text} from 'react-native-ui-lib';
 import {NimSystemMsg, NimFriend} from 'react-native-netease-im';
+import {useNavigation} from '@react-navigation/native';
 import {RNToasty} from 'react-native-toasty';
 import {HeaderButtons} from 'react-navigation-header-buttons';
+import Cell from '../components/Cell';
 
-export default class NewFriend extends React.Component {
-  static navigationOptions = ({navigation}) => ({
-    title: '新的朋友',
-    headerRight: () => (
-      <HeaderButtons color="#037aff">
-        <HeaderButtons.Item
-          title="查找"
-          color="#037aff"
-          onPress={() => navigation.push('SearchScreen')}
-        />
-      </HeaderButtons>
-    ),
-  });
-  // 构造
-  constructor(props) {
-    super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.state = {
-      dataSource: ds.cloneWithRows([]),
-    };
-  }
-  componentWillMount() {
+export default function NewFriendScreen() {
+  const navigation = useNavigation();
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderButtons color="#037aff">
+          <HeaderButtons.Item
+            title="查找"
+            color="#037aff"
+            onPress={() => navigation.push('SearchScreen')}
+          />
+        </HeaderButtons>
+      ),
+    });
+  }, [navigation]);
+
+  const [dataList, setDataList] = React.useState([]);
+  React.useEffect(() => {
     NimSystemMsg.startSystemMsg();
-  }
-  componentDidMount() {
-    this.friendListener = NativeAppEventEmitter.addListener(
+    const _systemMsgListener = NativeAppEventEmitter.addListener(
       'observeReceiveSystemMsg',
       (data) => {
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(data),
-        });
+        setDataList(data);
       },
     );
-  }
-  componentWillUnmount() {
-    NimSystemMsg.stopSystemMsg();
-    this.friendListener && this.friendListener.remove();
-  }
-  toFriendDetail(res) {
+    return () => {
+      NimSystemMsg.stopSystemMsg();
+      _systemMsgListener.remove();
+    };
+  }, []);
+
+  const _toFriendDetail = (res) => {
     NimFriend.fetchUserInfo(res.fromAccount).then((data) => {
-      this.props.navigation.push('FriendDetail', {
+      navigation.push('FriendDetail', {
         friendData: data,
         isRequest: res.status !== '1',
       });
     });
-  }
-  delete = (res) => {
+  };
+  const _delete = (res) => {
     NimSystemMsg.ackAddFriendRequest(
       res.messageId,
       res.fromAccount,
@@ -78,7 +71,7 @@ export default class NewFriend extends React.Component {
       });
     });
   };
-  accect = (res) => {
+  const _accect = (res) => {
     NimSystemMsg.ackAddFriendRequest(
       res.messageId,
       res.fromAccount,
@@ -95,58 +88,46 @@ export default class NewFriend extends React.Component {
       },
     );
   };
-  _renderRow = (res) => (
-    <ListItem
-      style={{backgroundColor: '#fff'}}
-      key={res.messageId}
-      onPress={() => this.toFriendDetail(res)}>
-      <Image
-        style={{width: 35, height: 35}}
-        source={
-          res.avatar ? {uri: res.avatar} : require('../images/discuss_logo.png')
-        }
-      />
-      <Body>
-        <TextNB>{res.name}</TextNB>
-        <TextNB note>{res.verifyText}</TextNB>
-      </Body>
-      {res.status === '0' ? (
-        <TouchableOpacity
-          style={{backgroundColor: '#d82617', borderRadius: 3, padding: 8}}
-          onPress={() => this.accect(res)}>
-          <Text style={{color: '#fff', fontSize: 13}}>接受</Text>
-        </TouchableOpacity>
-      ) : (
-        <TextNB note>已接受</TextNB>
-      )}
-    </ListItem>
+  const _renderRow = ({item}) => (
+    <Cell
+      source={
+        item.avatar ? {uri: item.avatar} : require('../images/discuss_logo.png')
+      }
+      iconLeftStyle={{width: 35, height: 35}}
+      title={item.name}
+      desc={item.verifyText}
+      onPress={() => _toFriendDetail(item)}
+      renderRight={
+        item.status === '0' ? (
+          <TouchableOpacity
+            style={{backgroundColor: '#d82617', borderRadius: 3, padding: 8}}
+            onPress={() => _accect(item)}>
+            <Text style={{color: '#fff', fontSize: 13}}>接受</Text>
+          </TouchableOpacity>
+        ) : (
+          <Text grey40>已接受</Text>
+        )
+      }
+    />
   );
-  _renderHiddenRow = (res) => (
+  const _renderHiddenRow = (res) => (
     <View style={styles.rowBack}>
       <TouchableOpacity
         style={styles.deleteBtn}
         activeOpacity={1}
-        onPress={() => this.delete(res)}>
-        <TextNB style={{color: '#fff'}}>删除</TextNB>
+        onPress={() => _delete(res)}>
+        <Text style={{color: '#fff'}}>删除</Text>
       </TouchableOpacity>
     </View>
   );
-  render() {
-    return (
-      <Container style={{flex: 1, backgroundColor: '#f7f7f7'}}>
-        <Content>
-          <View style={{backgroundColor: '#fff'}}>
-            <ListView
-              ref={(v) => (this.swList = v)}
-              enableEmptySections
-              dataSource={this.state.dataSource}
-              renderRow={this._renderRow}
-            />
-          </View>
-        </Content>
-      </Container>
-    );
-  }
+
+  return (
+    <FlatList
+      ref={(v) => (this.swList = v)}
+      data={dataList}
+      renderItem={_renderRow}
+    />
+  );
 }
 const styles = StyleSheet.create({
   deleteBtn: {

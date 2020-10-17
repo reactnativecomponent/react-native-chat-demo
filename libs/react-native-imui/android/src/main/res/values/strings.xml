@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">IMUIReactNative</string>
+
+    <string name="empty"></string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="clear_empty">清空</string>
+    <string name="iknow">知道了</string>
+    <string name="aurora_font_fontFamily_medium">sans-serif</string>
+    <string name="aurora_file_not_found_toast">File not found</string>
+    <string name="aurora_symbol_second">\"</string>
+
+    <string name="font_fontFamily_medium">sans-serif</string>
+
+    <!-- chat input start -->
+    <string name="send">Send</string>
+    <string name="record_voice_hint">Hold to Talk</string>
+    <string name="release_send_voice_hint">Release to Send</string>
+    <string name="cancel_record_voice_hint">To cancel recording</string>
+    <string name="preview_play_audio_hint">Preview</string>
+
+    <string name="rest_record_time_hint">You can also say %s seconds</string>
+    <string name="time_too_short_toast">Time is too short</string>
+    <string name="record_voice_permission_request">If you want to record, please grant the permission</string>
+    <string name="sdcard_not_exist_toast">Sdcard not exist.</string>
+    <string name="illegal_state_toast">Illegal state, please try again later</string>
+    <string name="record_voice_permission_denied">
+        Please grant the voice permission, otherwise the recording function can not be enabled
+    </string>
+    <string name="file_not_found_toast">File not found</string>
+    <string name="sdcard_not_prepare_toast">Sdcard not prepared</string>
+    <string name="record_video_failed">Record video</string>
+</resources>

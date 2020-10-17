@@ -1,0 +1,20 @@
+
+{
+  "name": "react-native-imui",
+  "version": "3.0.0",
+  "description": "ReactNative 原生聊天UI",
+  "main": "index.js",
+  "keywords": [
+    "react-native"
+  ],
+  "repository" :
+  { "type" : "git",
+    "url" : "https://github.com/reactnativecomponent/react-native-imui.git"
+  },
+  "author": "",
+  "license": "",
+  "peerDependencies": {
+    "react-native": ">=0.60.0"
+
+  }
+}

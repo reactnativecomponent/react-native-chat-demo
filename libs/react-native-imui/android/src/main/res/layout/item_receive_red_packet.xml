@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/aurora_msgitem_receive_style">
+
+
+    <TextView
+        android:id="@+id/aurora_tv_msgitem_date"
+        style="@style/aurora_msgitem_date_style" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp">
+
+        <include layout="@layout/item_head_left"/>
+
+        <TextView
+            android:id="@+id/aurora_tv_msgitem_display_name"
+            style="@style/aurora_msgitem_display_name_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/aurora_iv_msgitem_avatar"
+            android:text="123" />
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/aurora_message_padding_top"
+            android:id="@+id/item_layout"
+            android:clickable="false"
+            android:layout_marginLeft="@dimen/aurora_avatar_padding"
+            android:layout_marginRight="@dimen/aurora_width_msg_avatar"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/aurora_tv_msgitem_display_name"
+            android:layout_toRightOf="@id/aurora_iv_msgitem_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/layout_top"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:duplicateParentState="true"
+                android:background="@drawable/red_packet_top">
+
+                <ImageView
+                    android:id="@+id/iconPacket"
+                    android:layout_margin="@dimen/red_packet_image_margin"
+                    android:src="@drawable/icon_packet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/red_packet_comments"
+                    android:layout_toRightOf="@+id/iconPacket"
+                    android:layout_marginTop="@dimen/red_packet_top"
+                    android:textSize="@dimen/red_packet_comments_size"
+                    android:text="恭喜发财,大吉大利"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    android:textColor="@color/red_packet_comments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginTop="3dp"
+                    android:layout_toRightOf="@+id/iconPacket"
+                    android:layout_below="@+id/red_packet_comments"
+                    android:text="领取红包"
+                    android:textColor="@color/red_packet_text"
+                    android:textSize="@dimen/red_packet_text_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+
+            <TextView
+                android:background="@drawable/red_packet_bottom"
+                android:padding="5dp"
+                android:textSize="@dimen/red_packet_tag_size"
+                android:textColor="@color/red_packet_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="红包" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

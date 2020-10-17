@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/aurora_msgitem_send_style">
+
+
+    <TextView
+        android:id="@+id/aurora_tv_msgitem_date"
+        style="@style/aurora_msgitem_date_style" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/aurora_ib_msgitem_resend"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/aurora_send_msg_error"
+                android:clickable="true"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/aurora_pb_msgitem_sending"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="3dp"
+                android:visibility="visible" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/item_layout"
+            android:layout_marginRight="@dimen/aurora_avatar_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/aurora_tv_msgitem_display_name"
+            android:layout_toRightOf="@id/aurora_iv_msgitem_avatar"
+            android:background="@drawable/link_bg"
+            android:orientation="vertical">
+            <TextView
+                android:maxLines="3"
+                android:id="@+id/location_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="123" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/location" />
+        </LinearLayout>
+
+        <include layout="@layout/item_head_right"/>
+
+    </LinearLayout>
+
+</LinearLayout>

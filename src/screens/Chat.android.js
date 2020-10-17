@@ -5,12 +5,10 @@
  * @Last Modified by: huangjun
  * @Last Modified time: 2020-04-19 16:28:50
  */
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   Clipboard,
   StyleSheet,
-  Text,
-  View,
   Dimensions,
   TouchableOpacity,
   NativeAppEventEmitter,
@@ -18,7 +16,9 @@ import {
   Image,
   Animated,
 } from 'react-native';
+import {View, Text} from 'react-native-ui-lib';
 import {RNToasty} from 'react-native-toasty';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {HeaderButtons} from 'react-navigation-header-buttons';
 import {NimFriend, NimSession} from 'react-native-netease-im';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -29,17 +29,39 @@ const ContainerHeightMax = 800;
 
 const ChatInputHeightBg = '#ffffff';
 const {AuroraIMUIModule} = NativeModules;
-const AnimatedImplementation = require('react-native/Libraries/Animated/src/AnimatedImplementation');
+// const AnimatedImplementation = require('react-native/Libraries/Animated/src/AnimatedImplementation');
 
-const MessageListView = AnimatedImplementation.createAnimatedComponent(
-  MessageList,
-);
-const InputView = AnimatedImplementation.createAnimatedComponent(ChatInput);
-class Chat extends React.Component {
-  static navigationOptions = ({navigation}) => {
-    const {session = {}, title} = navigation.state.params;
-    return {
-      title,
+// const MessageListView = AnimatedImplementation.createAnimatedComponent(
+//   MessageList,
+// );
+// const InputView = AnimatedImplementation.createAnimatedComponent(ChatInput);
+
+export default function ChatScreen() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const {session = {}, title} = route.params || {};
+
+  // 会话详情
+  const _toSessionDetail = React.useCallback(() => {
+    if (session.sessionType === '1') {
+      navigation.push('SessionTeamDetail', {
+        session,
+        onResult() {
+          AuroraIMUIModule.clearMessage();
+        },
+      });
+    } else {
+      navigation.push('SessionUserDetail', {
+        session,
+        onResult() {
+          AuroraIMUIModule.clearMessage();
+        },
+      });
+    }
+  }, [navigation, session]);
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: title,
       headerRight: () => (
         <HeaderButtons>
           <HeaderButtons.Item
@@ -47,7 +69,7 @@ class Chat extends React.Component {
               <Image
                 style={{tintColor: '#037aff'}}
                 source={
-                  session.sessionType === '1'
+                  session?.sessionType === '1'
                     ? require('../images/session_team.png')
                     : require('../images/session_user.png')
                 }
@@ -55,45 +77,42 @@ class Chat extends React.Component {
             }
             title=""
             buttonWrapperStyle={{marginRight: 5}}
-            onPress={navigation.getParam('handlerRightBtn')}
+            onPress={_toSessionDetail}
           />
         </HeaderButtons>
       ),
-    };
-  };
-  constructor(props) {
-    super(props);
-    this.state = {
-      menuContainerHeight: ContainerHeightMax,
-      chatInputStyle: {
-        backgroundColor: ChatInputHeightBg,
-        width,
-      },
-      chatInputheight: new Animated.Value(48),
-      isDismissMenuContainer: false,
-      initList: [],
-    };
-  }
-  componentDidMount() {
-    const {navigation} = this.props;
-    const {session = {}} = navigation.state.params;
-
-    navigation.setParams({
-      handlerRightBtn: this.toSessionDetail,
     });
+  }, [title, session, navigation, _toSessionDetail]);
+
+  const [menuContainerHeight, setMenuContainerHeight] = React.useState(
+    ContainerHeightMax,
+  );
+  const [chatInputStyle, setChatInputStyle] = React.useState({
+    backgroundColor: ChatInputHeightBg,
+    width,
+  });
+  const [chatInputheight, setChatInputheight] = React.useState(48);
+  const [isDismissMenuContainer, setIsDismissMenuContainer] = React.useState(
+    false,
+  );
+  const [initList, setInitList] = React.useState([]);
+  const [action, setAction] = React.useState();
+
+  let _lastMessage = useRef();
+
+  React.useEffect(() => {
     NimSession.startSession(session.contactId, session.sessionType);
-    this.sessionListener = NativeAppEventEmitter.addListener(
+    const _sessionListener = NativeAppEventEmitter.addListener(
       'observeReceiveMessage',
       (data) => {
         console.info('新消息通知', data);
-        console.warn(JSON.stringify(data));
         if (data && data.length > 0) {
           AuroraIMUIModule.appendMessages(data);
           AuroraIMUIModule.scrollToBottom();
         }
       },
     );
-    this.msgStatusListener = NativeAppEventEmitter.addListener(
+    const _msgStatusListener = NativeAppEventEmitter.addListener(
       'observeMsgStatus',
       (data) => {
         console.info('消息', data);
@@ -111,7 +130,7 @@ class Chat extends React.Component {
       },
     );
     // 删除消息通知
-    this.deleteMessageListener = NativeAppEventEmitter.addListener(
+    const _deleteMessageListener = NativeAppEventEmitter.addListener(
       'observeDeleteMessage',
       (data) => {
         if (data.length > 0) {
@@ -127,8 +146,8 @@ class Chat extends React.Component {
         console.info('首次加载', data);
         if (data.length > 0) {
           const [first] = data;
-          this._lastMessage = first;
-          this.setState({initList: data});
+          _lastMessage.current = first;
+          setInitList(data);
           AuroraIMUIModule.scrollToBottom();
         }
       },
@@ -136,38 +155,29 @@ class Chat extends React.Component {
         console.log(err);
       },
     );
-  }
-  componentWillUnmount() {
-    NimSession.stopSession();
-    this.sessionListener && this.sessionListener.remove();
-    this.msgStatusListener && this.msgStatusListener.remove();
-    this.deleteMessageListener && this.deleteMessageListener.remove();
-  }
-  // 会话详情
-  toSessionDetail = () => {
-    const {navigation} = this.props;
-    const {session} = navigation.state.params;
-    if (session.sessionType === '1') {
-      navigation.push('SessionTeamDetail', {
-        session,
-        onResult() {
-          AuroraIMUIModule.clearMessage();
-        },
-      });
-    } else {
-      navigation.push('SessionUserDetail', {
-        session,
-        onResult() {
-          AuroraIMUIModule.clearMessage();
-        },
-      });
+    return () => {
+      NimSession.stopSession();
+      _sessionListener.remove();
+      _msgStatusListener.remove();
+      _deleteMessageListener.remove();
+    };
+  }, [session]);
+  const _loadMoreContentAsync = () => {
+    if (!_lastMessage.current) {
+      return;
     }
+    NimSession.queryMessageListEx(_lastMessage.current?.msgId, 20).then(
+      (data) => {
+        if (data.length > 0) {
+          const [first] = data;
+          _lastMessage.current = first;
+          AuroraIMUIModule.insertMessagesToTop(data);
+        }
+      },
+    );
   };
 
-  sendLocationImage = (longitude, latitude, address) => {
-    NimSession.sendLocationMessage(longitude, latitude, address);
-  };
-  onSend = (text, ids) => {
+  const _onSendText = (text, ids = []) => {
     let t = text;
     if (!t || !t.trim()) {
       RNToasty.Show({
@@ -178,10 +188,25 @@ class Chat extends React.Component {
     t = text.trim();
     NimSession.sendTextMessage(t, ids);
 
-    this.forceUpdate();
+    // this.forceUpdate();
   };
-  handleImagePicker = () => {
-    if (!this.state.action) {
+  const _sendLocationImage = (longitude, latitude, address) => {
+    NimSession.sendLocationMessage(longitude, latitude, address);
+  };
+  const _onLocation = (coordinate) => {
+    _sendLocationImage(
+      coordinate.longitude,
+      coordinate.latitude,
+      coordinate.address,
+    );
+  };
+  // 语音消息
+  const _onSendRecordMessage = (path, duration) => {
+    NimSession.sendAudioMessage(path, duration);
+  };
+  // 打开相册照片
+  const _handleImagePicker = () => {
+    if (!action) {
       return;
     }
     ImagePicker.openPicker({
@@ -191,8 +216,9 @@ class Chat extends React.Component {
       NimSession.sendImageMessages(image.path, 'myName');
     });
   };
-  handleCameraPicker = () => {
-    if (!this.state.action) {
+  // 打开相机拍照
+  const _handleCameraPicker = () => {
+    if (!action) {
       return;
     }
     ImagePicker.openCamera({
@@ -202,51 +228,55 @@ class Chat extends React.Component {
       NimSession.sendImageMessages(image.path, 'myName');
     });
   };
-  onLocation = (coordinate) => {
-    this.sendLocationImage(
-      coordinate.longitude,
-      coordinate.latitude,
-      coordinate.address,
-    );
-  };
-  handleLocationClick = () => {
-    if (!this.state.action) {
+  // 选择位置
+  const _handleLocationClick = () => {
+    if (!action) {
       return;
     }
-    this.props.navigation.push('LocationPicker', {
-      onLocation: this.onLocation,
+    navigation.push('LocationPicker', {
+      onLocation: _onLocation,
     });
   };
-  handleTransferClick = () => {
-    if (!this.state.action) {
+  // 转账
+  const _handleTransferClick = () => {
+    if (!action) {
       return;
     }
     RNToasty.Show({
       title: '向好友转账',
     });
   };
-  handlePacketClick = () => {
-    if (!this.state.action) {
+  // 输入@监听
+  const _onEditTextChange = (text) => {
+    console.log('用于做@提醒:', text);
+  };
+  // 红包消息
+  const _handlePacketClick = () => {
+    if (!action) {
       return;
     }
     RNToasty.Show({
       title: '发红包',
     });
   };
-  onOpenURL = (url) => {
+  // 点击链接
+  const _onOpenURL = (url) => {
     RNToasty.Show({
       title: `打开链接${url}`,
     });
   };
-  onMessagePress = (message) => {
-    const {navigator} = this.props;
+  // 点击红包消息
+  const _onPacketPress = (message) => {
+    console.log(message);
+    RNToasty.Show({
+      title: '红包详情',
+    });
+  };
+  // 点击消息
+  const _onMessagePress = (message) => {
     if (message.msgType === 'location') {
-      navigator.push({
-        screen: 'ImDemo.LocationView',
-        title: '查看位置',
-        passProps: {
-          region: message.extend,
-        },
+      navigation.push('LocationView', {
+        region: message?.extend,
       });
     }
     if (message.msgType === 'redpacket' && message.extend) {
@@ -260,91 +290,46 @@ class Chat extends React.Component {
       });
     }
     if (message.msgType === 'redpacketOpen' && message.extend) {
-      this.onPacketPress(message);
+      _onPacketPress(message);
     }
   };
-  onTouchMsgList = () => {
-    Animated.timing(this.state.chatInputheight, {
-      toValue: 48,
-      duration: 200,
-    }).start();
-    this.setState({
-      isDismissMenuContainer: true,
-      chatInputStyle: {
-        backgroundColor: ChatInputHeightBg,
-        width,
-      },
-    });
-  };
-  onPacketPress = (message) => {
-    console.log(message);
-    RNToasty.Show({
-      title: '红包详情',
-    });
-  };
-  onAvatarPress = (v) => {
+
+  // 点击头像
+  const _onAvatarPress = (v) => {
     if (v && v.fromUser) {
       NimFriend.getUserInfo(v.fromUser._id).then((data) => {
-        this.props.navigation.push('FriendDetail', {
+        navigation.push('FriendDetail', {
           friendData: data,
         });
       });
     }
   };
-  _loadMoreContentAsync = () => {
-    if (!this._lastMessage) {
-      return;
-    }
-    NimSession.queryMessageListEx(this._lastMessage.msgId, 20).then((data) => {
-      if (data.length > 0) {
-        const [first] = data;
-        this._lastMessage = first;
-        AuroraIMUIModule.insertMessagesToTop(data);
-      }
+  const _onTouchMsgList = () => {
+    setChatInputheight(48);
+    setChatInputStyle({
+      backgroundColor: ChatInputHeightBg,
+      width,
     });
+    setIsDismissMenuContainer(true);
   };
-  onSendText = (text) => {
-    this.onSend(text, []);
-  };
-  onSendRecordMessage = (path, duration) => {
-    NimSession.sendAudioMessage(path, duration);
-  };
-  onFeatureView = (inputHeight, showType) => {
-    if (showType > 0) {
-      Animated.timing(this.state.chatInputheight, {
-        toValue: 323,
-        duration: 200,
-      }).start();
-    } else {
-      Animated.timing(this.state.chatInputheight, {
-        toValue: 48,
-        duration: 260,
-      }).start();
-    }
-    this.setState({
-      action: showType === 2,
-      isDismissMenuContainer: false,
-      chatInputStyle: {
-        backgroundColor: ChatInputHeightBg,
-        width,
-        // height: showType === 0 ? ChatInputHeightMin : ChatInputHeightMax
-      },
-      // showType === 0 ? ContainerHeightMin : ContainerHeightMax + showType,
-      menuContainerHeight: ContainerHeightMax,
-    });
+  const _onFeatureView = (inputHeight, showType) => {
+    setChatInputheight(showType > 0 ? 323 : 48);
+    setAction(showType === 2);
+    setIsDismissMenuContainer(false);
+    setChatInputStyle({backgroundColor: ChatInputHeightBg, width});
+    setMenuContainerHeight(ContainerHeightMax);
+
     setTimeout(() => {
       AuroraIMUIModule.scrollToBottom();
     }, 500);
   };
-  onShowKeyboard = () => {
+  const _onShowKeyboard = () => {
     setTimeout(() => {
       AuroraIMUIModule.scrollToBottom();
     }, 200);
   };
-  onEditTextChange = (text) => {
-    console.log('用于做@提醒:', text);
-  };
-  onStatusViewClick = (message, opt) => {
+  // tip菜单
+  const _onStatusViewClick = (message, opt) => {
     console.info('onStatusViewClick', `${message}--${opt}`);
     if (opt === 'copy') {
       Clipboard.setString(message.text);
@@ -357,54 +342,14 @@ class Chat extends React.Component {
       });
     }
   };
-  renderChatInput() {
-    return (
-      <InputView
-        style={[
-          this.state.chatInputStyle,
-          {height: this.state.chatInputheight},
-        ]}
-        menuContainerHeight={this.state.menuContainerHeight}
-        isDismissMenuContainer={this.state.isDismissMenuContainer}
-        onSendText={this.onSendText}
-        onSendVoice={this.onSendRecordMessage}
-        onShowKeyboard={this.onShowKeyboard}
-        onFeatureView={this.onFeatureView}
-        onEditTextChange={this.onEditTextChange}>
-        <View style={styles.search}>{this.renderActionBar()}</View>
-      </InputView>
-    );
-  }
-  renderMessages() {
-    return (
-      <MessageListView
-        style={{flex: 1}}
-        onMsgClick={this.onMessagePress}
-        onLinkClick={this.onOpenURL}
-        onAvatarClick={this.onAvatarPress}
-        onStatusViewClick={this.onStatusViewClick}
-        onTouchMsgList={this.onTouchMsgList}
-        onClickChangeAutoScroll={this.onClickChangeAutoScroll}
-        onPullToRefresh={this._loadMoreContentAsync}
-        sendBubble={{imageName: 'send_msg', padding: 10}}
-        receiveBubbleTextColor="#ffffff"
-        sendBubbleTextSize={14}
-        receiveBubbleTextSize={14}
-        sendBubblePressedColor="#dddddd"
-        eventMsgTxtColor="#ffffff"
-        eventMsgTxtSize={12}
-        initList={this.state.initList}
-      />
-    );
-  }
-  renderActionBar() {
-    const {session} = this.props.navigation.state.params;
+  // 自定义输入功能
+  const _renderActionBar = () => {
     return (
       <View style={styles.iconRow}>
         <View style={styles.actionCol}>
           <TouchableOpacity
             style={styles.iconTouch}
-            onPress={this.handleCameraPicker}>
+            onPress={_handleCameraPicker}>
             {Svgs.iconCamera}
           </TouchableOpacity>
           <Text style={{marginTop: 6, fontSize: 12}}>拍照</Text>
@@ -412,7 +357,7 @@ class Chat extends React.Component {
         <View style={styles.actionCol}>
           <TouchableOpacity
             style={styles.iconTouch}
-            onPress={this.handleImagePicker}>
+            onPress={_handleImagePicker}>
             {Svgs.iconImage}
           </TouchableOpacity>
           <Text style={{marginTop: 6, fontSize: 12}}>相册</Text>
@@ -420,7 +365,7 @@ class Chat extends React.Component {
         <View style={[styles.actionCol]}>
           <TouchableOpacity
             style={styles.iconTouch}
-            onPress={this.handleLocationClick}>
+            onPress={_handleLocationClick}>
             {Svgs.iconLocation}
           </TouchableOpacity>
           <Text style={{marginTop: 6, fontSize: 12}}>位置</Text>
@@ -428,7 +373,7 @@ class Chat extends React.Component {
         <View style={[styles.actionCol, {marginRight: 0}]}>
           <TouchableOpacity
             style={styles.iconTouch}
-            onPress={this.handlePacketClick}>
+            onPress={_handlePacketClick}>
             {Svgs.iconPack}
           </TouchableOpacity>
           <Text style={{marginTop: 6, fontSize: 12}}>红包</Text>
@@ -437,7 +382,7 @@ class Chat extends React.Component {
           <View style={[styles.actionCol]}>
             <TouchableOpacity
               style={styles.iconTouch}
-              onPress={this.handleTransferClick}>
+              onPress={_handleTransferClick}>
               {Svgs.iconTransfer}
             </TouchableOpacity>
             <Text style={{marginTop: 6, fontSize: 12}}>转账</Text>
@@ -445,16 +390,40 @@ class Chat extends React.Component {
         ) : null}
       </View>
     );
-  }
-
-  render() {
-    return (
-      <View style={{flex: 1, backgroundColor: '#f7f7f7'}}>
-        {this.renderMessages()}
-        {this.renderChatInput()}
-      </View>
-    );
-  }
+  };
+  return (
+    <View flex>
+      <MessageList
+        style={{flex: 1}}
+        onMsgClick={_onMessagePress}
+        onLinkClick={_onOpenURL}
+        onAvatarClick={_onAvatarPress}
+        onStatusViewClick={_onStatusViewClick}
+        onTouchMsgList={_onTouchMsgList}
+        // onClickChangeAutoScroll={_onClickChangeAutoScroll}
+        onPullToRefresh={_loadMoreContentAsync}
+        sendBubble={{imageName: 'send_msg', padding: 10}}
+        receiveBubbleTextColor="#ffffff"
+        sendBubbleTextSize={14}
+        receiveBubbleTextSize={14}
+        sendBubblePressedColor="#dddddd"
+        eventMsgTxtColor="#ffffff"
+        eventMsgTxtSize={12}
+        initList={initList}
+      />
+      <ChatInput
+        style={[chatInputStyle, {height: chatInputheight}]}
+        menuContainerHeight={menuContainerHeight}
+        isDismissMenuContainer={isDismissMenuContainer}
+        onSendText={_onSendText}
+        onSendVoice={_onSendRecordMessage}
+        onShowKeyboard={_onShowKeyboard}
+        onFeatureView={_onFeatureView}
+        onEditTextChange={_onEditTextChange}>
+        <View style={styles.search}>{_renderActionBar()}</View>
+      </ChatInput>
+    </View>
+  );
 }
 
 const {width} = Dimensions.get('window');
@@ -509,5 +478,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
-
-export default Chat;

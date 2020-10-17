@@ -1,79 +1,75 @@
 /*
- * @选择好友
+ * @Descripttion: 邀请好友进群
  * @Author: huangjun
- * @Date: 2018-10-10 16:29:18
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 16:09:09
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-17 15:30:55
  */
-import React from 'react';
-import {View, SectionList, Image, ScrollView, Dimensions} from 'react-native';
-import {Container, Icon, ListItem, Text, Body} from 'native-base';
+
+import React, {useRef} from 'react';
+import {
+  SectionList,
+  Image,
+  ScrollView,
+  Dimensions,
+  StyleSheet,
+} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native-ui-lib';
 import {NimTeam, NimFriend} from 'react-native-netease-im';
 import {HeaderButtons} from 'react-navigation-header-buttons';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-export default class SelectUsers extends React.Component {
-  static navigationOptions = ({navigation}) => ({
-    title: '选择好友',
-    headerLeft: () => (
-      <HeaderButtons color="#037aff">
-        <HeaderButtons.Item
-          title="取消"
-          color="#037aff"
-          onPress={() => navigation.pop()}
-        />
-      </HeaderButtons>
-    ),
-    headerRight: () => (
-      <HeaderButtons color="#037aff">
-        <HeaderButtons.Item
-          title="确定"
-          color="#037aff"
-          onPress={navigation.getParam('handlerDone')}
-        />
-      </HeaderButtons>
-    ),
-  });
+export default function SelectUsersScreen() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const {teamId, onResult, members = []} = route.params || {};
+  const [dataList, setDataList] = React.useState([]);
+  const [accounts, setAccounts] = React.useState([]);
+  let _listData = useRef([]);
 
-  // 构造
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-      selectAccounts: [],
-    };
-  }
-
-  componentDidMount() {
-    this.props.navigation.setParams({
-      handlerDone: this.addMembers,
+  const _addMembers = React.useCallback(() => {
+    const result = accounts.map((res) => {
+      return res.contactId;
     });
-
-    NimFriend.getFriendList('').then((data) => {
-      this.listData = this.formatData(data);
-      this.setState({
-        data: this.listData,
-      });
-    });
-  }
-
-  addMembers = () => {
-    const {navigation} = this.props;
-    const {teamId, onResult} = navigation.state.params;
-    const result = this.getIds();
     if (result.length > 0) {
       NimTeam.addMembers(teamId, result).then(() => {
         onResult && onResult();
+        navigation.pop(2);
       });
     }
-  };
-  getIds() {
-    const arr = [];
-    this.state.selectAccounts.map((res) => {
-      arr.push(res.contactId);
+  }, [accounts, onResult, teamId, navigation]);
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <HeaderButtons color="#037aff">
+          <HeaderButtons.Item
+            title="取消"
+            color="#037aff"
+            onPress={() => navigation.pop()}
+          />
+        </HeaderButtons>
+      ),
+      headerRight: () => (
+        <HeaderButtons color="#037aff">
+          <HeaderButtons.Item
+            title="确定"
+            color="#037aff"
+            onPress={_addMembers}
+          />
+        </HeaderButtons>
+      ),
     });
-    return arr;
-  }
-  formatData = (data) => {
+  }, [navigation, _addMembers]);
+
+  React.useEffect(() => {
+    NimFriend.getFriendList('').then((data) => {
+      _listData.current = formatData(data);
+      setDataList(_listData.current);
+    });
+  }, []);
+
+  const formatData = (data) => {
     const newList = [];
     const h = transform(data).sort();
     h.map((res) => {
@@ -84,8 +80,7 @@ export default class SelectUsers extends React.Component {
     });
     return newList;
   };
-  getStatus(data) {
-    const {members = []} = this.props.navigation.state.params;
+  const _getStatus = (data) => {
     let isSelect = false;
     members.map((res) => {
       if (data.contactId === res.contactId) {
@@ -93,15 +88,15 @@ export default class SelectUsers extends React.Component {
       }
     });
     return isSelect;
-  }
-  _select(res, sectionId, rowId) {
-    const newSelect = this.state.selectAccounts;
+  };
+  const _select = (res, sectionId, rowId) => {
+    const newSelect = accounts;
     if (res.isSelect) {
       newSelect.splice(newSelect.indexOf(res), 1);
     } else {
       newSelect.push(res);
     }
-    this.listData.map((sectionList) => {
+    _listData.current?.map((sectionList) => {
       if (sectionList.key === sectionId) {
         sectionList.data.splice(rowId, 1, {
           ...res,
@@ -109,13 +104,11 @@ export default class SelectUsers extends React.Component {
         });
       }
     });
-    this.setState({
-      selectAccounts: newSelect,
-      data: this.listData,
-    });
-  }
-  _renderSelect() {
-    return this.state.selectAccounts.map((res) => (
+    setAccounts([...newSelect]);
+    setDataList([..._listData.current]);
+  };
+  const _renderSelect = () => {
+    return accounts.map((res) => (
       <Image
         key={res.contactId}
         style={{width: 35, height: 35, marginRight: 5}}
@@ -124,87 +117,85 @@ export default class SelectUsers extends React.Component {
         }
       />
     ));
-  }
-  _renderRow = ({item, section, index}) => {
-    if (this.getStatus(item)) {
-      return (
-        <ListItem>
-          <Icon
-            name="ios-checkmark-circle"
-            style={{color: '#ccc', marginRight: 8}}
-          />
-          <Image
-            style={{width: 35, height: 35}}
-            source={
-              item.avatar
-                ? {uri: item.avatar}
-                : require('../images/discuss_logo.png')
-            }
-          />
-          <Body>
-            <Text>{item.name}</Text>
-          </Body>
-        </ListItem>
-      );
-    }
+  };
+  const _renderRow = ({item, section, index}) => {
+    console.log(item);
     return (
-      <ListItem onPress={() => this._select(item, section.key, index)}>
-        <Icon
-          name={item.isSelect ? 'ios-checkmark-circle' : 'ios-radio-button-off'}
-          style={{marginRight: 8, color: item.isSelect ? '#d82617' : '#ccc'}}
-        />
+      <TouchableOpacity
+        row
+        centerV
+        paddingL-12
+        style={{height: 50}}
+        activeOpacity={1}
+        onPress={
+          !_getStatus(item) ? () => _select(item, section.key, index) : null
+        }>
+        {_getStatus(item) ? (
+          <Icon
+            size={25}
+            name="ios-checkmark-circle"
+            style={{marginRight: 8, color: '#ccc'}}
+          />
+        ) : (
+          <Icon
+            name={
+              item.isSelect ? 'ios-checkmark-circle' : 'ios-radio-button-off'
+            }
+            style={{marginRight: 8, color: item.isSelect ? '#d82617' : '#ccc'}}
+            size={25}
+          />
+        )}
         <Image
-          style={{width: 35, height: 35}}
+          style={{width: 35, height: 35, marginRight: 12}}
           source={
             item.avatar
               ? {uri: item.avatar}
               : require('../images/discuss_logo.png')
           }
         />
-        <Body>
+        <View flex>
           <Text>{item.name}</Text>
-        </Body>
-      </ListItem>
+        </View>
+      </TouchableOpacity>
     );
   };
-  _renderSectionHeader = ({section}) => (
-    <ListItem itemDivider last>
+  const _renderSectionHeader = ({section}) => (
+    <View centerV style={{height: 38}} paddingL-15>
       <Text>{section.key}</Text>
-    </ListItem>
+    </View>
   );
-  render() {
-    return (
-      <Container style={{flex: 1, backgroundColor: '#f7f7f7'}}>
-        <View
-          style={{
-            width,
-            height: 51,
-            backgroundColor: '#fff',
+
+  return (
+    <View style={{flex: 1, backgroundColor: '#f7f7f7'}}>
+      <View
+        style={{
+          width,
+          height: 51,
+          backgroundColor: '#fff',
+          justifyContent: 'center',
+          paddingHorizontal: 8,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: '#eee',
+        }}>
+        <ScrollView
+          horizontal
+          style={{flex: 1}}
+          contentContainerStyle={{
             justifyContent: 'center',
-            paddingHorizontal: 8,
-            borderBottomWidth: 1,
-            borderBottomColor: '#c9c9c9',
+            alignItems: 'center',
           }}>
-          <ScrollView
-            horizontal
-            style={{flex: 1}}
-            contentContainerStyle={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            {this._renderSelect()}
-          </ScrollView>
-        </View>
-        <SectionList
-          style={{backgroundColor: '#fff'}}
-          sections={this.state.data}
-          renderItem={this._renderRow}
-          keyExtractor={(item) => item.contactId}
-          renderSectionHeader={this._renderSectionHeader}
-        />
-      </Container>
-    );
-  }
+          {_renderSelect()}
+        </ScrollView>
+      </View>
+      <SectionList
+        style={{backgroundColor: '#fff'}}
+        sections={dataList}
+        renderItem={_renderRow}
+        keyExtractor={(item) => item.contactId}
+        renderSectionHeader={_renderSectionHeader}
+      />
+    </View>
+  );
 }
 const {width} = Dimensions.get('window');
 function transform(obj) {
@@ -219,5 +210,5 @@ function mySorter(a, b) {
   if (/^\d/.test(a) !== /^\D/.test(b)) {
     return a > b ? 1 : (a = b ? 0 : -1);
   }
-  return a > b ? -1 : a == b ? 0 : 1;
+  return a > b ? -1 : a === b ? 0 : 1;
 }

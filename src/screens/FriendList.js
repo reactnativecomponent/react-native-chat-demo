@@ -1,61 +1,41 @@
 /*
- * @通讯录
+ * @Descripttion: 通讯录
  * @Author: huangjun
- * @Date: 2018-10-10 16:21:48
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 16:17:13
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-17 15:53:58
  */
+
 import React from 'react';
-import {View, NativeAppEventEmitter, SectionList, Image} from 'react-native';
+import {NativeAppEventEmitter, SectionList, StyleSheet} from 'react-native';
 import {HeaderButtons} from 'react-navigation-header-buttons';
-import {Container, ListItem, Text, Body} from 'native-base';
+import {View, Text} from 'react-native-ui-lib';
 import {NimFriend} from 'react-native-netease-im';
+import {useNavigation} from '@react-navigation/native';
+import Cell from '../components/Cell';
 
-export default class FriendList extends React.Component {
-  static navigationOptions = ({navigation}) => ({
-    title: '通讯录',
-    headerRight: () => (
-      <HeaderButtons color="#037aff">
-        <HeaderButtons.Item
-          title="添加"
-          color="#037aff"
-          onPress={navigation.getParam('handlerAddBtn')}
-        />
-      </HeaderButtons>
-    ),
-  });
-  // 构造
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      ds: [],
-    };
-  }
-  addFriend = () => {
-    console.log('search');
-    this.props.navigation.push('SearchScreen');
-  };
-
-  componentDidMount() {
-    NimFriend.startFriendList();
-    this.props.navigation.setParams({
-      handlerAddBtn: this.addFriend,
+export default function FriendList() {
+  const navigation = useNavigation();
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderButtons color="#037aff">
+          <HeaderButtons.Item
+            title="添加"
+            color="#037aff"
+            onPress={() => navigation.push('SearchScreen')}
+          />
+        </HeaderButtons>
+      ),
     });
-    this.friendListener = NativeAppEventEmitter.addListener(
-      'observeFriend',
-      (data) => {
-        this.setState({
-          ds: this.formatData(data),
-        });
-      },
-    );
-  }
-  formatData = (data) => {
+  }, [navigation]);
+
+  const [dataList, setDataList] = React.useState([]);
+
+  const _formatData = (data) => {
     const newObj = [];
     const h = transform(data).sort();
     h.map((res) => {
-      // newObj[res] = data[res];
       newObj.push({
         title: res,
         data: data[res],
@@ -64,61 +44,63 @@ export default class FriendList extends React.Component {
     console.log(newObj);
     return newObj;
   };
-  componentWillUnmount() {
-    NimFriend.stopFriendList();
-    this.friendListener && this.friendListener.remove();
-  }
-  toFriendDetail(id) {
+  React.useEffect(() => {
+    NimFriend.startFriendList();
+    const _friendListener = NativeAppEventEmitter.addListener(
+      'observeFriend',
+      (data) => {
+        setDataList(_formatData(data));
+      },
+    );
+    return () => {
+      NimFriend.stopFriendList();
+      _friendListener.remove();
+    };
+  }, []);
+
+  const _toFriendDetail = (id) => {
     NimFriend.getUserInfo(id).then((data) => {
-      this.props.navigation.push('FriendDetail', {
+      navigation.push('FriendDetail', {
         friendData: data,
       });
     });
-  }
-  _renderRow = ({item}) => (
-    <ListItem onPress={() => this.toFriendDetail(item.contactId)}>
-      <Image
-        style={{width: 35, height: 35}}
-        source={
-          item.avatar
-            ? {uri: item.avatar}
-            : require('../images/discuss_logo.png')
-        }
-      />
-      <Body>
-        <Text>{item.name}</Text>
-      </Body>
-    </ListItem>
+  };
+  const _renderRow = ({item}) => (
+    <Cell
+      title={item.name}
+      iconLeftStyle={{width: 35, height: 35, marginRight: 12}}
+      source={
+        item.avatar ? {uri: item.avatar} : require('../images/discuss_logo.png')
+      }
+      onPress={() => _toFriendDetail(item.contactId)}
+    />
   );
-  _renderSectionHeader = ({section: {title}}) => (
-    <ListItem itemDivider>
+  const _renderSectionHeader = ({section: {title}}) => (
+    <View
+      paddingL-15
+      centerV
+      bg-white
+      style={{
+        height: 38,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: '#eee',
+      }}>
       <Text>{title}</Text>
-    </ListItem>
+    </View>
   );
-  render() {
-    return (
-      <Container style={{flex: 1}}>
-        <SectionList
-          style={{backgroundColor: '#fff'}}
-          sections={this.state.ds}
-          renderItem={this._renderRow}
-          renderSectionHeader={this._renderSectionHeader}
-          keyExtractor={(item, index) => item + index}
-          ListHeaderComponent={
-            <View>
-              <ListItem
-                last
-                onPress={() => this.props.navigation.push('NewFriend')}>
-                <Body>
-                  <Text>新的朋友</Text>
-                </Body>
-              </ListItem>
-            </View>
-          }
-        />
-      </Container>
-    );
-  }
+
+  return (
+    <SectionList
+      style={{backgroundColor: '#fff'}}
+      sections={dataList}
+      renderItem={_renderRow}
+      renderSectionHeader={_renderSectionHeader}
+      keyExtractor={(item, index) => item + index}
+      ListHeaderComponent={
+        <Cell title="新的朋友" onPress={() => navigation.push('NewFriend')} />
+      }
+    />
+  );
 }
 function transform(obj) {
   const arr = [];
@@ -132,5 +114,5 @@ function mySorter(a, b) {
   if (/^\d/.test(a) !== /^\D/.test(b)) {
     return a > b ? 1 : (a = b ? 0 : -1);
   }
-  return a > b ? -1 : a == b ? 0 : 1;
+  return a > b ? -1 : a === b ? 0 : 1;
 }

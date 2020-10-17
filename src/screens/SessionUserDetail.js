@@ -1,139 +1,112 @@
 /*
- * @会话设置
+ * @Descripttion: 单聊会话详情
  * @Author: huangjun
- * @Date: 2018-10-10 16:34:07
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 15:16:42
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-17 15:52:47
  */
-import React, {Component} from 'react';
-import {Image, TouchableOpacity, View, StyleSheet, Switch} from 'react-native';
-import {
-  Container,
-  Text,
-  Content,
-  Icon,
-  Right,
-  Body,
-  ListItem,
-} from 'native-base';
-import {NimSession, NimFriend, NimTeam} from 'react-native-netease-im';
 
-export default class SessionUserDetail extends Component {
-  static navigationOptions = (navigation) => ({
-    title: '会话详情',
-  });
-  // 构造
-  constructor(props) {
-    super(props);
-    this.state = {
-      userInfo: {},
-    };
-    // 初始状态
-  }
-  componentDidMount() {
-    const {session} = this.props.navigation.state.params;
+import * as React from 'react';
+import {Image, ScrollView, StyleSheet, Switch} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native-ui-lib';
+import {NimSession, NimFriend, NimTeam} from 'react-native-netease-im';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Cell from '../components/Cell';
+
+export default function SessionUserDetailScreen() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const {session = {}, onResult} = route.params || {};
+  const [userInfo, setUserInfo] = React.useState({});
+
+  React.useEffect(() => {
     NimFriend.getUserInfo(session.contactId).then((data) => {
-      this.setState({
-        userInfo: data,
-      });
+      setUserInfo(data);
     });
-  }
-  _addUserToTeam() {
-    const {navigation} = this.props;
+  }, [session]);
+
+  const _addUserToTeam = () => {
     navigation.push('CreateTeam', {
-      members: [this.state.userInfo],
+      members: [userInfo],
       onSuccess: (res) => {
-        const session = {
-          contactId: res.teamId,
-          name: '群聊',
-          sessionType: '1',
-        };
         navigation.popToTop();
         navigation.push('Chat', {
-          session,
+          session: {
+            contactId: res.teamId,
+            name: '群聊',
+            sessionType: '1',
+          },
         });
       },
     });
-  }
-  _changeState(v) {
-    const {session = {}} = this.props.navigation.state.params;
+  };
+  const _changeState = (v) => {
     if (v) {
       NimTeam.setMessageNotify(session.contactId, '0').then((res) => {
-        console.log(v, res);
-        this.setState({
-          userInfo: {
-            ...this.state.userInfo,
-            mute: '0',
-          },
+        setUserInfo({
+          ...userInfo,
+          mute: '0',
         });
       });
     } else {
       NimTeam.setMessageNotify(session.contactId, '1').then((res) => {
-        console.log(v, res);
-        this.setState({
-          userInfo: {
-            ...this.state.userInfo,
-            mute: '1',
-          },
+        setUserInfo({
+          ...userInfo,
+          mute: '1',
         });
       });
     }
-  }
-  clearMessage() {
-    const {session = {}, onResult} = this.props.navigation.state.params;
+  };
+  const _clearMessage = () => {
     NimSession.clearMessage(session.contactId, '0');
     onResult && onResult();
-  }
-  render() {
-    const {userInfo} = this.state;
-    return (
-      <Container style={{backgroundColor: '#f7f7f7'}}>
-        <Content>
-          <View style={styles.membersWarp}>
-            <TouchableOpacity activeOpacity={1} style={styles.member}>
-              <Image
-                source={
-                  userInfo.avatar
-                    ? {uri: userInfo.avatar}
-                    : require('../images/head.png')
-                }
-                style={styles.avatar}
-              />
-              <Text style={{fontSize: 11, marginTop: 5}} note numberOfLines={1}>
-                {userInfo.alias || userInfo.name}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={[styles.member]}
-              onPress={() => this._addUserToTeam()}>
-              <Icon name="ios-add" style={{fontSize: 45, color: '#666666'}} />
-            </TouchableOpacity>
-          </View>
-          <View style={{backgroundColor: '#fff', marginTop: 12}}>
-            <ListItem icon last>
-              <Body>
-                <Text>消息免打扰</Text>
-              </Body>
-              <Right>
-                <Switch
-                  value={this.state.userInfo.mute === '0'}
-                  onValueChange={(v) => this._changeState(v)}
-                />
-              </Right>
-            </ListItem>
-          </View>
-          <View style={{backgroundColor: '#fff', marginTop: 12}}>
-            <ListItem icon last onPress={() => this.clearMessage()}>
-              <Body>
-                <Text>清空聊天信息</Text>
-              </Body>
-            </ListItem>
-          </View>
-        </Content>
-      </Container>
-    );
-  }
+  };
+
+  return (
+    <View flex style={{backgroundColor: '#f7f7f7'}}>
+      <ScrollView>
+        <View style={styles.membersWarp}>
+          <TouchableOpacity activeOpacity={1} style={styles.member}>
+            <Image
+              source={
+                userInfo.avatar
+                  ? {uri: userInfo.avatar}
+                  : require('../images/head.png')
+              }
+              style={styles.avatar}
+            />
+            <Text style={{fontSize: 11, marginTop: 5}} note numberOfLines={1}>
+              {userInfo.alias || userInfo.name}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.member}
+            onPress={_addUserToTeam}>
+            <Icon name="ios-add" style={{fontSize: 45, color: '#666666'}} />
+          </TouchableOpacity>
+        </View>
+        <Cell
+          containerStyle={{marginTop: 12}}
+          border={false}
+          title="消息免打扰"
+          renderRight={
+            <Switch
+              value={userInfo.mute === '0'}
+              onValueChange={(v) => _changeState(v)}
+            />
+          }
+        />
+        <Cell
+          containerStyle={{marginTop: 12}}
+          title="清空聊天信息"
+          border={false}
+          onPress={_clearMessage}
+        />
+      </ScrollView>
+    </View>
+  );
 }
 const styles = StyleSheet.create({
   membersWarp: {

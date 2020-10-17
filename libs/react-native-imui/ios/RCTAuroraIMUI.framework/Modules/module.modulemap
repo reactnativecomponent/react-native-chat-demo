@@ -1,0 +1,11 @@
+framework module RCTAuroraIMUI {
+  umbrella header "RCTAuroraIMUI.h"
+
+  export *
+  module * { export * }
+}
+
+module RCTAuroraIMUI.Swift {
+    header "RCTAuroraIMUI-Swift.h"
+    requires objc
+}

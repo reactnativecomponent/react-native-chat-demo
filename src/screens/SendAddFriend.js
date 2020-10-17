@@ -1,55 +1,42 @@
 /*
- * @发送好友添加请求
+ * @Descripttion: 发送添加好友请求
  * @Author: huangjun
- * @Date: 2018-10-10 16:31:31
- * @Last Modified by: huangjun
- * @Last Modified time: 2020-04-19 15:15:16
+ * @Date: 2020-05-19 09:44:33
+ * @LastEditors: huangjun
+ * @LastEditTime: 2020-10-17 15:52:07
  */
-import React, {Component} from 'react';
-import {View} from 'react-native';
+
+import * as React from 'react';
 import HeaderButtons from 'react-navigation-header-buttons';
-import {Container, Text, Content, Item, Form, Input} from 'native-base';
+import {
+  View,
+  Text,
+  TextField,
+  KeyboardAwareScrollView,
+} from 'react-native-ui-lib';
 import {NimFriend} from 'react-native-netease-im';
 import {RNToasty} from 'react-native-toasty';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
-export default class SendAddFriend extends Component {
-  static navigationOptions = ({navigation}) => ({
-    title: '发送请求',
-    headerRight: () => (
-      <HeaderButtons color="#037aff">
-        <HeaderButtons.Item
-          title="发送"
-          color="#037aff"
-          onPress={navigation.getParam('handlerSend')}
-        />
-      </HeaderButtons>
-    ),
-  });
-  constructor(props) {
-    super(props);
-    this.state = {
-      remark: '',
-    };
-  }
-  componentDidMount() {
-    this.props.navigation.setParams({
-      handlerSend: this.submit,
-    });
-  }
-  submit = () => {
-    const {friendData = {}} = this.props.navigation.state.params;
-    if (!/^[\u4e00-\u9fa5a-zA-Z0-9_]+$/.test(this.state.remark)) {
+export default function SendAddFriend() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const {friendData = {}} = route.params || {};
+  const [remark, setRemark] = React.useState('');
+
+  const _submit = React.useCallback(() => {
+    if (!/^[\u4e00-\u9fa5a-zA-Z0-9_]+$/.test(remark)) {
       RNToasty.Show({
         title: '不能包含特殊字符',
       });
       return;
     }
-    NimFriend.addFriend(friendData.contactId, this.state.remark).then(
+    NimFriend.addFriend(friendData.contactId, remark).then(
       () => {
         RNToasty.Show({
           title: '已发送请求',
         });
-        this.props.navigation.pop();
+        navigation.pop();
       },
       (err) => {
         RNToasty.Show({
@@ -57,29 +44,31 @@ export default class SendAddFriend extends Component {
         });
       },
     );
-  };
-  render() {
-    return (
-      <Container style={{backgroundColor: '#f7f7f7'}}>
-        <Content>
-          <Form style={{backgroundColor: '#fff'}}>
-            <View style={{backgroundColor: '#f7f7f7', padding: 12}}>
-              <Text note>你需要发送的请求,等对方通过</Text>
-            </View>
-            <Item inlineLabel last>
-              <Input
-                value={this.state.remark}
-                autoCapitalize="none"
-                autoCorrect={false}
-                clearButtonMode="while-editing"
-                onChangeText={(remark) => {
-                  this.setState({remark});
-                }}
-              />
-            </Item>
-          </Form>
-        </Content>
-      </Container>
-    );
-  }
+  }, [friendData, remark, navigation]);
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderButtons color="#037aff">
+          <HeaderButtons.Item title="发送" color="#037aff" onPress={_submit} />
+        </HeaderButtons>
+      ),
+    });
+  }, [_submit, navigation]);
+
+  return (
+    <KeyboardAwareScrollView>
+      <View bg-white>
+        <View style={{backgroundColor: '#f7f7f7', padding: 12}}>
+          <Text note>你需要发送的请求,等对方通过</Text>
+        </View>
+        <TextField
+          value={remark}
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearButtonMode="while-editing"
+          onChangeText={(val) => setRemark(val)}
+        />
+      </View>
+    </KeyboardAwareScrollView>
+  );
 }

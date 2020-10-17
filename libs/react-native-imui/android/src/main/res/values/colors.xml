@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#c2b8bc</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="color_black_333333">#333333</color>
+    <color name="main_bg_color">#FFFFFF</color>
+
+    <color name="split_line_grey_color_d9d9d9">#D9D9D9</color>
+    <color name="color_activity_blue_bg">#f7389fff</color>
+
+    <color name="color_b3b3b3">#b3b3b3</color>
+    <color name="color_gray_d9d9d9">#d9d9d9</color>
+
+    <!-- image picker -->
+    <color name="color_split_line_d9d9d9">#d9d9d9</color>
+    <color name="color_split_line_cccccc">#cccccc</color>
+
+    <color name="action_bar_black_title_1f1f1f">#1f1f1f</color>
+    <color name="action_bar_black_title_color">#252525</color>
+
+
+    <color name="line">#4e4e4e</color>
+
+
+    <!-->Conversation<-->
+    <color name="aurora_conv_divider">#ebebeb</color>
+
+    <!-->Message List<-->
+    <color name="aurora_msg_date_text_color">#4e4e4e</color>
+    <color name="aurora_msg_event_text_color">#9D9D9E</color>
+    <!--send_bubble-->
+    <color name="aurora_msg_send_bubble_default_color">#2977fa</color>
+    <color name="aurora_msg_send_bubble_pressed_color">#005af2</color>
+    <color name="aurora_msg_send_bubble_selected_color">#0e63f0</color>
+    <color name="aurora_msg_send_text_color">@color/white</color>
+    <!--receive_bubble-->
+    <color name="aurora_msg_receive_bubble_default_color">#ffffff</color>
+    <color name="aurora_msg_receive_bubble_pressed_color">#c9d3dd</color>
+    <color name="aurora_msg_receive_bubble_selected_color">#d3d9df</color>
+    <color name="aurora_msg_receive_text_color">@color/black</color>
+
+    <color name="red_packet_bg">#ff911a</color>
+    <color name="red_packet_bg_pressed">#f4a148</color>
+    <color name="red_packet_comments">#ffffff</color>
+    <color name="red_packet_text">#ffe4bf</color>
+    <color name="red_packet_tag">#999999</color>
+    <color name="link_pressed">#dcd9d9</color>
+    <color name="link_card">#dcd9d9</color>
+    <color name="line_bg">#a9a3a3</color>
+    <color name="voice_re_bg">#dadada</color>
+    <color name="voice_re_bg_focused">#D6D7DC</color>
+    <color name="voice_re_bg_selected">#D6D7DC</color>
+    <color name="voice_re_bg_default">#F7F7F7</color>
+    <color name="voice_re_bg_pressed">#D6D7DC</color>
+    <color name="chat_input_bg">#F7F7F7</color>
+
+    <!-->chat input<-->
+    <color name="aurora_bg_input_default">#f3f3f3</color>
+    <color name="aurora_bg_input_container">#e5e5e5</color>
+    <color name="aurora_bg_edittext_default">#e5e5e5</color>
+    <color name="aurora_bg_edittext_focus">#3f80dc</color>
+    <color name="aurora_cursor_color_default">#8db4eb</color>
+    <color name="aurora_send_blue">#3f80dc</color>
+    <color name="aurora_bg_voice_btn_default">#3f80dc</color>
+    <color name="aurora_bg_voice_btn_pressed">#3773cb</color>
+    <color name="aurora_text_color_input">#000000</color>
+    <color name="aurora_hint_color_input">#8b8b8b</color>
+    <color name="aurora_chronometer_text_color">#92A7C5</color>
+
+
+
+</resources>
