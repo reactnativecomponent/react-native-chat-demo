@@ -1,4 +1,4 @@
-# 0.60+ ios的imui尚有问题待解决，正在处理中...
+# 0.60+ ios的imui临时解决方案，重构项目完成
 
 ## react-native-chat-demo
 网易云信IM示 界面仿微信
